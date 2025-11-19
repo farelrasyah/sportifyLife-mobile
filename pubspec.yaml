@@ -50,7 +50,7 @@ dependencies:
     sdk: flutter
   
   # Deep Links
-  uni_links: ^0.5.1
+  app_links: ^6.3.2
   
   # URL Launcher
   url_launcher: ^6.2.2
