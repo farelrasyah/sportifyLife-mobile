@@ -1,124 +1,78 @@
-import 'package:dio/dio.dart';
 import '../models/userDetailsModel.dart';
-import '../models/apiResponseModel.dart';
-import '../../utils/api.dart';
-import '../../utils/apiClient.dart';
+import '../../services/profile_service.dart';
+import '../../config/goal_type.dart';
 
 /// User details repository for API calls
+/// This is a wrapper around ProfileService for backward compatibility
 class UserDetailsRepository {
-  final ApiClient _apiClient = ApiClient();
+  final ProfileService _profileService;
+
+  UserDetailsRepository({ProfileService? profileService})
+    : _profileService = profileService ?? ProfileService();
 
   /// Get user details
   Future<UserDetailsModel?> getUserDetails() async {
-    try {
-      final response = await _apiClient.dio.get(Api.getUserDetails);
+    final result = await _profileService.getUserDetails();
 
-      final apiResponse = ApiResponseModel.fromJson(
-        response.data,
-        (data) => UserDetailsModel.fromJson(data as Map<String, dynamic>),
-      );
-
-      return apiResponse.data;
-    } on DioException catch (e) {
-      // If 404, user details don't exist yet
-      if (e.response?.statusCode == 404) {
-        return null;
-      }
-      throw ApiException(_handleError(e));
-    }
+    return result.when(
+      success: (data) => data,
+      failure: (error) {
+        // If 404, user details don't exist yet
+        if (error.statusCode == 404) {
+          return null;
+        }
+        throw Exception(error.userMessage);
+      },
+    );
   }
 
   /// Complete user profile (first time)
+  /// Calls POST /api/v1/auth/complete-profile
+  /// Requires: gender, dateOfBirth (YYYY-MM-DD), weight, height, goalType
   Future<UserDetailsModel> completeProfile({
     required double weight,
     required int height,
-    required String gender,
+    required Gender gender,
     required DateTime dateOfBirth,
-    required String phoneNumber,
+    required GoalType goalType,
   }) async {
-    try {
-      final response = await _apiClient.dio.post(
-        Api.completeProfile,
-        data: {
-          'weight': weight,
-          'height': height,
-          'gender': gender,
-          'dateOfBirth': dateOfBirth.toIso8601String(),
-          'phoneNumber': phoneNumber,
-        },
-      );
+    // Create profile model
+    final profile = ProfileModel(
+      weight: weight,
+      height: height,
+      gender: gender,
+      dateOfBirth: dateOfBirth,
+      goalType: goalType,
+    );
 
-      final apiResponse = ApiResponseModel.fromJson(
-        response.data,
-        (data) => UserDetailsModel.fromJson(data as Map<String, dynamic>),
-      );
+    // Call service
+    final result = await _profileService.completeProfile(profile);
 
-      if (apiResponse.data == null) {
-        throw ApiException('Failed to complete profile');
-      }
-
-      return apiResponse.data!;
-    } on DioException catch (e) {
-      throw ApiException(_handleError(e));
-    }
+    return result.when(
+      success: (data) => data,
+      failure: (error) => throw Exception(error.userMessage),
+    );
   }
 
   /// Update user details
   Future<UserDetailsModel> updateUserDetails({
     double? weight,
     int? height,
-    String? gender,
+    Gender? gender,
     DateTime? dateOfBirth,
-    String? phoneNumber,
+    GoalType? goalType,
   }) async {
-    try {
-      final Map<String, dynamic> data = {};
-      if (weight != null) data['weight'] = weight;
-      if (height != null) data['height'] = height;
-      if (gender != null) data['gender'] = gender;
-      if (dateOfBirth != null)
-        data['dateOfBirth'] = dateOfBirth.toIso8601String();
-      if (phoneNumber != null) data['phoneNumber'] = phoneNumber;
+    final result = await _profileService.updateUserDetails(
+      weight: weight,
+      height: height,
+      gender: gender,
+      dateOfBirth: dateOfBirth,
+      goalType: goalType,
+    );
 
-      final response = await _apiClient.dio.put(
-        Api.updateUserDetails,
-        data: data,
-      );
-
-      final apiResponse = ApiResponseModel.fromJson(
-        response.data,
-        (data) => UserDetailsModel.fromJson(data as Map<String, dynamic>),
-      );
-
-      if (apiResponse.data == null) {
-        throw ApiException('Failed to update profile');
-      }
-
-      return apiResponse.data!;
-    } on DioException catch (e) {
-      throw ApiException(_handleError(e));
-    }
-  }
-
-  /// Error handler
-  String _handleError(DioException error) {
-    if (error.response != null) {
-      final data = error.response!.data;
-      if (data is Map<String, dynamic>) {
-        return data['message'] ?? data['error'] ?? 'An error occurred';
-      }
-      return error.response!.statusMessage ?? 'An error occurred';
-    }
-
-    if (error.type == DioExceptionType.connectionTimeout ||
-        error.type == DioExceptionType.receiveTimeout) {
-      return 'Connection timeout. Please check your internet connection.';
-    }
-
-    if (error.type == DioExceptionType.connectionError) {
-      return 'No internet connection';
-    }
-
-    return error.message ?? 'An error occurred';
+    return result.when(
+      success: (data) => data,
+      failure: (error) => throw Exception(error.userMessage),
+    );
   }
 }

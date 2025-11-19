@@ -1,16 +1,19 @@
 import 'package:equatable/equatable.dart';
+import '../../config/goal_type.dart';
 
-/// User details model (weight, height, etc)
+/// User details model (weight, height, goal type)
+/// Matches backend schema: gender, dateOfBirth, weight, height, goalType
+/// Backend allowed goalType values: improve_shape, lean_tone, lose_fat
 class UserDetailsModel extends Equatable {
   final String id;
   final String userId;
   final double? weight; // in kg
   final int? height; // in cm
-  final String? gender; // male, female, other
+  final Gender? gender; // male, female, other
   final DateTime? dateOfBirth;
-  final String? phoneNumber;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final GoalType? goalType; // improve_shape, lean_tone, lose_fat
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   const UserDetailsModel({
     required this.id,
@@ -19,12 +22,26 @@ class UserDetailsModel extends Equatable {
     this.height,
     this.gender,
     this.dateOfBirth,
-    this.phoneNumber,
-    required this.createdAt,
-    required this.updatedAt,
+    this.goalType,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory UserDetailsModel.fromJson(Map<String, dynamic> json) {
+    // Parse gender from string to enum
+    Gender? parsedGender;
+    final genderStr = json['gender'] as String?;
+    if (genderStr != null) {
+      parsedGender = Gender.fromValue(genderStr);
+    }
+
+    // Parse goalType from string to enum
+    GoalType? parsedGoalType;
+    final goalTypeStr = json['goalType'] as String?;
+    if (goalTypeStr != null) {
+      parsedGoalType = GoalType.fromValue(goalTypeStr);
+    }
+
     return UserDetailsModel(
       id: json['id'] as String,
       userId: json['userId'] as String,
@@ -32,27 +49,35 @@ class UserDetailsModel extends Equatable {
           ? (json['weight'] as num).toDouble()
           : null,
       height: json['height'] as int?,
-      gender: json['gender'] as String?,
+      gender: parsedGender,
       dateOfBirth: json['dateOfBirth'] != null
           ? DateTime.parse(json['dateOfBirth'] as String)
           : null,
-      phoneNumber: json['phoneNumber'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      goalType: parsedGoalType,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'] as String)
+          : null,
     );
   }
 
+  /// Convert to JSON for API requests
+  /// dateOfBirth is formatted as YYYY-MM-DD string
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'userId': userId,
       'weight': weight,
       'height': height,
-      'gender': gender,
-      'dateOfBirth': dateOfBirth?.toIso8601String(),
-      'phoneNumber': phoneNumber,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'gender': gender?.value,
+      'dateOfBirth': dateOfBirth != null
+          ? '${dateOfBirth!.year.toString().padLeft(4, '0')}-${dateOfBirth!.month.toString().padLeft(2, '0')}-${dateOfBirth!.day.toString().padLeft(2, '0')}'
+          : null,
+      'goalType': goalType?.value,
+      if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
+      if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
     };
   }
 
@@ -61,9 +86,9 @@ class UserDetailsModel extends Equatable {
     String? userId,
     double? weight,
     int? height,
-    String? gender,
+    Gender? gender,
     DateTime? dateOfBirth,
-    String? phoneNumber,
+    GoalType? goalType,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -74,20 +99,19 @@ class UserDetailsModel extends Equatable {
       height: height ?? this.height,
       gender: gender ?? this.gender,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
+      goalType: goalType ?? this.goalType,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
-  /// Check if profile is complete
+  /// Check if profile is complete (all required fields filled)
   bool get isComplete {
     return weight != null &&
         height != null &&
         gender != null &&
         dateOfBirth != null &&
-        phoneNumber != null &&
-        phoneNumber!.isNotEmpty;
+        goalType != null;
   }
 
   /// Calculate age from date of birth
@@ -128,7 +152,7 @@ class UserDetailsModel extends Equatable {
     height,
     gender,
     dateOfBirth,
-    phoneNumber,
+    goalType,
     createdAt,
     updatedAt,
   ];

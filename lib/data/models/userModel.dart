@@ -9,8 +9,8 @@ class UserModel extends Equatable {
   final String provider;
   final bool isVerified;
   final String? profilePhoto;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   const UserModel({
     required this.id,
@@ -20,8 +20,8 @@ class UserModel extends Equatable {
     required this.provider,
     this.isVerified = false,
     this.profilePhoto,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -33,8 +33,12 @@ class UserModel extends Equatable {
       provider: json['provider'] as String? ?? 'local',
       isVerified: json['isVerified'] as bool? ?? false,
       profilePhoto: json['profilePhoto'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'] as String)
+          : null,
     );
   }
 
@@ -47,8 +51,8 @@ class UserModel extends Equatable {
       'provider': provider,
       'isVerified': isVerified,
       'profilePhoto': profilePhoto,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
+      if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
     };
   }
 

@@ -28,13 +28,11 @@ class Api {
   static String resetPassword = "${AppConstants.apiUrl}/auth/reset-password";
   static String changePassword = "${AppConstants.apiUrl}/auth/change-password";
 
-  // User Details Endpoints
+  // Profile Endpoints (Auth-based)
+  static String completeProfile =
+      "${AppConstants.apiUrl}/auth/complete-profile";
   static String getUserDetails = "${AppConstants.apiUrl}/user/details";
   static String updateUserDetails = "${AppConstants.apiUrl}/user/details";
-  static String completeProfile =
-      "${AppConstants.apiUrl}/user/complete-profile";
-
-  // Profile Endpoints
   static String updateProfile = "${AppConstants.apiUrl}/user/profile";
   static String uploadProfilePhoto =
       "${AppConstants.apiUrl}/user/profile-photo";

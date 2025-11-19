@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../data/models/userDetailsModel.dart';
 import '../data/repositories/userDetailsRepository.dart';
+import '../config/goal_type.dart';
 
 // States
 abstract class UserDetailsState extends Equatable {
@@ -66,12 +67,13 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
   }
 
   /// Complete profile (first time)
+  /// Required fields: weight, height, gender, dateOfBirth, goalType
   Future<void> completeProfile({
     required double weight,
     required int height,
-    required String gender,
+    required Gender gender,
     required DateTime dateOfBirth,
-    required String phoneNumber,
+    required GoalType goalType,
   }) async {
     try {
       emit(UserDetailsLoading());
@@ -81,7 +83,7 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
         height: height,
         gender: gender,
         dateOfBirth: dateOfBirth,
-        phoneNumber: phoneNumber,
+        goalType: goalType,
       );
 
       emit(UserDetailsSuccess(userDetails, 'Profile completed successfully'));
@@ -94,9 +96,9 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
   Future<void> updateUserDetails({
     double? weight,
     int? height,
-    String? gender,
+    Gender? gender,
     DateTime? dateOfBirth,
-    String? phoneNumber,
+    GoalType? goalType,
   }) async {
     try {
       emit(UserDetailsLoading());
@@ -106,7 +108,7 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
         height: height,
         gender: gender,
         dateOfBirth: dateOfBirth,
-        phoneNumber: phoneNumber,
+        goalType: goalType,
       );
 
       emit(UserDetailsSuccess(userDetails, 'Profile updated successfully'));
