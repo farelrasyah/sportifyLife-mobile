@@ -138,7 +138,27 @@ class AppTypography {
     fontWeight: FontWeight.w500,
     letterSpacing: 0.5,
     height: 1.25,
-    color: ColorPalette.kTextOnPrimary,
+    color: ColorPalette.kTextPrimary,
+  );
+
+  // Onboarding text styles
+
+  /// Style for onboarding title
+  static TextStyle get onboardingTitle => GoogleFonts.inter(
+    fontSize: 24.0,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 0.2,
+    height: 1.4,
+    color: ColorPalette.kOnboardingTitle,
+  );
+
+  /// Style for onboarding description
+  static TextStyle get onboardingDescription => GoogleFonts.inter(
+    fontSize: 14.0,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.3,
+    height: 1.6,
+    color: ColorPalette.kOnboardingDescription,
   );
 
   // Text theme for Material Design integration

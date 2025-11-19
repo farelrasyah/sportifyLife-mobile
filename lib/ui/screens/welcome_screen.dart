@@ -5,6 +5,7 @@ import '../theme/spacing.dart';
 import '../theme/app_theme.dart';
 import '../widgets/logo_widget.dart';
 import '../widgets/primary_button.dart';
+import '../../app/routes.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -41,7 +42,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       CurvedAnimation(parent: _backgroundController, curve: Curves.easeOut),
     );
 
-    
     _buttonAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _buttonController, curve: Curves.easeOut),
     );
@@ -121,10 +121,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _onGetStartedPressed() {
-    
+    Navigator.of(context).pushReplacementNamed(Routes.onboardingScreen);
   }
 }
-
 
 extension GradientExtension on LinearGradient {
   LinearGradient scale(double opacity) {

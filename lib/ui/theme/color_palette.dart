@@ -27,6 +27,19 @@ class ColorPalette {
 
   // Shadow colors
   static const Color kShadowLight = Color(0x1A000000); // Light shadow
+
+  // Onboarding colors
+  static const Color kOnboardingBackground = Color(
+    0xFF92B4FF,
+  ); // Blue background
+  static const Color kOnboardingTitle = Color(0xFF1D1617); // Dark title
+  static const Color kOnboardingDescription = Color(
+    0xFF7B6F72,
+  ); // Gray description
+  static const Color kOnboardingButton = Color(0xFF92A3FD); // Blue button
+  static const Color kOnboardingButtonIcon = Color(0xFFFFFFFF); // White icon
+  static const Color kOnboardingDotActive = Color(0xFF92A3FD); // Active dot
+  static const Color kOnboardingDotInactive = Color(0xFFD0D0D0); // Inactive dot
   static const Color kShadowMedium = Color(0x33000000); // Medium shadow
 
   // Gradient definitions

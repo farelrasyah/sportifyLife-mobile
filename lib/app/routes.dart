@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Screens
 import '../ui/screens/welcome_screen.dart';
 import '../ui/screens/splash_screen.dart';
+import '../ui/screens/onboarding_screen.dart';
 import '../ui/screens/auth/login_screen.dart';
 import '../ui/screens/auth/register_screen.dart';
 import '../ui/screens/auth/verify_email_screen.dart';
@@ -22,6 +23,7 @@ import '../data/repositories/user_details_repository.dart';
 class Routes {
   static const String welcomeScreen = '/';
   static const String splashScreen = '/splash';
+  static const String onboardingScreen = '/onboarding';
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
   static const String verifyEmailScreen = '/verifyEmail';
@@ -41,6 +43,9 @@ class RouteGenerator {
 
       case Routes.splashScreen:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
+
+      case Routes.onboardingScreen:
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
 
       case Routes.loginScreen:
         return MaterialPageRoute(
