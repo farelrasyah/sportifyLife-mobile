@@ -116,7 +116,7 @@ class AppTypography {
 
   /// Style for the tagline "Everybody Can Train"
   static TextStyle get tagline => GoogleFonts.inter(
-    fontSize: 16.0,
+    fontSize: 18.0,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.5,
     height: 1.5,
@@ -126,7 +126,7 @@ class AppTypography {
   /// Style for primary button text
   static TextStyle get buttonPrimary => GoogleFonts.inter(
     fontSize: 16.0,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.bold,
     letterSpacing: 0.5,
     height: 1.25,
     color: ColorPalette.kTextButton,

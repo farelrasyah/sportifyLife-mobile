@@ -6,8 +6,6 @@ import '../theme/app_theme.dart';
 import '../widgets/logo_widget.dart';
 import '../widgets/primary_button.dart';
 
-/// Welcome screen with pixel-perfect design matching the provided image
-/// Features gradient background, animated logo, and call-to-action button
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
@@ -27,32 +25,27 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   void initState() {
     super.initState();
 
-    // Set system UI overlay style for gradient background
     SystemChrome.setSystemUIOverlayStyle(AppTheme.gradientSystemUiOverlayStyle);
 
-    // Background animation controller
     _backgroundController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
-    // Button animation controller
     _buttonController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
 
-    // Background fade animation
     _backgroundAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _backgroundController, curve: Curves.easeOut),
     );
 
-    // Button fade animation
+    
     _buttonAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _buttonController, curve: Curves.easeOut),
     );
 
-    // Button slide animation
     _buttonSlideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
           CurvedAnimation(
@@ -61,7 +54,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           ),
         );
 
-    // Start animations with delay
     _startAnimations();
   }
 
@@ -95,16 +87,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 padding: Spacing.screenAll,
                 child: Column(
                   children: [
-                    // Top spacer to center content vertically
-                    const Spacer(flex: 2),
-
-                    // Logo and tagline
-                    const LogoWidget(animate: true),
-
-                    // Bottom spacer
                     const Spacer(flex: 3),
 
-                    // Get Started button with animation
+                    const LogoWidget(animate: true),
+
+                    const Spacer(flex: 2),
+
                     AnimatedBuilder(
                       animation: _buttonController,
                       builder: (context, child) {
@@ -121,7 +109,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       },
                     ),
 
-                    // Bottom padding
                     Spacing.verticalXXL,
                   ],
                 ),
@@ -134,10 +121,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _onGetStartedPressed() {
-    // Add haptic feedback
     HapticFeedback.lightImpact();
 
-    // Navigate to next screen (placeholder for now)
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Welcome to SportifyLife!'),
@@ -145,12 +130,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       ),
     );
 
-    // TODO: Navigate to login/register screen
-    // Navigator.pushNamed(context, '/auth');
+    
   }
 }
 
-/// Extension to scale gradient opacity
+
 extension GradientExtension on LinearGradient {
   LinearGradient scale(double opacity) {
     return LinearGradient(

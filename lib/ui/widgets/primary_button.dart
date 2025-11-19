@@ -33,15 +33,9 @@ class PrimaryButton extends StatelessWidget {
         borderRadius: Spacing.radiusButton,
         boxShadow: const [
           BoxShadow(
-            color: ColorPalette.kShadowMedium,
-            offset: Offset(0, 8),
-            blurRadius: 24,
-            spreadRadius: 0,
-          ),
-          BoxShadow(
             color: ColorPalette.kShadowLight,
-            offset: Offset(0, 2),
-            blurRadius: 8,
+            offset: Offset(0, 4),
+            blurRadius: 12,
             spreadRadius: 0,
           ),
         ],

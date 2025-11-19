@@ -80,10 +80,10 @@ class _LogoWidgetState extends State<LogoWidget>
       children: [
         Image.asset(
           'assets/icon/SportifyLife.png',
-          height: 120,
+          height: 50,
           fit: BoxFit.contain,
         ),
-        Spacing.verticalLG,
+        Spacing.verticalMD,
         Text(
           'Everybody Can Train',
           style: AppTypography.tagline,

@@ -16,7 +16,7 @@ class ColorPalette {
 
   // Text colors
   static const Color kTextPrimary = Color(0xFF1F2937); // Dark text (Sportify)
-  static const Color kTextSecondary = Color(0xFF6B7280); // Gray text (tagline)
+  static const Color kTextSecondary = Color(0xFF4B5563); // Gray text (tagline)
   static const Color kTextOnPrimary = Color(0xFFFFFFFF); // White text (Life)
   static const Color kTextButton = Color(0xFF92A3FD); // Button text color
 

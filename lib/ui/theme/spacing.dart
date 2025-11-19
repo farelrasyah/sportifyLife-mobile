@@ -23,7 +23,7 @@ class Spacing {
   static const double buttonSpacing = _baseUnit * 8; // 64px above button
   static const double screenPadding = _baseUnit * 3; // 24px screen edges
   static const double buttonHeight = _baseUnit * 7; // 56px button height
-  static const double buttonRadius = _baseUnit * 4; // 32px button radius
+  static const double buttonRadius = _baseUnit * 3; // 24px button radius
 
   // EdgeInsets presets for common use cases
   static const EdgeInsets screenHorizontal = EdgeInsets.symmetric(
