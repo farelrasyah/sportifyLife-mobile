@@ -15,7 +15,6 @@ import '../cubits/verifyCubit.dart';
 import '../cubits/userDetailsCubit.dart';
 
 // Repositories
-import '../data/repositories/authRepository.dart';
 import '../data/repositories/userDetailsRepository.dart';
 
 /// Route names
@@ -38,7 +37,7 @@ class RouteGenerator {
       case Routes.splashScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) => AuthCubit(AuthRepository()),
+            create: (_) => AuthCubit(),
             child: const SplashScreen(),
           ),
         );
@@ -46,7 +45,7 @@ class RouteGenerator {
       case Routes.loginScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) => AuthCubit(AuthRepository()),
+            create: (_) => AuthCubit(),
             child: const LoginScreen(),
           ),
         );
@@ -54,7 +53,7 @@ class RouteGenerator {
       case Routes.registerScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) => AuthCubit(AuthRepository()),
+            create: (_) => AuthCubit(),
             child: const RegisterScreen(),
           ),
         );
@@ -63,7 +62,7 @@ class RouteGenerator {
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => VerifyCubit(AuthRepository()),
+              create: (_) => VerifyCubit(),
               child: VerifyEmailScreen(email: args['email'] as String),
             ),
           );

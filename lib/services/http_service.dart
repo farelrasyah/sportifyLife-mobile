@@ -261,6 +261,11 @@ class HttpService {
       return ServiceError.auth(message);
     }
 
+    if (statusCode == 409) {
+      // Conflict - usually duplicate resource (email already exists, etc)
+      return ServiceError.validation(message);
+    }
+
     if (statusCode >= 500) {
       return ServiceError.server(message);
     }

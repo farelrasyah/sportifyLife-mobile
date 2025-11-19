@@ -29,7 +29,8 @@ class UserDetailsRepository {
   /// Complete user profile (first time)
   /// Calls POST /api/v1/auth/complete-profile
   /// Requires: gender, dateOfBirth (YYYY-MM-DD), weight, height, goalType
-  Future<UserDetailsModel> completeProfile({
+  /// Note: Backend returns success message only, not user details
+  Future<void> completeProfile({
     required double weight,
     required int height,
     required Gender gender,
@@ -49,7 +50,7 @@ class UserDetailsRepository {
     final result = await _profileService.completeProfile(profile);
 
     return result.when(
-      success: (data) => data,
+      success: (_) {}, // Success - returns void
       failure: (error) => throw Exception(error.userMessage),
     );
   }

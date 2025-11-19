@@ -109,8 +109,9 @@ class ProfileService {
 
   /// Complete user profile
   /// This is called after registration and email verification
-  /// Returns UserDetailsModel on success or ServiceError on failure
-  Future<Result<UserDetailsModel>> completeProfile(ProfileModel profile) async {
+  /// Returns success or ServiceError on failure
+  /// Note: Backend returns {message: string}, not full user details
+  Future<Result<void>> completeProfile(ProfileModel profile) async {
     // Validate input before making API call
     final validation = profile.validate();
     if (!validation.isValid) {
@@ -122,13 +123,21 @@ class ProfileService {
       );
     }
 
-    // Make API request
-    return await _httpService.post<UserDetailsModel>(
-      '/auth/complete-profile',
-      data: profile.toJson(),
-      fromJson: (json) =>
-          UserDetailsModel.fromJson(json as Map<String, dynamic>),
-    );
+    // Make API request - backend returns simple success message
+    try {
+      final response = await _httpService.post<Map<String, dynamic>>(
+        '/auth/complete-profile',
+        data: profile.toJson(),
+        fromJson: (json) => json as Map<String, dynamic>,
+      );
+
+      return response.when(
+        success: (_) => const Success(null),
+        failure: (error) => Failure(error),
+      );
+    } catch (e) {
+      return Failure(ServiceError.unknown(e.toString()));
+    }
   }
 
   /// Get user details

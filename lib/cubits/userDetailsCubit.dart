@@ -68,6 +68,7 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
 
   /// Complete profile (first time)
   /// Required fields: weight, height, gender, dateOfBirth, goalType
+  /// Note: Backend returns success message only, creates temporary model
   Future<void> completeProfile({
     required double weight,
     required int height,
@@ -78,7 +79,8 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
     try {
       emit(UserDetailsLoading());
 
-      final userDetails = await _repository.completeProfile(
+      // Complete profile (returns void)
+      await _repository.completeProfile(
         weight: weight,
         height: height,
         gender: gender,
@@ -86,7 +88,23 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
         goalType: goalType,
       );
 
-      emit(UserDetailsSuccess(userDetails, 'Profile completed successfully'));
+      // Create temporary user details model for state
+      // The actual data will be loaded when needed from /user/details endpoint
+      final tempUserDetails = UserDetailsModel(
+        id: 'temp', // Temporary ID
+        userId: 'temp', // Will be replaced when fetching from server
+        weight: weight,
+        height: height,
+        gender: gender,
+        dateOfBirth: dateOfBirth,
+        goalType: goalType,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      emit(
+        UserDetailsSuccess(tempUserDetails, 'Profile completed successfully'),
+      );
     } catch (e) {
       emit(UserDetailsError(e.toString()));
     }

@@ -14,11 +14,12 @@ class AuthResponseModel extends Equatable {
   });
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
-    final data = json['data'] as Map<String, dynamic>;
+    // HttpService._extractData already extracts 'data' field
+    // So json already contains: {accessToken, refreshToken, user}
     return AuthResponseModel(
-      accessToken: data['accessToken'] as String,
-      refreshToken: data['refreshToken'] as String,
-      user: UserModel.fromJson(data['user'] as Map<String, dynamic>),
+      accessToken: json['accessToken'] as String,
+      refreshToken: json['refreshToken'] as String,
+      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
     );
   }
 

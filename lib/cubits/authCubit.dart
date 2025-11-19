@@ -1,20 +1,26 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../data/models/userModel.dart';
-import '../data/repositories/authRepository.dart';
+import '../services/auth_service.dart';
+import '../services/verification_service.dart';
 import '../utils/storageHelper.dart';
-import '../utils/constants.dart';
 
-// States
+// ============================================================================
+// STATES
+// ============================================================================
+
 abstract class AuthState extends Equatable {
   @override
   List<Object?> get props => [];
 }
 
+/// Initial state - auth status unknown
 class AuthInitial extends AuthState {}
 
+/// Loading state for auth operations
 class AuthLoading extends AuthState {}
 
+/// Authentication successful
 class AuthSuccess extends AuthState {
   final UserModel user;
   final bool needsVerification;
@@ -30,24 +36,40 @@ class AuthSuccess extends AuthState {
   List<Object?> get props => [user, needsVerification, needsProfileCompletion];
 }
 
+/// Authentication error
 class AuthError extends AuthState {
   final String error;
-  AuthError(this.error);
+  final bool canRetry;
+
+  AuthError(this.error, {this.canRetry = true});
 
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => [error, canRetry];
 }
 
+/// User is not authenticated
 class AuthUnauthenticated extends AuthState {}
 
-// Cubit
-class AuthCubit extends Cubit<AuthState> {
-  final AuthRepository _repository;
-  final StorageHelper _storage = StorageHelper();
+// ============================================================================
+// CUBIT
+// ============================================================================
 
-  AuthCubit(this._repository) : super(AuthInitial());
+class AuthCubit extends Cubit<AuthState> {
+  final AuthService _authService;
+  final VerificationService _verificationService;
+  final StorageHelper _storage;
+
+  AuthCubit({
+    AuthService? authService,
+    VerificationService? verificationService,
+    StorageHelper? storage,
+  }) : _authService = authService ?? AuthService(),
+       _verificationService = verificationService ?? VerificationService(),
+       _storage = storage ?? StorageHelper(),
+       super(AuthInitial());
 
   /// Register new user
+  /// After successful registration, saves auth data and navigates to verification
   Future<void> register({
     required String email,
     required String password,
@@ -58,7 +80,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
 
-      final response = await _repository.register(
+      final result = await _authService.register(
         email: email,
         password: password,
         confirmPassword: confirmPassword,
@@ -66,59 +88,63 @@ class AuthCubit extends Cubit<AuthState> {
         lastName: lastName,
       );
 
-      // Save tokens and user data
-      await _storage.saveAccessToken(response.accessToken);
-      await _storage.saveRefreshToken(response.refreshToken);
-      await _storage.saveUserEmail(response.user.email);
-      await _storage.saveUserId(response.user.id);
+      result.when(
+        success: (authResponse) async {
+          // Save verification expiry
+          final expiresAt = _verificationService.calculateExpiry();
+          await _storage.saveVerificationExpiry(expiresAt);
 
-      // Save verification expiry
-      final expiresAt = DateTime.now().add(
-        AppConstants.verificationTokenExpiry,
-      );
-      await _storage.saveVerificationExpiry(expiresAt);
-
-      emit(
-        AuthSuccess(
-          user: response.user,
-          needsVerification: !response.user.isVerified,
-        ),
+          emit(
+            AuthSuccess(
+              user: authResponse.user,
+              needsVerification: !authResponse.user.isVerified,
+            ),
+          );
+        },
+        failure: (error) {
+          emit(AuthError(error.userMessage));
+        },
       );
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError('Registration failed: ${e.toString()}'));
     }
   }
 
   /// Login user
+  /// After successful login, checks verification status and navigates accordingly
   Future<void> login({required String email, required String password}) async {
     try {
       emit(AuthLoading());
 
-      final response = await _repository.login(
-        email: email,
-        password: password,
-      );
+      final result = await _authService.login(email: email, password: password);
 
-      // Save tokens and user data
-      await _storage.saveAccessToken(response.accessToken);
-      await _storage.saveRefreshToken(response.refreshToken);
-      await _storage.saveUserEmail(response.user.email);
-      await _storage.saveUserId(response.user.id);
+      result.when(
+        success: (authResponse) async {
+          // Check if user needs email verification
+          if (!authResponse.user.isVerified) {
+            // Save verification expiry for countdown
+            final expiry = _verificationService.calculateExpiry();
+            await _storage.saveVerificationExpiry(expiry);
 
-      // Check if user needs verification or profile completion
-      // Note: Profile completion check will be done in next screen
-      emit(
-        AuthSuccess(
-          user: response.user,
-          needsVerification: !response.user.isVerified,
-        ),
+            emit(AuthSuccess(user: authResponse.user, needsVerification: true));
+          } else {
+            // User is verified, proceed normally
+            emit(
+              AuthSuccess(user: authResponse.user, needsVerification: false),
+            );
+          }
+        },
+        failure: (error) {
+          emit(AuthError(error.userMessage));
+        },
       );
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError('Login failed: ${e.toString()}'));
     }
   }
 
-  /// Check authentication status
+  /// Check authentication status on app startup
+  /// Verifies token validity and user verification status
   Future<void> checkAuthStatus() async {
     try {
       final isLoggedIn = await _storage.isLoggedIn();
@@ -128,19 +154,44 @@ class AuthCubit extends Cubit<AuthState> {
         return;
       }
 
-      final user = await _repository.getCurrentUser();
+      // Get current user from backend
+      final result = await _authService.getCurrentUser();
 
-      emit(AuthSuccess(user: user, needsVerification: !user.isVerified));
+      result.when(
+        success: (user) {
+          // Check verification status
+          if (!user.isVerified) {
+            // User logged in but not verified
+            // This happens if user closed app during verification
+            emit(AuthSuccess(user: user, needsVerification: true));
+          } else {
+            // Fully authenticated and verified
+            emit(AuthSuccess(user: user, needsVerification: false));
+          }
+        },
+        failure: (error) {
+          // Token invalid or expired
+          if (error.isAuthError) {
+            // Clear invalid session
+            _storage.clearAll();
+            emit(AuthUnauthenticated());
+          } else {
+            // Network error - allow offline mode
+            emit(AuthError(error.userMessage, canRetry: true));
+          }
+        },
+      );
     } catch (e) {
       await _storage.clearAll();
       emit(AuthUnauthenticated());
     }
   }
 
-  /// Logout
+  /// Logout user
+  /// Clears all auth data and navigates to login
   Future<void> logout() async {
     try {
-      await _repository.logout();
+      await _authService.logout();
       emit(AuthUnauthenticated());
     } catch (e) {
       // Even if server logout fails, clear local data
@@ -149,8 +200,63 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  /// Update user after verification
-  void updateUserAfterVerification(UserModel user) {
-    emit(AuthSuccess(user: user, needsVerification: false));
+  /// Update user data after email verification
+  /// Called from VerifyCubit when verification succeeds
+  Future<void> updateUserAfterVerification(UserModel user) async {
+    try {
+      // Refresh user data from backend to ensure it's up to date
+      final result = await _authService.getCurrentUser();
+
+      result.when(
+        success: (freshUser) {
+          emit(AuthSuccess(user: freshUser, needsVerification: false));
+        },
+        failure: (_) {
+          // If fetch fails, use the provided user data
+          emit(
+            AuthSuccess(
+              user: user.copyWith(isVerified: true),
+              needsVerification: false,
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      // Fallback: use provided user data
+      emit(
+        AuthSuccess(
+          user: user.copyWith(isVerified: true),
+          needsVerification: false,
+        ),
+      );
+    }
+  }
+
+  /// Forgot password
+  Future<void> forgotPassword(String email) async {
+    try {
+      emit(AuthLoading());
+
+      final result = await _authService.forgotPassword(email);
+
+      result.when(
+        success: (message) {
+          // Return to unauthenticated state with success message
+          // UI will show snackbar and navigate
+          emit(AuthUnauthenticated());
+        },
+        failure: (error) {
+          emit(AuthError(error.userMessage));
+          // Return to unauthenticated after showing error
+          Future.delayed(const Duration(seconds: 2), () {
+            if (state is AuthError) {
+              emit(AuthUnauthenticated());
+            }
+          });
+        },
+      );
+    } catch (e) {
+      emit(AuthError('Failed to send reset email: ${e.toString()}'));
+    }
   }
 }
