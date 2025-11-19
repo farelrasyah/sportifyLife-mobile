@@ -49,7 +49,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorPalette.kBackground,
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Expanded(
@@ -62,23 +62,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
             ),
           ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: Spacing.screenAll,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  PageIndicator(
-                    currentPage: _currentPage,
-                    pageCount: _pages.length,
-                  ),
-                  _buildNextButton(),
-                ],
+          Container(
+            color: Colors.white,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 16.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    PageIndicator(
+                      currentPage: _currentPage,
+                      pageCount: _pages.length,
+                    ),
+                    _buildNextButton(),
+                  ],
+                ),
               ),
             ),
           ),
-          Spacing.verticalMD,
         ],
       ),
     );
@@ -96,19 +101,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         Expanded(
           flex: 4,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Spacing.verticalXL,
-                Text(page.title, style: AppTypography.onboardingTitle),
-                Spacing.verticalMD,
-                Text(
-                  page.description,
-                  style: AppTypography.onboardingDescription,
-                ),
-              ],
+          child: Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Spacing.verticalXL,
+                  Text(page.title, style: AppTypography.onboardingTitle),
+                  Spacing.verticalMD,
+                  Text(
+                    page.description,
+                    style: AppTypography.onboardingDescription,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

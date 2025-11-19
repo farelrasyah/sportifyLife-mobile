@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Screens
-import '../ui/screens/welcome_screen.dart';
 import '../ui/screens/splash_screen.dart';
 import '../ui/screens/onboarding_screen.dart';
 import '../ui/screens/auth/login_screen.dart';
@@ -39,7 +38,7 @@ class RouteGenerator {
 
     switch (settings.name) {
       case Routes.welcomeScreen:
-        return MaterialPageRoute(builder: (_) => const WelcomeScreen());
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
 
       case Routes.splashScreen:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
