@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Screens
 import '../ui/screens/welcome_screen.dart';
 import '../ui/screens/splash_screen.dart';
-import '../ui/screens/login_screen.dart';
-import '../ui/screens/register_screen.dart';
-import '../ui/screens/verify_email_screen.dart';
+import '../ui/screens/auth/login_screen.dart';
+import '../ui/screens/auth/register_screen.dart';
+import '../ui/screens/auth/verify_email_screen.dart';
 import '../ui/screens/complete_profile_screen.dart';
 import '../ui/screens/home_screen.dart';
 

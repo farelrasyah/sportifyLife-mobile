@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../cubits/verify_cubit.dart';
-import '../../cubits/auth_cubit.dart';
-import '../../app/routes.dart';
-import '../../utils/storage_helper.dart';
-import '../../data/models/user_model.dart';
+import '../../../cubits/verify_cubit.dart';
+import '../../../cubits/auth_cubit.dart';
+import '../../../app/routes.dart';
+import '../../../utils/storage_helper.dart';
+import '../../../data/models/user_model.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;

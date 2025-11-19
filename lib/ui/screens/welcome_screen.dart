@@ -121,15 +121,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _onGetStartedPressed() {
-    HapticFeedback.lightImpact();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Welcome to SportifyLife!'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-
     
   }
 }
