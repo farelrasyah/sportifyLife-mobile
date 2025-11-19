@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Screens
+import '../ui/screens/welcome_screen.dart';
 import '../ui/screens/splashScreen.dart';
 import '../ui/screens/loginScreen.dart';
 import '../ui/screens/registerScreen.dart';
@@ -19,7 +20,8 @@ import '../data/repositories/userDetailsRepository.dart';
 
 /// Route names
 class Routes {
-  static const String splashScreen = '/';
+  static const String welcomeScreen = '/';
+  static const String splashScreen = '/splash';
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
   static const String verifyEmailScreen = '/verifyEmail';
@@ -34,13 +36,11 @@ class RouteGenerator {
     final args = settings.arguments;
 
     switch (settings.name) {
+      case Routes.welcomeScreen:
+        return MaterialPageRoute(builder: (_) => const WelcomeScreen());
+
       case Routes.splashScreen:
-        return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => AuthCubit(),
-            child: const SplashScreen(),
-          ),
-        );
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
 
       case Routes.loginScreen:
         return MaterialPageRoute(
