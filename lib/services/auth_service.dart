@@ -1,8 +1,8 @@
 import '../core/result.dart';
-import '../data/models/authResponseModel.dart';
-import '../data/models/userModel.dart';
+import '../data/models/auth_response_model.dart';
+import '../data/models/user_model.dart';
 import '../services/http_service.dart';
-import '../utils/storageHelper.dart';
+import '../utils/storage_helper.dart';
 
 /// Authentication Service
 /// Handles all authentication-related operations with clean architecture

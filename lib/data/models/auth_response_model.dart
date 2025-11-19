@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'userModel.dart';
+import 'user_model.dart';
 
 /// Auth response model
 class AuthResponseModel extends Equatable {

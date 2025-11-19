@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import '../../cubits/userDetailsCubit.dart';
+import '../../cubits/user_details_cubit.dart';
 import '../../app/routes.dart';
 import '../../config/goal_type.dart';
 import '../../config/environment.dart';
@@ -95,12 +95,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
     // Submit to backend
     context.read<UserDetailsCubit>().completeProfile(
-          weight: double.parse(_weightController.text),
-          height: int.parse(_heightController.text),
-          gender: _selectedGender!,
-          dateOfBirth: _selectedDate!,
-          goalType: _selectedGoalType!,
-        );
+      weight: double.parse(_weightController.text),
+      height: int.parse(_heightController.text),
+      gender: _selectedGender!,
+      dateOfBirth: _selectedDate!,
+      goalType: _selectedGoalType!,
+    );
   }
 
   int _calculateAge(DateTime birthDate) {
@@ -303,8 +303,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           children: [
                             Text(
                               _selectedDate != null
-                                  ? DateFormat('dd MMM yyyy')
-                                      .format(_selectedDate!)
+                                  ? DateFormat(
+                                      'dd MMM yyyy',
+                                    ).format(_selectedDate!)
                                   : 'Select date',
                               style: TextStyle(
                                 color: _selectedDate != null
@@ -424,8 +425,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       onPressed: isLoading
                           ? null
                           : () {
-                              Navigator.of(context)
-                                  .pushReplacementNamed(Routes.homeScreen);
+                              Navigator.of(
+                                context,
+                              ).pushReplacementNamed(Routes.homeScreen);
                             },
                       child: const Text('Skip for now'),
                     ),

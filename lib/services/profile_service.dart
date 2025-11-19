@@ -1,5 +1,5 @@
 import '../core/result.dart';
-import '../data/models/userDetailsModel.dart';
+import '../data/models/user_details_model.dart';
 import 'http_service.dart';
 import '../config/goal_type.dart';
 import '../config/environment.dart';

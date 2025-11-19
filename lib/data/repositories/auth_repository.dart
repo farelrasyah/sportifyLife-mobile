@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import '../models/authResponseModel.dart';
-import '../models/userModel.dart';
-import '../models/apiResponseModel.dart';
+import '../models/auth_response_model.dart';
+import '../models/user_model.dart';
+import '../models/api_response_model.dart';
 import '../../utils/api.dart';
-import '../../utils/apiClient.dart';
+import '../../utils/api_client.dart';
 
 /// Auth repository for API calls
 class AuthRepository {

@@ -2,7 +2,7 @@ import 'dart:async';
 import '../core/result.dart';
 import '../services/http_service.dart';
 import '../services/auth_service.dart';
-import '../data/models/userModel.dart';
+import '../data/models/user_model.dart';
 import '../config/environment.dart';
 
 /// Email Verification Service

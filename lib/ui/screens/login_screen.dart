@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../cubits/authCubit.dart';
+import '../../cubits/auth_cubit.dart';
 import '../../app/routes.dart';
-import '../../data/repositories/userDetailsRepository.dart';
-import '../../cubits/userDetailsCubit.dart';
+import '../../data/repositories/user_details_repository.dart';
+import '../../cubits/user_details_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

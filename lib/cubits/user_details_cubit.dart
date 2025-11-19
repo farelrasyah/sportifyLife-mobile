@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../data/models/userDetailsModel.dart';
-import '../data/repositories/userDetailsRepository.dart';
+import '../data/models/user_details_model.dart';
+import '../data/repositories/user_details_repository.dart';
 import '../config/goal_type.dart';
 
 // States

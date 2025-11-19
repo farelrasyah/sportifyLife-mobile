@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../cubits/authCubit.dart';
+import '../../cubits/auth_cubit.dart';
 import '../../app/routes.dart';
-import '../../utils/storageHelper.dart';
+import '../../utils/storage_helper.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);

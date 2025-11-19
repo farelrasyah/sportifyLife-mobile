@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../data/models/userModel.dart';
+import '../data/models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/verification_service.dart';
-import '../utils/storageHelper.dart';
+import '../utils/storage_helper.dart';
 
 // ============================================================================
 // STATES

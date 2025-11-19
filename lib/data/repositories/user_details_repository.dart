@@ -1,4 +1,4 @@
-import '../models/userDetailsModel.dart';
+import '../models/user_details_model.dart';
 import '../../services/profile_service.dart';
 import '../../config/goal_type.dart';
 

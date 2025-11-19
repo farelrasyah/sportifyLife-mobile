@@ -3,20 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Screens
 import '../ui/screens/welcome_screen.dart';
-import '../ui/screens/splashScreen.dart';
-import '../ui/screens/loginScreen.dart';
-import '../ui/screens/registerScreen.dart';
-import '../ui/screens/verifyEmailScreen.dart';
-import '../ui/screens/completeProfileScreen.dart';
-import '../ui/screens/homeScreen.dart';
+import '../ui/screens/splash_screen.dart';
+import '../ui/screens/login_screen.dart';
+import '../ui/screens/register_screen.dart';
+import '../ui/screens/verify_email_screen.dart';
+import '../ui/screens/complete_profile_screen.dart';
+import '../ui/screens/home_screen.dart';
 
 // Cubits
-import '../cubits/authCubit.dart';
-import '../cubits/verifyCubit.dart';
-import '../cubits/userDetailsCubit.dart';
+import '../cubits/auth_cubit.dart';
+import '../cubits/verify_cubit.dart';
+import '../cubits/user_details_cubit.dart';
 
 // Repositories
-import '../data/repositories/userDetailsRepository.dart';
+import '../data/repositories/user_details_repository.dart';
 
 /// Route names
 class Routes {
