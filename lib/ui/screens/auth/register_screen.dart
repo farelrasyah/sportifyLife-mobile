@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../cubits/auth_cubit.dart';
 import '../../../app/routes.dart';
 import '../../../utils/storage_helper.dart';
+import '../../theme/color_palette.dart';
+import '../../theme/typography.dart';
+import '../../widgets/auth_input_field.dart';
+import '../../widgets/auth_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -84,6 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorPalette.kAuthBackground,
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) async {
           if (state is AuthSuccess) {
@@ -99,177 +104,289 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+              SnackBar(
+                content: Text(state.error),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
             );
           }
         },
         builder: (context, state) {
+          final isLoading = state is AuthLoading;
+
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 24),
-                    // Logo
-                    Icon(
-                      Icons.fitness_center,
-                      size: 60,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    const SizedBox(height: 16),
-                    // Title
-                    const Text(
-                      'Create Account',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Join SportifyLife today',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                      textAlign: TextAlign.center,
-                    ),
+                    const SizedBox(height: 60),
+
+                    // Header Section
+                    Text('Hey there,', style: AppTypography.authSubtitle),
+                    const SizedBox(height: 4),
+                    Text('Create an Account', style: AppTypography.authTitle),
                     const SizedBox(height: 32),
-                    // First Name
-                    TextFormField(
+
+                    // First Name Field
+                    AuthInputField(
+                      hintText: 'First Name',
                       controller: _firstNameController,
-                      validator: _validateName,
-                      decoration: InputDecoration(
-                        labelText: 'First Name',
-                        prefixIcon: const Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      textCapitalization: TextCapitalization.words,
+                      prefixIcon: const Icon(
+                        Icons.person_outlined,
+                        color: ColorPalette.kAuthPlaceholder,
+                        size: 20,
                       ),
+                      validator: _validateName,
                     ),
                     const SizedBox(height: 16),
-                    // Last Name
-                    TextFormField(
+
+                    // Last Name Field
+                    AuthInputField(
+                      hintText: 'Last Name',
                       controller: _lastNameController,
-                      validator: _validateName,
-                      decoration: InputDecoration(
-                        labelText: 'Last Name',
-                        prefixIcon: const Icon(Icons.person_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      textCapitalization: TextCapitalization.words,
+                      prefixIcon: const Icon(
+                        Icons.person_outlined,
+                        color: ColorPalette.kAuthPlaceholder,
+                        size: 20,
                       ),
+                      validator: _validateName,
                     ),
                     const SizedBox(height: 16),
+
                     // Email Field
-                    TextFormField(
+                    AuthInputField(
+                      hintText: 'Email',
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
+                      prefixIcon: const Icon(
+                        Icons.email_outlined,
+                        color: ColorPalette.kAuthPlaceholder,
+                        size: 20,
+                      ),
                       validator: _validateEmail,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: const Icon(Icons.email),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 16),
+
                     // Password Field
-                    TextFormField(
+                    AuthInputField(
+                      hintText: 'Password',
                       controller: _passwordController,
+                      isPassword: true,
                       obscureText: _obscurePassword,
-                      validator: _validatePassword,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      prefixIcon: const Icon(
+                        Icons.lock_outlined,
+                        color: ColorPalette.kAuthPlaceholder,
+                        size: 20,
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: ColorPalette.kAuthPlaceholder,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      validator: _validatePassword,
                     ),
                     const SizedBox(height: 16),
+
                     // Confirm Password Field
-                    TextFormField(
+                    AuthInputField(
+                      hintText: 'Confirm Password',
                       controller: _confirmPasswordController,
+                      isPassword: true,
                       obscureText: _obscureConfirmPassword,
-                      validator: _validateConfirmPassword,
-                      decoration: InputDecoration(
-                        labelText: 'Confirm Password',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureConfirmPassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureConfirmPassword =
-                                  !_obscureConfirmPassword;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      prefixIcon: const Icon(
+                        Icons.lock_outlined,
+                        color: ColorPalette.kAuthPlaceholder,
+                        size: 20,
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmPassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: ColorPalette.kAuthPlaceholder,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
+                      ),
+                      validator: _validateConfirmPassword,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Terms and Privacy Policy
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 20,
+                          height: 20,
+                          margin: const EdgeInsets.only(top: 2),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: ColorPalette.kAuthInputBorder,
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Icon(
+                            Icons.check,
+                            size: 14,
+                            color: ColorPalette.kAuthButtonPrimary,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: AppTypography.authSmallText,
+                              children: [
+                                const TextSpan(
+                                  text: 'By continuing you accept our ',
+                                ),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  style: AppTypography.authSmallText.copyWith(
+                                    color: ColorPalette.kAuthLinkText,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                  text: 'Term of Use',
+                                  style: AppTypography.authSmallText.copyWith(
+                                    color: ColorPalette.kAuthLinkText,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Register Button
+                    AuthButton(
+                      text: 'Register',
+                      onPressed: isLoading ? null : _register,
+                      isLoading: isLoading,
                     ),
                     const SizedBox(height: 24),
-                    // Register Button
-                    ElevatedButton(
-                      onPressed: state is AuthLoading ? null : _register,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+
+                    // Divider
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(
+                            color: ColorPalette.kAuthDivider,
+                            thickness: 1,
+                          ),
                         ),
-                      ),
-                      child: state is AuthLoading
-                          ? const SizedBox(
-                              height: 20,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text('Or', style: AppTypography.authSmallText),
+                        ),
+                        const Expanded(
+                          child: Divider(
+                            color: ColorPalette.kAuthDivider,
+                            thickness: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Social Login Buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SocialLoginButton(
+                            text: 'Google',
+                            icon: Container(
                               width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
+                              height: 20,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/google_icon.png',
+                                  ),
+                                  fit: BoxFit.contain,
                                 ),
                               ),
-                            )
-                          : const Text(
-                              'Register',
-                              style: TextStyle(fontSize: 16),
                             ),
+                            onPressed: () {
+                              // TODO: Implement Google login
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: SocialLoginButton(
+                            text: 'Facebook',
+                            icon: const Icon(
+                              Icons.facebook,
+                              color: Color(0xFF1877F2),
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              // TODO: Implement Facebook login
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 32),
+
                     // Login Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Already have an account? '),
+                        Text(
+                          'Already have an account? ',
+                          style: AppTypography.authSmallText,
+                        ),
                         TextButton(
                           onPressed: () {
-                            Navigator.of(
-                              context,
-                            ).pushReplacementNamed(Routes.loginScreen);
+                            Navigator.of(context).pushNamed(Routes.loginScreen);
                           },
-                          child: const Text('Login here'),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4.0,
+                              vertical: 0.0,
+                            ),
+                          ),
+                          child: Text(
+                            'Login',
+                            style: AppTypography.authLinkText.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),

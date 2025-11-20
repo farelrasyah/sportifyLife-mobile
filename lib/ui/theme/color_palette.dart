@@ -40,6 +40,22 @@ class ColorPalette {
   static const Color kOnboardingButtonIcon = Color(0xFFFFFFFF); // White icon
   static const Color kOnboardingDotActive = Color(0xFF92A3FD); // Active dot
   static const Color kOnboardingDotInactive = Color(0xFFD0D0D0); // Inactive dot
+
+  // Auth screen colors - Modern & Elegant
+  static const Color kAuthBackground = Color(0xFFFFFFFF); // Pure white
+  static const Color kAuthTitle = Color(0xFF1A1A1A); // Deep black
+  static const Color kAuthSubtitle = Color(0xFF6B7280); // Soft gray
+  static const Color kAuthInputBorder = Color(0xFFE5E7EB); // Light gray border
+  static const Color kAuthInputFocused = Color(0xFF92A3FD); // Blue focused
+  static const Color kAuthInputFill = Color(0xFFF9FAFB); // Very light gray fill
+  static const Color kAuthButtonPrimary = Color(0xFF92A3FD); // Primary blue
+  static const Color kAuthButtonText = Color(0xFFFFFFFF); // White text
+  static const Color kAuthLinkText = Color(0xFF92A3FD); // Blue link
+  static const Color kAuthDivider = Color(0xFFE5E7EB); // Divider gray
+  static const Color kAuthSocialBorder = Color(
+    0xFFE5E7EB,
+  ); // Social button border
+  static const Color kAuthPlaceholder = Color(0xFF9CA3AF); // Placeholder text
   static const Color kShadowMedium = Color(0x33000000); // Medium shadow
 
   // Gradient definitions

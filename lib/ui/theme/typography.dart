@@ -161,6 +161,80 @@ class AppTypography {
     color: ColorPalette.kOnboardingDescription,
   );
 
+  // Auth screen text styles
+
+  /// Style for auth screen main title
+  static TextStyle get authTitle => GoogleFonts.inter(
+    fontSize: 28.0,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.5,
+    height: 1.2,
+    color: ColorPalette.kAuthTitle,
+  );
+
+  /// Style for auth screen subtitle
+  static TextStyle get authSubtitle => GoogleFonts.inter(
+    fontSize: 16.0,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+    height: 1.5,
+    color: ColorPalette.kAuthSubtitle,
+  );
+
+  /// Style for auth input labels
+  static TextStyle get authInputLabel => GoogleFonts.inter(
+    fontSize: 14.0,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.1,
+    height: 1.4,
+    color: ColorPalette.kAuthTitle,
+  );
+
+  /// Style for auth input text
+  static TextStyle get authInputText => GoogleFonts.inter(
+    fontSize: 16.0,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+    height: 1.5,
+    color: ColorPalette.kAuthTitle,
+  );
+
+  /// Style for auth input placeholder
+  static TextStyle get authInputPlaceholder => GoogleFonts.inter(
+    fontSize: 16.0,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+    height: 1.5,
+    color: ColorPalette.kAuthPlaceholder,
+  );
+
+  /// Style for auth button text
+  static TextStyle get authButtonText => GoogleFonts.inter(
+    fontSize: 16.0,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.2,
+    height: 1.25,
+    color: ColorPalette.kAuthButtonText,
+  );
+
+  /// Style for auth link text
+  static TextStyle get authLinkText => GoogleFonts.inter(
+    fontSize: 14.0,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.1,
+    height: 1.4,
+    color: ColorPalette.kAuthLinkText,
+  );
+
+  /// Style for auth small text
+  static TextStyle get authSmallText => GoogleFonts.inter(
+    fontSize: 12.0,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.2,
+    height: 1.4,
+    color: ColorPalette.kAuthSubtitle,
+  );
+
   // Text theme for Material Design integration
   static TextTheme get textTheme => TextTheme(
     displayLarge: displayLarge,
