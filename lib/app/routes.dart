@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Screens
 import '../ui/screens/splash_screen.dart';
-import '../ui/screens/onboarding_screen.dart';
+import '../ui/screens/onboarding/view/onboarding_screen.dart';
 import '../ui/screens/auth/login_screen.dart';
 import '../ui/screens/auth/register_screen.dart';
 import '../ui/screens/auth/verify_email_screen.dart';
@@ -38,13 +38,13 @@ class RouteGenerator {
 
     switch (settings.name) {
       case Routes.welcomeScreen:
-        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
+        return MaterialPageRoute(builder: (_) => const AnimatedOnboardingScreen());
 
       case Routes.splashScreen:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
 
       case Routes.onboardingScreen:
-        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
+        return MaterialPageRoute(builder: (_) => const AnimatedOnboardingScreen());
 
       case Routes.loginScreen:
         return MaterialPageRoute(

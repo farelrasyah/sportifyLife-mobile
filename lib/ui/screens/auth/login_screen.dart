@@ -6,11 +6,9 @@ import '../../../data/repositories/user_details_repository.dart';
 import '../../../cubits/user_details_cubit.dart';
 import '../../theme/color_palette.dart';
 import '../../theme/typography.dart';
-import '../../widgets/animated_background.dart';
-import '../../widgets/glassmorphism_container.dart';
-import '../../widgets/animated_logo.dart';
+
 import '../../widgets/elegant_text_field.dart';
-import '../../widgets/animated_login_button.dart';
+
 import '../../widgets/remember_me_checkbox.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -124,9 +122,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Animated Logo
-        Center(child: const AnimatedLogo()),
-        SizedBox(height: isSmallScreen ? 16 : 26),
 
         // Welcome Text
         Center(
@@ -223,76 +218,76 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 18),
 
         // Login Button
-        BlocConsumer<AuthCubit, AuthState>(
-          listener: (context, state) async {
-            if (state is AuthSuccess) {
-              if (state.needsVerification) {
-                Navigator.of(context).pushReplacementNamed(
-                  Routes.verifyEmailScreen,
-                  arguments: {'email': state.user.email},
-                );
-              } else {
-                // Check if profile is complete
-                final userDetailsCubit = UserDetailsCubit(
-                  UserDetailsRepository(),
-                );
-                await userDetailsCubit.getUserDetails();
+        // BlocConsumer<AuthCubit, AuthState>(
+        //   listener: (context, state) async {
+        //     if (state is AuthSuccess) {
+        //       if (state.needsVerification) {
+        //         Navigator.of(context).pushReplacementNamed(
+        //           Routes.verifyEmailScreen,
+        //           arguments: {'email': state.user.email},
+        //         );
+        //       } else {
+        //         // Check if profile is complete
+        //         final userDetailsCubit = UserDetailsCubit(
+        //           UserDetailsRepository(),
+        //         );
+        //         await userDetailsCubit.getUserDetails();
 
-                final detailsState = userDetailsCubit.state;
-                if (detailsState is UserDetailsLoaded &&
-                    !detailsState.isComplete) {
-                  if (mounted) {
-                    Navigator.of(
-                      context,
-                    ).pushReplacementNamed(Routes.completeProfileScreen);
-                  }
-                } else {
-                  if (mounted) {
-                    Navigator.of(
-                      context,
-                    ).pushReplacementNamed(Routes.homeScreen);
-                  }
-                }
-              }
-            } else if (state is AuthError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            final isLoading = state is AuthLoading;
-            return AnimatedLoginButton(
-              text: 'Masuk',
-              onPressed: isLoading
-                  ? null
-                  : () {
-                      if (_emailController.text.trim().isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Email harus diisi')),
-                        );
-                        return;
-                      }
-                      if (_passwordController.text.trim().isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Password harus diisi')),
-                        );
-                        return;
-                      }
-                      _login();
-                    },
-              isLoading: isLoading,
-              icon: Icons.arrow_forward_rounded,
-            );
-          },
-        ),
+        //         final detailsState = userDetailsCubit.state;
+        //         if (detailsState is UserDetailsLoaded &&
+        //             !detailsState.isComplete) {
+        //           if (mounted) {
+        //             Navigator.of(
+        //               context,
+        //             ).pushReplacementNamed(Routes.completeProfileScreen);
+        //           }
+        //         } else {
+        //           if (mounted) {
+        //             Navigator.of(
+        //               context,
+        //             ).pushReplacementNamed(Routes.homeScreen);
+        //           }
+        //         }
+        //       }
+        //     } else if (state is AuthError) {
+        //       ScaffoldMessenger.of(context).showSnackBar(
+        //         SnackBar(
+        //           content: Text(state.error),
+        //           backgroundColor: Colors.red,
+        //           behavior: SnackBarBehavior.floating,
+        //           shape: RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(12.0),
+        //           ),
+        //         ),
+        //       );
+        //     }
+        //   },
+        //   // builder: (context, state) {
+        //   //   final isLoading = state is AuthLoading;
+        //   //   return AnimatedLoginButton(
+        //   //     text: 'Masuk',
+        //   //     onPressed: isLoading
+        //   //         ? null
+        //   //         : () {
+        //   //             if (_emailController.text.trim().isEmpty) {
+        //   //               ScaffoldMessenger.of(context).showSnackBar(
+        //   //                 const SnackBar(content: Text('Email harus diisi')),
+        //   //               );
+        //   //               return;
+        //   //             }
+        //   //             if (_passwordController.text.trim().isEmpty) {
+        //   //               ScaffoldMessenger.of(context).showSnackBar(
+        //   //                 const SnackBar(content: Text('Password harus diisi')),
+        //   //               );
+        //   //               return;
+        //   //             }
+        //   //             _login();
+        //   //           },
+        //   //     isLoading: isLoading,
+        //   //     icon: Icons.arrow_forward_rounded,
+        //   //   );
+        //   // },
+        // ),
 
         const SizedBox(height: 24),
 
@@ -331,40 +326,40 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        body: AnimatedBackground(
-          child: SafeArea(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Container(
-                constraints: BoxConstraints(
-                  minHeight:
-                      MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top -
-                      MediaQuery.of(context).padding.bottom,
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.width < 360 ? 10 : 20,
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: GlassmorphismContainer(
-                        child: _buildLoginFormContent(),
-                      ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.width < 360 ? 16 : 24,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      // child: Scaffold(
+      //   body: AnimatedBackground(
+      //     child: SafeArea(
+      //       child: SingleChildScrollView(
+      //         physics: const BouncingScrollPhysics(),
+      //         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      //         child: Container(
+      //           constraints: BoxConstraints(
+      //             minHeight:
+      //                 MediaQuery.of(context).size.height -
+      //                 MediaQuery.of(context).padding.top -
+      //                 MediaQuery.of(context).padding.bottom,
+      //           ),
+      //           child: Column(
+      //             children: [
+      //               SizedBox(
+      //                 height: MediaQuery.of(context).size.width < 360 ? 10 : 20,
+      //               ),
+      //               Form(
+      //                 key: _formKey,
+      //                 child: GlassmorphismContainer(
+      //                   child: _buildLoginFormContent(),
+      //                 ),
+      //               ),
+      //               SizedBox(
+      //                 height: MediaQuery.of(context).size.width < 360 ? 16 : 24,
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
     );
   }
 }
