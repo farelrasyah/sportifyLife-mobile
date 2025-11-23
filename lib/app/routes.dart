@@ -20,8 +20,7 @@ import '../data/repositories/user_details_repository.dart';
 
 /// Route names
 class Routes {
-  static const String welcomeScreen = '/';
-  static const String splashScreen = '/splash';
+  static const String splashScreen = '/';
   static const String onboardingScreen = '/onboarding';
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
@@ -37,14 +36,13 @@ class RouteGenerator {
     final args = settings.arguments;
 
     switch (settings.name) {
-      case Routes.welcomeScreen:
-        return MaterialPageRoute(builder: (_) => const AnimatedOnboardingScreen());
-
       case Routes.splashScreen:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
 
       case Routes.onboardingScreen:
-        return MaterialPageRoute(builder: (_) => const AnimatedOnboardingScreen());
+        return MaterialPageRoute(
+          builder: (_) => const AnimatedOnboardingScreen(),
+        );
 
       case Routes.loginScreen:
         return MaterialPageRoute(

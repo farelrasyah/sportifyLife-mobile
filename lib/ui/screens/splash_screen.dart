@@ -22,8 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
-    // Navigate directly to welcome screen instead of checking auth
-    Navigator.of(context).pushReplacementNamed(Routes.welcomeScreen);
+    // Navigate directly to onboarding screen
+    Navigator.of(context).pushReplacementNamed(Routes.onboardingScreen);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:sportifylife/ui/screens/onboarding/model/onboarding_model.dart';
+import 'package:sportifylife/app/routes.dart';
 
 class AnimatedOnboardingScreen extends StatefulWidget {
   const AnimatedOnboardingScreen({Key? key}) : super(key: key);
@@ -24,9 +25,12 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen> {
   }
 
   final List<List<Color>> buttonGradients = [
-    [Color(0xFFFF66B2), Color(0xFFFF0080)],
-    [Color(0xFFFDC830), Color(0xFFF37335)],
-    [Color(0xFF00c6ff), Color(0xFF0072ff)],
+    // Slide 1: Soft deep blue gradient (kontras dengan light blue background #E1F5FE)
+    [Color(0xFF42A5F5), Color(0xFF1976D2)],
+    // Slide 2: Soft medium blue gradient (kontras dengan medium blue background #B3E5FC)
+    [Color(0xFF1E88E5), Color(0xFF1565C0)],
+    // Slide 3: Soft darker blue gradient (kontras dengan deeper blue background #81D4FA)
+    [Color(0xFF1976D2), Color(0xFF0D47A1)],
   ];
 
   @override
@@ -78,7 +82,10 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen> {
                               duration: 700,
                             );
                           } else {
-                            // Navigate to main app screen
+                            // Navigate to register screen
+                            Navigator.of(
+                              context,
+                            ).pushReplacementNamed(Routes.registerScreen);
                           }
                         },
                         child: Container(
@@ -142,7 +149,10 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen> {
             right: 25,
             child: GestureDetector(
               onTap: () {
-                // Navigate to home or main screen
+                // Navigate to register screen
+                Navigator.of(
+                  context,
+                ).pushReplacementNamed(Routes.registerScreen);
               },
               child: Text(
                 "Skip",
