@@ -47,8 +47,8 @@ class AppTheme {
       // Elevated button theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorPalette.kButtonBackground,
-          foregroundColor: ColorPalette.kTextButton,
+          backgroundColor: ColorPalette.kButtonPrimary,
+          foregroundColor: ColorPalette.kButtonTextPrimary,
           elevation: 8,
           shadowColor: ColorPalette.kShadowMedium,
           shape: RoundedRectangleBorder(borderRadius: Spacing.radiusButton),
@@ -135,7 +135,7 @@ class AppTheme {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: ColorPalette.kGradientEnd,
+        systemNavigationBarColor: ColorPalette.kPrimaryDark,
         systemNavigationBarIconBrightness: Brightness.light,
       );
 }

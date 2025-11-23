@@ -129,7 +129,7 @@ class AppTypography {
     fontWeight: FontWeight.bold,
     letterSpacing: 0.5,
     height: 1.25,
-    color: ColorPalette.kTextButton,
+    color: ColorPalette.kButtonTextPrimary,
   );
 
   /// Style for secondary button text

@@ -29,7 +29,7 @@ class PrimaryButton extends StatelessWidget {
       width: width ?? double.infinity,
       height: height ?? Spacing.buttonHeight,
       decoration: BoxDecoration(
-        color: ColorPalette.kButtonBackground,
+        color: ColorPalette.kButtonPrimary,
         borderRadius: Spacing.radiusButton,
         boxShadow: const [
           BoxShadow(
@@ -57,7 +57,7 @@ class PrimaryButton extends StatelessWidget {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        ColorPalette.kTextButton,
+                        ColorPalette.kButtonTextPrimary,
                       ),
                     ),
                   ),
