@@ -1,396 +1,341 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
+import '../../../common/colo_extension.dart';
+import '../../../common_widget/round_button.dart';
+import '../../../common_widget/round_textfield.dart';
 import '../../../cubits/auth_cubit.dart';
-import '../../../app/routes.dart';
-import '../../../utils/storage_helper.dart';
-import '../../theme/color_palette.dart';
-import '../../theme/typography.dart';
-import '../../widgets/auth_input_field.dart';
-import '../../widgets/auth_button.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  bool isCheck = false;
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _register() async {
-    if (_formKey.currentState!.validate()) {
+  void _handleRegister() {
+    if (_firstNameController.text.isNotEmpty &&
+        _lastNameController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        isCheck) {
       context.read<AuthCubit>().register(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        confirmPassword: _confirmPasswordController.text,
+        confirmPassword: _passwordController.text,
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
+      );
+    } else {
+      String message = '';
+      if (!isCheck) {
+        message = 'Please accept terms and conditions';
+      } else {
+        message = 'Please fill in all fields';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     }
   }
 
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email is required';
-    }
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) {
-      return 'Please enter a valid email';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Password is required';
-    }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-    return null;
-  }
-
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please confirm your password';
-    }
-    if (value != _passwordController.text) {
-      return 'Passwords do not match';
-    }
-    return null;
-  }
-
-  String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'This field is required';
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: ColorPalette.kAuthBackground,
+      backgroundColor: TColor.white,
       body: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) async {
-          if (state is AuthSuccess) {
-            // Save verification expiry and navigate
-            final expiresAt = DateTime.now().add(const Duration(minutes: 1));
-            await StorageHelper().saveVerificationExpiry(expiresAt);
-
-            if (mounted) {
-              Navigator.of(context).pushReplacementNamed(
-                Routes.verifyEmailScreen,
-                arguments: {'email': state.user.email},
+        listener: (context, state) {
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+            );
+          } else if (state is AuthSuccess) {
+            if (state.needsVerification) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Registration successful! Please verify your email',
+                  ),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Registration successful!'),
+                  backgroundColor: Colors.green,
+                ),
               );
             }
-          } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-                backgroundColor: Colors.red,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-            );
           }
         },
         builder: (context, state) {
-          final isLoading = state is AuthLoading;
-
-          return SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 60),
-
-                    // Header Section
-                    Text('Hey there,', style: AppTypography.authSubtitle),
-                    const SizedBox(height: 4),
-                    Text('Create an Account', style: AppTypography.authTitle),
-                    const SizedBox(height: 32),
-
-                    // First Name Field
-                    AuthInputField(
-                      hintText: 'First Name',
-                      controller: _firstNameController,
-                      textCapitalization: TextCapitalization.words,
-                      prefixIcon: const Icon(
-                        Icons.person_outlined,
-                        color: ColorPalette.kAuthPlaceholder,
-                        size: 20,
-                      ),
-                      validator: _validateName,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Last Name Field
-                    AuthInputField(
-                      hintText: 'Last Name',
-                      controller: _lastNameController,
-                      textCapitalization: TextCapitalization.words,
-                      prefixIcon: const Icon(
-                        Icons.person_outlined,
-                        color: ColorPalette.kAuthPlaceholder,
-                        size: 20,
-                      ),
-                      validator: _validateName,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Email Field
-                    AuthInputField(
-                      hintText: 'Email',
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      prefixIcon: const Icon(
-                        Icons.email_outlined,
-                        color: ColorPalette.kAuthPlaceholder,
-                        size: 20,
-                      ),
-                      validator: _validateEmail,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Password Field
-                    AuthInputField(
-                      hintText: 'Password',
-                      controller: _passwordController,
-                      isPassword: true,
-                      obscureText: _obscurePassword,
-                      prefixIcon: const Icon(
-                        Icons.lock_outlined,
-                        color: ColorPalette.kAuthPlaceholder,
-                        size: 20,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          color: ColorPalette.kAuthPlaceholder,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      validator: _validatePassword,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Confirm Password Field
-                    AuthInputField(
-                      hintText: 'Confirm Password',
-                      controller: _confirmPasswordController,
-                      isPassword: true,
-                      obscureText: _obscureConfirmPassword,
-                      prefixIcon: const Icon(
-                        Icons.lock_outlined,
-                        color: ColorPalette.kAuthPlaceholder,
-                        size: 20,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          color: ColorPalette.kAuthPlaceholder,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                      validator: _validateConfirmPassword,
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Terms and Privacy Policy
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          return Stack(
+            children: [
+              SingleChildScrollView(
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        SizedBox(height: 20),
+                        // Header Section
+                        Text(
+                          "Hey there,",
+                          style: TextStyle(color: TColor.gray, fontSize: 16),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Create an Account",
+                          style: TextStyle(
+                            color: TColor.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(height: 30),
+
+                        // Lottie Animation
                         Container(
-                          width: 20,
-                          height: 20,
-                          margin: const EdgeInsets.only(top: 2),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: ColorPalette.kAuthInputBorder,
-                              width: 1.5,
-                            ),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Icon(
-                            Icons.check,
-                            size: 14,
-                            color: ColorPalette.kAuthButtonPrimary,
+                          height: media.width * 0.7,
+                          width: media.width * 0.7,
+                          child: Lottie.asset(
+                            'assets/images/meditating.json',
+                            fit: BoxFit.contain,
+                            repeat: true,
+                            animate: true,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: RichText(
-                            text: TextSpan(
-                              style: AppTypography.authSmallText,
-                              children: [
-                                const TextSpan(
-                                  text: 'By continuing you accept our ',
-                                ),
-                                TextSpan(
-                                  text: 'Privacy Policy',
-                                  style: AppTypography.authSmallText.copyWith(
-                                    color: ColorPalette.kAuthLinkText,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                                const TextSpan(text: ' and '),
-                                TextSpan(
-                                  text: 'Term of Use',
-                                  style: AppTypography.authSmallText.copyWith(
-                                    color: ColorPalette.kAuthLinkText,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
+                        SizedBox(height: 30),
 
-                    // Register Button
-                    AuthButton(
-                      text: 'Register',
-                      onPressed: isLoading ? null : _register,
-                      isLoading: isLoading,
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Divider
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Divider(
-                            color: ColorPalette.kAuthDivider,
-                            thickness: 1,
-                          ),
+                        // Form Section
+                        RoundTextField(
+                          controller: _firstNameController,
+                          hitText: "First Name",
+                          icon: "assets/images/user.png",
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text('Or', style: AppTypography.authSmallText),
+                        SizedBox(height: 15),
+                        RoundTextField(
+                          controller: _lastNameController,
+                          hitText: "Last Name",
+                          icon: "assets/images/user.png",
                         ),
-                        const Expanded(
-                          child: Divider(
-                            color: ColorPalette.kAuthDivider,
-                            thickness: 1,
-                          ),
+                        SizedBox(height: 15),
+                        RoundTextField(
+                          controller: _emailController,
+                          hitText: "Email",
+                          icon: "assets/images/email.png",
+                          keyboardType: TextInputType.emailAddress,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Social Login Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SocialLoginButton(
-                            text: 'Google',
-                            icon: Container(
+                        SizedBox(height: 15),
+                        RoundTextField(
+                          controller: _passwordController,
+                          hitText: "Password",
+                          icon: "assets/images/lock.png",
+                          obscureText: true,
+                          rigtIcon: TextButton(
+                            onPressed: () {},
+                            child: Container(
+                              alignment: Alignment.center,
                               width: 20,
                               height: 20,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/google_icon.png',
-                                  ),
-                                  fit: BoxFit.contain,
+                              child: Image.asset(
+                                "assets/images/show_password.png",
+                                width: 20,
+                                height: 20,
+                                fit: BoxFit.contain,
+                                color: TColor.gray,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 15),
+
+                        // Terms & Conditions
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isCheck = !isCheck;
+                                });
+                              },
+                              icon: Icon(
+                                isCheck
+                                    ? Icons.check_box_outlined
+                                    : Icons.check_box_outline_blank_outlined,
+                                color: TColor.gray,
+                                size: 20,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                "By continuing you accept our Privacy Policy and Term of Use",
+                                style: TextStyle(
+                                  color: TColor.gray,
+                                  fontSize: 10,
                                 ),
                               ),
                             ),
-                            onPressed: () {
-                              // TODO: Implement Google login
-                            },
-                          ),
+                          ],
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: SocialLoginButton(
-                            text: 'Facebook',
-                            icon: const Icon(
-                              Icons.facebook,
-                              color: Color(0xFF1877F2),
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              // TODO: Implement Facebook login
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
+                        SizedBox(height: 25),
 
-                    // Login Link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Already have an account? ',
-                          style: AppTypography.authSmallText,
+                        // Button Section
+                        RoundButton(
+                          title: state is AuthLoading
+                              ? "Registering..."
+                              : "Register",
+                          onPressed: state is AuthLoading
+                              ? () {}
+                              : _handleRegister,
                         ),
+                        SizedBox(height: 20),
+                        // Divider
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: TColor.gray.withOpacity(0.5),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text(
+                                "Or",
+                                style: TextStyle(
+                                  color: TColor.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: TColor.gray.withOpacity(0.5),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        // Social Login
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {},
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: TColor.white,
+                                  border: Border.all(
+                                    width: 1,
+                                    color: TColor.gray.withOpacity(0.4),
+                                  ),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Image.asset(
+                                  "assets/images/google.png",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 30),
+                            GestureDetector(
+                              onTap: () {},
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: TColor.white,
+                                  border: Border.all(
+                                    width: 1,
+                                    color: TColor.gray.withOpacity(0.4),
+                                  ),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Image.asset(
+                                  "assets/images/facebook.png",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        // Footer
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).pushNamed(Routes.loginScreen);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider(
+                                  create: (_) => AuthCubit(),
+                                  child: const LoginScreen(),
+                                ),
+                              ),
+                            );
                           },
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 4.0,
-                              vertical: 0.0,
-                            ),
-                          ),
-                          child: Text(
-                            'Login',
-                            style: AppTypography.authLinkText.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "Already have an account? ",
+                                style: TextStyle(
+                                  color: TColor.black,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                "Login",
+                                style: TextStyle(
+                                  color: TColor.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                        SizedBox(height: 20),
                       ],
                     ),
-                    const SizedBox(height: 32),
-                  ],
+                  ),
                 ),
               ),
-            ),
+              if (state is AuthLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+            ],
           );
         },
       ),
