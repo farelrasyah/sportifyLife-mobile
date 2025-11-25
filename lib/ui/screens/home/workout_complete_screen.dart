@@ -36,7 +36,7 @@ class WorkoutCompleteScreen extends StatelessWidget {
 
   Widget _buildCongratulationsImage(MediaQueryData mediaQuery) {
     return Image.asset(
-      "assets/img/complete_workout.png",
+      "assets/images/finished_workout.png",
       height: mediaQuery.size.width * 0.8,
       fit: BoxFit.fitHeight,
       errorBuilder: (context, error, stackTrace) {

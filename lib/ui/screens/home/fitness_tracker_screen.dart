@@ -18,12 +18,12 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
 
   final List<Map<String, String>> _latestActivities = [
     {
-      "image": "assets/img/pic_4.png",
+      "image": "assets/images/pfp_1.png",
       "title": "Drinking 300ml Water",
       "time": "About 1 minutes ago",
     },
     {
-      "image": "assets/img/pic_5.png",
+      "image": "assets/images/pfp_2.png",
       "title": "Eat Snack (Fitbar)",
       "time": "About 3 hours ago",
     },
@@ -80,7 +80,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Image.asset(
-          "assets/img/black_btn.png",
+          "assets/images/black_btn.png",
           width: 15,
           height: 15,
           fit: BoxFit.contain,
@@ -99,7 +99,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Image.asset(
-          "assets/img/more_btn.png",
+          "assets/images/elips_btn.png",
           width: 15,
           height: 15,
           fit: BoxFit.contain,
@@ -141,7 +141,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
             children: [
               Expanded(
                 child: TodayTargetCell(
-                  icon: "assets/img/water.png",
+                  icon: "assets/images/water.png",
                   value: "8L",
                   title: "Water Intake",
                 ),
@@ -149,7 +149,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
               SizedBox(width: 15),
               Expanded(
                 child: TodayTargetCell(
-                  icon: "assets/img/foot.png",
+                  icon: "assets/images/foot.png",
                   value: "2400",
                   title: "Foot Steps",
                 ),

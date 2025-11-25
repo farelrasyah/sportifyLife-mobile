@@ -22,21 +22,21 @@ class _MainScreenState extends State<MainScreen> {
   final List<Map<String, dynamic>> _workoutData = [
     {
       "name": "Full Body Workout",
-      "image": "assets/img/Workout1.png",
+      "image": "assets/images/moveSet_1.png",
       "kcal": "180",
       "time": "20",
       "progress": 0.3,
     },
     {
       "name": "Lower Body Workout",
-      "image": "assets/img/Workout2.png",
+      "image": "assets/images/moveSet_2.png",
       "kcal": "200",
       "time": "30",
       "progress": 0.4,
     },
     {
       "name": "Ab Workout",
-      "image": "assets/img/Workout3.png",
+      "image": "assets/images/moveSet_3.png",
       "kcal": "300",
       "time": "40",
       "progress": 0.7,
@@ -147,7 +147,7 @@ class _MainScreenState extends State<MainScreen> {
             MaterialPageRoute(builder: (context) => const NotificationScreen()),
           ),
           icon: Image.asset(
-            "assets/img/notification_active.png",
+            "assets/images/notification.png",
             width: 25,
             height: 25,
             fit: BoxFit.fitHeight,
@@ -168,7 +168,7 @@ class _MainScreenState extends State<MainScreen> {
         alignment: Alignment.center,
         children: [
           Image.asset(
-            "assets/img/bg_dots.png",
+            "assets/images/decor.png",
             height: media.width * 0.4,
             width: double.maxFinite,
             fit: BoxFit.fitHeight,
@@ -557,7 +557,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           const Spacer(),
           Image.asset(
-            "assets/img/sleep_grap.png",
+            "assets/images/sleepTrack.png",
             width: double.maxFinite,
             fit: BoxFit.fitWidth,
           ),
