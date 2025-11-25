@@ -5,7 +5,10 @@ import '../../../common/colo_extension.dart';
 import '../../../common_widget/round_button.dart';
 import '../../../common_widget/round_textfield.dart';
 import '../../../cubits/auth_cubit.dart';
+import '../../../cubits/verify_cubit.dart';
 import 'login_screen.dart';
+import 'verify_email_screen.dart';
+import '../home/main_screen.dart'; // TEMPORARY: For testing without auth
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -31,6 +34,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _handleRegister() {
+    // TEMPORARY: Direct navigation to MainScreen for testing
+    // TODO: Uncomment below code when ready to use authentication
+    /*
     if (_firstNameController.text.isNotEmpty &&
         _lastNameController.text.isNotEmpty &&
         _emailController.text.isNotEmpty &&
@@ -54,6 +60,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     }
+    */
+
+    // TEMPORARY: Navigate directly to MainScreen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MainScreen()),
+    );
   }
 
   @override
@@ -77,6 +90,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   backgroundColor: Colors.green,
                 ),
               );
+              // Navigate to verify email screen
+              Future.delayed(const Duration(milliseconds: 500), () {
+                if (mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (_) => VerifyCubit(),
+                        child: VerifyEmailScreen(
+                          email: _emailController.text.trim(),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              });
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

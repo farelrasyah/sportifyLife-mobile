@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../common/colo_extension.dart';
+import '../../../common_widget/round_button.dart';
 import '../../../cubits/verify_cubit.dart';
 import '../../../cubits/auth_cubit.dart';
 import '../../../app/routes.dart';
@@ -17,24 +20,63 @@ class VerifyEmailScreen extends StatefulWidget {
   State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
 }
 
-class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
+class _VerifyEmailScreenState extends State<VerifyEmailScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late AnimationController _scaleController;
+  late AnimationController _pulseController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _pulseAnimation;
+
   @override
   void initState() {
     super.initState();
+    _initializeAnimations();
     _initializeVerification();
   }
 
-  /// Initialize verification flow
+  void _initializeAnimations() {
+    // Fade animation
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
+
+    // Scale animation
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
+    );
+
+    // Pulse animation for timer
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
+    _fadeController.forward();
+    _scaleController.forward();
+  }
+
   Future<void> _initializeVerification() async {
     final expiry = await StorageHelper().getVerificationExpiry();
     final expiryTime = expiry ?? DateTime.now().add(const Duration(minutes: 1));
 
-    // Save expiry if it doesn't exist
     if (expiry == null) {
       await StorageHelper().saveVerificationExpiry(expiryTime);
     }
 
-    // Start verification flow with auto-check
     if (mounted) {
       context.read<VerifyCubit>().startVerificationFlow(
         widget.email,
@@ -43,7 +85,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     }
   }
 
-  /// Format duration as MM:SS
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes = twoDigits(duration.inMinutes.remainder(60));
@@ -51,7 +92,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     return '$minutes:$seconds';
   }
 
-  /// Open email app
   Future<void> _openEmailApp() async {
     final Uri emailUri = Uri(scheme: 'mailto');
     try {
@@ -65,21 +105,17 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     }
   }
 
-  /// Resend verification email
   Future<void> _resendVerification() async {
     context.read<VerifyCubit>().resendVerification(widget.email);
-
-    // Save new expiry time
     final newExpiry = DateTime.now().add(const Duration(minutes: 1));
     await StorageHelper().saveVerificationExpiry(newExpiry);
+    _showSnackBar('Verification email sent!', isError: false);
   }
 
-  /// Manually check verification status
   void _checkStatus() {
     context.read<VerifyCubit>().checkVerificationStatus();
   }
 
-  /// Show snackbar message
   void _showSnackBar(String message, {bool isError = false}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -88,50 +124,57 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         backgroundColor: isError ? Colors.red : Colors.green,
         duration: Duration(seconds: isError ? 4 : 3),
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
 
-  /// Handle successful verification - auto-login
   void _handleVerificationSuccess(UserModel user) async {
     _showSnackBar('Email verified! Logging you in...', isError: false);
-
-    // Update auth state
     context.read<AuthCubit>().updateUserAfterVerification(user);
-
-    // Wait a moment for user to see the message
-    await Future.delayed(const Duration(seconds: 1));
-
+    await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
-      // Navigate to complete profile or home
-      // Check if user details are complete
-      // For now, navigate to complete profile
       Navigator.of(context).pushReplacementNamed(Routes.completeProfileScreen);
     }
   }
 
   @override
+  void dispose() {
+    _fadeController.dispose();
+    _scaleController.dispose();
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: TColor.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Verify Your Email'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: TColor.white.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: TColor.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(Icons.arrow_back, color: TColor.black, size: 20),
+          ),
           onPressed: () {
             Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
           },
-          tooltip: 'Back to Login',
         ),
-        actions: [
-          // Help button
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {
-              _showHelpDialog();
-            },
-            tooltip: 'Help',
-          ),
-        ],
       ),
       body: BlocConsumer<VerifyCubit, VerifyState>(
         listener: (context, state) {
@@ -142,451 +185,491 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           }
         },
         builder: (context, state) {
-          return SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 16),
-
-                  // Email Icon with status indicator
-                  _buildStatusIcon(state),
-
-                  const SizedBox(height: 32),
-
-                  // Title
-                  const Text(
-                    'Verify Your Email',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+          return Stack(
+            children: [
+              // Gradient Background
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      TColor.primary.withOpacity(0.05),
+                      TColor.secondary.withOpacity(0.05),
+                      TColor.white,
+                    ],
+                    stops: const [0.0, 0.3, 0.7],
                   ),
-
-                  const SizedBox(height: 16),
-
-                  // Description
-                  Text(
-                    'We sent a verification link to',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Email address
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      widget.email,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Status card
-                  _buildStatusCard(state),
-
-                  const SizedBox(height: 24),
-
-                  // Instructions
-                  _buildInstructions(state),
-
-                  const SizedBox(height: 32),
-
-                  // Action buttons
-                  _buildActionButtons(state),
-                ],
+                ),
               ),
-            ),
+
+              // Main Content
+              SingleChildScrollView(
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 20),
+
+                        // Animated Header
+                        FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Column(
+                            children: [
+                              Text(
+                                "Verify Your Email",
+                                style: TextStyle(
+                                  color: TColor.black,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "We've sent a verification link to",
+                                style: TextStyle(
+                                  color: TColor.gray,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      TColor.primary.withOpacity(0.1),
+                                      TColor.secondary.withOpacity(0.1),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  widget.email,
+                                  style: TextStyle(
+                                    color: TColor.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: 30),
+
+                        // Animated Lottie
+                        ScaleTransition(
+                          scale: _scaleAnimation,
+                          child: Container(
+                            height: media.width * 0.6,
+                            width: media.width * 0.6,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: [
+                                  TColor.primary.withOpacity(0.1),
+                                  TColor.secondary.withOpacity(0.1),
+                                ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: TColor.primary.withOpacity(0.2),
+                                  blurRadius: 30,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: Lottie.asset(
+                              'assets/images/verification.json',
+                              fit: BoxFit.contain,
+                              repeat: true,
+                              animate: true,
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 30),
+
+                        // Status Card with Animation
+                        _buildStatusCard(state),
+
+                        SizedBox(height: 30),
+
+                        // Premium Instructions Card
+                        _buildInstructionsCard(),
+
+                        SizedBox(height: 30),
+
+                        // Action Buttons with Stagger Animation
+                        _buildActionButtons(state),
+
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),
     );
   }
 
-  /// Build status icon with animation
-  Widget _buildStatusIcon(VerifyState state) {
-    IconData iconData;
-    Color iconColor;
-
-    if (state is VerifySuccess) {
-      iconData = Icons.check_circle;
-      iconColor = Colors.green;
-    } else if (state is VerifyError) {
-      iconData = Icons.error;
-      iconColor = Colors.red;
-    } else if (state is VerifyExpired) {
-      iconData = Icons.access_time;
-      iconColor = Colors.orange;
-    } else if (state is VerifyLoading) {
-      iconData = Icons.hourglass_empty;
-      iconColor = Colors.blue;
-    } else if (state is VerifyPending && state.isChecking) {
-      iconData = Icons.sync;
-      iconColor = Colors.blue;
-    } else {
-      iconData = Icons.email_outlined;
-      iconColor = Theme.of(context).primaryColor;
-    }
-
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Icon(iconData, size: 100, color: iconColor),
-        if (state is VerifyPending && state.isChecking)
-          const Positioned(
-            bottom: 0,
-            right: 0,
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2),
+  Widget _buildStatusCard(VerifyState state) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 600),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: TColor.white,
+          borderRadius: BorderRadius.circular(20),
+          gradient: state is VerifyExpired
+              ? LinearGradient(
+                  colors: [
+                    Colors.orange.withOpacity(0.1),
+                    Colors.orange.withOpacity(0.05),
+                  ],
+                )
+              : LinearGradient(
+                  colors: [
+                    TColor.primary.withOpacity(0.1),
+                    TColor.secondary.withOpacity(0.05),
+                  ],
+                ),
+          boxShadow: [
+            BoxShadow(
+              color: TColor.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
-          ),
-      ],
+          ],
+        ),
+        child: _buildStatusContent(state),
+      ),
     );
   }
 
-  /// Build status card showing timer or status message
-  Widget _buildStatusCard(VerifyState state) {
+  Widget _buildStatusContent(VerifyState state) {
     if (state is VerifyPending) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.blue.withOpacity(0.1),
-              Colors.blue.withOpacity(0.05),
+      return Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.access_time, color: TColor.primary, size: 24),
+              SizedBox(width: 12),
+              Text(
+                "Expires in",
+                style: TextStyle(
+                  color: TColor.gray,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.blue.withOpacity(0.3)),
-        ),
-        child: Column(
-          children: [
+          SizedBox(height: 16),
+          ScaleTransition(
+            scale: _pulseAnimation,
+            child: Text(
+              _formatDuration(state.remainingTime),
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.w800,
+                foreground: Paint()
+                  ..shader = LinearGradient(
+                    colors: [TColor.primary, TColor.secondary],
+                  ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
+              ),
+            ),
+          ),
+          if (state.isChecking) ...[
+            SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.access_time, color: Colors.blue),
-                const SizedBox(width: 8),
-                const Text(
-                  'Verification expires in',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation(TColor.primary),
+                  ),
+                ),
+                SizedBox(width: 12),
+                Text(
+                  "Checking status...",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: TColor.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              _formatDuration(state.remainingTime),
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
-            ),
-            if (state.isChecking) ...[
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.blue.shade700,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Checking verification status...',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.blue.shade700,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ],
           ],
-        ),
+        ],
       );
     } else if (state is VerifyExpired) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.orange.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.orange.withOpacity(0.3)),
-        ),
-        child: Column(
-          children: [
-            Icon(Icons.access_time, color: Colors.orange.shade700, size: 32),
-            const SizedBox(height: 12),
-            Text(
-              'Verification Link Expired',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.orange.shade700,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
+      return Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.2),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Please request a new verification email',
-              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-              textAlign: TextAlign.center,
+            child: Icon(Icons.access_time, color: Colors.orange, size: 40),
+          ),
+          SizedBox(height: 16),
+          Text(
+            "Link Expired",
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.orange,
+              fontWeight: FontWeight.w800,
             ),
-          ],
-        ),
-      );
-    } else if (state is VerifyLoading) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Column(
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Processing...', style: TextStyle(fontSize: 16)),
-          ],
-        ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            "Please request a new verification email",
+            style: TextStyle(fontSize: 13, color: TColor.gray),
+            textAlign: TextAlign.center,
+          ),
+        ],
       );
     }
-
     return const SizedBox.shrink();
   }
 
-  /// Build instructions text
-  Widget _buildInstructions(VerifyState state) {
-    if (state is VerifyExpired) {
-      return Column(
-        children: [
-          Text(
-            '⚠️ Your verification link has expired',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.orange.shade700,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Click the button below to receive a new verification email',
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      );
-    }
-
-    return Column(
-      children: [
-        Row(
-          children: [
-            Icon(Icons.check_circle_outline, size: 20, color: Colors.grey[600]),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Check your email inbox',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              ),
+  Widget _buildInstructionsCard() {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 700),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: TColor.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: TColor.gray.withOpacity(0.2), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: TColor.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.check_circle_outline, size: 20, color: Colors.grey[600]),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Click the verification link',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              ),
+            _buildInstructionItem(
+              Icons.email_outlined,
+              "Check your email inbox",
+              0,
+            ),
+            SizedBox(height: 12),
+            _buildInstructionItem(
+              Icons.touch_app_outlined,
+              "Click the verification link",
+              1,
+            ),
+            SizedBox(height: 12),
+            _buildInstructionItem(
+              Icons.check_circle_outline,
+              "We'll log you in automatically",
+              2,
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Icon(Icons.check_circle_outline, size: 20, color: Colors.grey[600]),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Return here - we\'ll log you in automatically',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.info_outline, size: 18, color: Colors.grey[700]),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  "Don't see the email? Check your spam folder",
-                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  /// Build action buttons
-  Widget _buildActionButtons(VerifyState state) {
-    final isLoading = state is VerifyLoading;
-    final isExpired = state is VerifyExpired;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Check Status Button (only show if pending)
-        if (state is VerifyPending) ...[
-          ElevatedButton.icon(
-            onPressed: isLoading ? null : _checkStatus,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Check Verification Status'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+  Widget _buildInstructionItem(IconData icon, String text, int index) {
+    return TweenAnimationBuilder<double>(
+      duration: Duration(milliseconds: 600 + (index * 100)),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(-20 * (1 - value), 0),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [TColor.primary, TColor.secondary],
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 18, color: TColor.white),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                color: TColor.gray,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          const SizedBox(height: 12),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(VerifyState state) {
+    return Column(
+      children: [
+        // Check Status Button
+        if (state is VerifyPending)
+          TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 800),
+            tween: Tween(begin: 0.0, end: 1.0),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Transform.translate(
+                offset: Offset(0, 30 * (1 - value)),
+                child: Opacity(opacity: value, child: child),
+              );
+            },
+            child: Column(
+              children: [
+                RoundButton(title: "Check Status", onPressed: _checkStatus),
+                SizedBox(height: 15),
+              ],
+            ),
+          ),
 
         // Open Email Button
-        OutlinedButton.icon(
-          onPressed: isLoading ? null : _openEmailApp,
-          icon: const Icon(Icons.email),
-          label: const Text('Open Email App'),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+        TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 900),
+          tween: Tween(begin: 0.0, end: 1.0),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) {
+            return Transform.translate(
+              offset: Offset(0, 30 * (1 - value)),
+              child: Opacity(opacity: value, child: child),
+            );
+          },
+          child: _buildOutlineButton(
+            "Open Email App",
+            Icons.email_outlined,
+            _openEmailApp,
+            TColor.primary,
           ),
         ),
-
-        const SizedBox(height: 12),
+        SizedBox(height: 15),
 
         // Resend Button
-        OutlinedButton.icon(
-          onPressed: isLoading ? null : _resendVerification,
-          icon: const Icon(Icons.send),
-          label: Text(isExpired ? 'Send New Email' : 'Resend Verification'),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            side: BorderSide(
-              color: isExpired ? Colors.orange : Colors.blue,
-              width: isExpired ? 2 : 1,
-            ),
+        TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 1000),
+          tween: Tween(begin: 0.0, end: 1.0),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) {
+            return Transform.translate(
+              offset: Offset(0, 30 * (1 - value)),
+              child: Opacity(opacity: value, child: child),
+            );
+          },
+          child: _buildOutlineButton(
+            state is VerifyExpired ? "Send New Email" : "Resend Verification",
+            Icons.send_outlined,
+            _resendVerification,
+            state is VerifyExpired ? Colors.orange : TColor.secondary,
           ),
         ),
-
-        const SizedBox(height: 24),
+        SizedBox(height: 20),
 
         // Back to Login
         TextButton(
-          onPressed: isLoading
-              ? null
-              : () {
-                  Navigator.of(
-                    context,
-                  ).pushReplacementNamed(Routes.loginScreen);
-                },
-          child: const Text('Back to Login'),
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
+          },
+          child: Text(
+            "Back to Login",
+            style: TextStyle(
+              color: TColor.gray,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.underline,
+            ),
+          ),
         ),
       ],
     );
   }
 
-  /// Show help dialog
-  void _showHelpDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Verification Help'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Why do I need to verify my email?',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Email verification ensures the security of your account and allows us to send you important notifications.',
-                style: TextStyle(color: Colors.grey[700]),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'I haven\'t received the email',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '1. Check your spam/junk folder\n2. Make sure you entered the correct email\n3. Wait a few minutes for delivery\n4. Click "Resend Verification" to get a new email',
-                style: TextStyle(color: Colors.grey[700]),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'The link expired',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Verification links expire after 1 minute for security. Simply click "Resend Verification" to get a new link.',
-                style: TextStyle(color: Colors.grey[700]),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
+  Widget _buildOutlineButton(
+    String title,
+    IconData icon,
+    VoidCallback onPressed,
+    Color color,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: color.withOpacity(0.4), width: 2),
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
+      ),
+      child: MaterialButton(
+        onPressed: onPressed,
+        height: 56,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        minWidth: double.maxFinite,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 20),
+            SizedBox(width: 8),
+            Text(
+              title,
+              style: TextStyle(
+                color: color,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

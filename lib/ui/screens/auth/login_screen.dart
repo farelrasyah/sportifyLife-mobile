@@ -5,7 +5,10 @@ import '../../../common/colo_extension.dart';
 import '../../../common_widget/round_button.dart';
 import '../../../common_widget/round_textfield.dart';
 import '../../../cubits/auth_cubit.dart';
+import '../../../cubits/verify_cubit.dart';
 import 'register_screen.dart';
+import 'verify_email_screen.dart';
+import '../home/main_screen.dart'; // TEMPORARY: For testing without auth
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,6 +30,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
+    // TEMPORARY: Direct navigation to MainScreen for testing
+    // TODO: Uncomment below code when ready to use authentication
+    /*
     if (_emailController.text.isNotEmpty &&
         _passwordController.text.isNotEmpty) {
       context.read<AuthCubit>().login(
@@ -41,6 +47,13 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
+    */
+
+    // TEMPORARY: Navigate directly to MainScreen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MainScreen()),
+    );
   }
 
   @override
@@ -62,6 +75,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   backgroundColor: Colors.orange,
                 ),
               );
+              // Navigate to verify email screen
+              Future.delayed(const Duration(milliseconds: 500), () {
+                if (mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (_) => VerifyCubit(),
+                        child: VerifyEmailScreen(
+                          email: _emailController.text.trim(),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              });
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   flutter_secure_storage_windows
   rive_common
+  simple_animation_progress_bar
   url_launcher_windows
 )
 
