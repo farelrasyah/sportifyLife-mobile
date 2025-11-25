@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../common/colo_extension.dart';
-import '../../../common_widget/round_button.dart';
+import '../../widgets/round_button.dart';
 import '../../../cubits/verify_cubit.dart';
 import '../../../cubits/auth_cubit.dart';
 import '../../../app/routes.dart';

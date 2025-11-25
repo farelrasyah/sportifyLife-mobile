@@ -5,8 +5,8 @@ import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
 import '../../../common/colo_extension.dart';
-import '../../../common_widget/round_button.dart';
-import '../../../common_widget/workout_row.dart';
+import '../../widgets/round_button.dart';
+import '../../widgets/workout_row.dart';
 import 'fitness_tracker_screen.dart';
 import 'notification_screen.dart';
 import 'workout_complete_screen.dart';

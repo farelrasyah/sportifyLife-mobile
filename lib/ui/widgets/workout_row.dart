@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
-import '../common/colo_extension.dart';
+import '../../common/colo_extension.dart';
 
 class WorkoutRow extends StatelessWidget {
   final Map<String, dynamic> workout;
