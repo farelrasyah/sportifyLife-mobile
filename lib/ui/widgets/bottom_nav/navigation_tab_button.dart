@@ -53,8 +53,24 @@ class NavigationTabButton extends StatelessWidget {
         height: 24,
         color: isSelected ? TColor.primaryColor1 : TColor.gray,
         fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          // Fallback to icon if image not found
+          return Icon(
+            _getFallbackIcon(),
+            size: 24,
+            color: isSelected ? TColor.primaryColor1 : TColor.gray,
+          );
+        },
       ),
     );
+  }
+
+  IconData _getFallbackIcon() {
+    if (iconPath.contains('home')) return Icons.home;
+    if (iconPath.contains('activity')) return Icons.fitness_center;
+    if (iconPath.contains('camera')) return Icons.photo_camera;
+    if (iconPath.contains('profile')) return Icons.person;
+    return Icons.circle;
   }
 
   Widget _buildLabel() {

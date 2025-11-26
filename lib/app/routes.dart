@@ -46,7 +46,6 @@ import '../ui/screens/home/workout_complete_screen.dart';
 // Navigation Screens
 import '../ui/screens/navigation/activity_selection_screen.dart';
 import '../ui/widgets/bottom_nav/bottom_nav_bar.dart';
-
 // Meal Stats Screens
 import '../ui/screens/meal_stats/food_detail_screen.dart';
 import '../ui/screens/meal_stats/meal_detail_screen.dart';
@@ -105,6 +104,7 @@ class Routes {
   // Navigation Routes
   static const String activitySelectionScreen = '/activitySelection';
   static const String mainBottomNavigationScreen = '/mainBottomNavigation';
+  static const String simpleBottomNavigationScreen = '/simpleBottomNavigation';
 
   // Meal Stats Routes
   static const String foodDetailScreen = '/foodDetail';
@@ -210,6 +210,8 @@ class RouteGenerator {
 
       case Routes.mainBottomNavigationScreen:
         return MaterialPageRoute(builder: (_) => const MainBottomNavigation());
+
+
 
       // Meal Stats Routes
       case Routes.foodDetailScreen:
@@ -465,5 +467,10 @@ class RouteHelper {
   /// Navigate to activity selection screen
   static Future<void> navigateToActivitySelection(BuildContext context) {
     return navigateTo(context, Routes.activitySelectionScreen);
+  }
+
+  /// Navigate to simple bottom navigation (for testing)
+  static Future<void> navigateToSimpleApp(BuildContext context) {
+    return navigateAndClearStack(context, Routes.simpleBottomNavigationScreen);
   }
 }

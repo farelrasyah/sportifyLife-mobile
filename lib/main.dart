@@ -32,7 +32,7 @@ class SportifyLifeApp extends StatelessWidget {
       ],
 
       // Routing
- 
+      initialRoute: Routes.splashScreen,
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }

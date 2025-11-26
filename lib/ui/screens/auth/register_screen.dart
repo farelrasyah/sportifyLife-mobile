@@ -8,7 +8,7 @@ import '../../../cubits/auth_cubit.dart';
 import '../../../cubits/verify_cubit.dart';
 import 'login_screen.dart';
 import 'verify_email_screen.dart';
-import '../home/main_screen.dart'; // TEMPORARY: For testing without auth
+import '../../../app/routes.dart'; // TEMPORARY: For testing without auth
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -62,11 +62,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     */
 
-    // TEMPORARY: Navigate directly to MainScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-    );
+    // Navigate to bottom navigation (main app)
+    RouteHelper.navigateToMainApp(context);
   }
 
   @override
