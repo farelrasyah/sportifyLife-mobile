@@ -57,7 +57,6 @@ dependencies:
   url_launcher: ^6.2.2
   
   # Date Picker
-  intl: ^0.20.0
   
   # UI
   google_fonts: ^6.1.0
@@ -73,6 +72,8 @@ dependencies:
   dotted_dashed_line: ^0.0.3
   simple_animation_progress_bar: ^1.9.2
   simple_circular_progress_bar: ^1.0.2
+  readmore: ^3.0.0
+  table_calendar: ^3.2.0
 
 dependency_overrides:
   vector_math: ^2.2.0
