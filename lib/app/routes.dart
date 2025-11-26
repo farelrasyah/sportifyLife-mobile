@@ -43,6 +43,10 @@ import '../ui/screens/home/fitness_tracker_screen.dart';
 import '../ui/screens/home/notification_screen.dart';
 import '../ui/screens/home/workout_complete_screen.dart';
 
+// Navigation Screens
+import '../ui/screens/navigation/activity_selection_screen.dart';
+import '../ui/widgets/bottom_nav/bottom_nav_bar.dart';
+
 // Meal Stats Screens
 import '../ui/screens/meal_stats/food_detail_screen.dart';
 import '../ui/screens/meal_stats/meal_detail_screen.dart';
@@ -97,6 +101,10 @@ class Routes {
   static const String fitnessTrackerScreen = '/fitnessTracker';
   static const String notificationScreen = '/notification';
   static const String workoutCompleteScreen = '/workoutComplete';
+
+  // Navigation Routes
+  static const String activitySelectionScreen = '/activitySelection';
+  static const String mainBottomNavigationScreen = '/mainBottomNavigation';
 
   // Meal Stats Routes
   static const String foodDetailScreen = '/foodDetail';
@@ -193,6 +201,15 @@ class RouteGenerator {
 
       case Routes.workoutCompleteScreen:
         return MaterialPageRoute(builder: (_) => const WorkoutCompleteScreen());
+
+      // Navigation Routes
+      case Routes.activitySelectionScreen:
+        return MaterialPageRoute(
+          builder: (_) => const ActivitySelectionScreen(),
+        );
+
+      case Routes.mainBottomNavigationScreen:
+        return MaterialPageRoute(builder: (_) => const MainBottomNavigation());
 
       // Meal Stats Routes
       case Routes.foodDetailScreen:
@@ -438,5 +455,15 @@ class RouteHelper {
     return navigateToWithArgs(context, Routes.verifyEmailScreen, {
       'email': email,
     });
+  }
+
+  /// Navigate to main bottom navigation (main app entry point)
+  static Future<void> navigateToMainApp(BuildContext context) {
+    return navigateAndClearStack(context, Routes.mainBottomNavigationScreen);
+  }
+
+  /// Navigate to activity selection screen
+  static Future<void> navigateToActivitySelection(BuildContext context) {
+    return navigateTo(context, Routes.activitySelectionScreen);
   }
 }
