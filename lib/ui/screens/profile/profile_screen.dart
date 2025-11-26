@@ -256,7 +256,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return CustomAnimatedToggleSwitch<bool>(
       current: _notificationEnabled,
       values: const [false, true],
-      dif: 0.0,
       indicatorSize: const Size.square(30.0),
       animationDuration: const Duration(milliseconds: 200),
       animationCurve: Curves.linear,
@@ -264,8 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       iconBuilder: (context, local, global) {
         return const SizedBox();
       },
-      defaultCursor: SystemMouseCursors.click,
-      onTap: () => setState(() => _notificationEnabled = !_notificationEnabled),
+      onTap: (value) => setState(() => _notificationEnabled = !_notificationEnabled),
       iconsTappable: false,
       wrapperBuilder: (context, global, child) {
         return Stack(
