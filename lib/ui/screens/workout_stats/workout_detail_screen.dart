@@ -18,42 +18,54 @@ class WorkoutDetailScreen extends StatefulWidget {
 class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   final List<Map<String, String>> _recentWorkouts = [
     {
-      "image": "assets/img/Workout1.png",
+      "image": "assets/images/Workout1.png",
       "title": "Fullbody Workout",
       "time": "Today, 03:00pm",
     },
     {
-      "image": "assets/img/Workout2.png",
+      "image": "assets/images/Workout2.png",
       "title": "Upperbody Workout",
       "time": "June 05, 02:00pm",
     },
   ];
 
   final List<Map<String, String>> _requiredEquipment = [
-    {"image": "assets/img/barbell.png", "title": "Barbell"},
-    {"image": "assets/img/skipping_rope.png", "title": "Skipping Rope"},
-    {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    {"image": "assets/images/barbell.png", "title": "Barbell"},
+    {"image": "assets/images/skipping_rope.png", "title": "Skipping Rope"},
+    {"image": "assets/images/bottle.png", "title": "Bottle 1 Liters"},
   ];
 
   final List<Map<String, dynamic>> _workoutSets = [
     {
       "name": "Set 1",
       "set": [
-        {"image": "assets/img/img_1.png", "title": "Warm Up", "value": "05:00"},
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/images/images_1.png",
+          "title": "Warm Up",
+          "value": "05:00",
+        },
+        {
+          "image": "assets/images/images_2.png",
           "title": "Jumping Jack",
           "value": "12x",
         },
-        {"image": "assets/img/img_1.png", "title": "Skipping", "value": "15x"},
-        {"image": "assets/img/img_2.png", "title": "Squats", "value": "20x"},
         {
-          "image": "assets/img/img_1.png",
+          "image": "assets/images/images_1.png",
+          "title": "Skipping",
+          "value": "15x",
+        },
+        {
+          "image": "assets/images/images_2.png",
+          "title": "Squats",
+          "value": "20x",
+        },
+        {
+          "image": "assets/images/images_1.png",
           "title": "Arm Raises",
           "value": "00:53",
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/images/images_2.png",
           "title": "Rest and Drink",
           "value": "02:00",
         },
@@ -62,21 +74,33 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     {
       "name": "Set 2",
       "set": [
-        {"image": "assets/img/img_1.png", "title": "Warm Up", "value": "05:00"},
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/images/images_1.png",
+          "title": "Warm Up",
+          "value": "05:00",
+        },
+        {
+          "image": "assets/images/images_2.png",
           "title": "Jumping Jack",
           "value": "12x",
         },
-        {"image": "assets/img/img_1.png", "title": "Skipping", "value": "15x"},
-        {"image": "assets/img/img_2.png", "title": "Squats", "value": "20x"},
         {
-          "image": "assets/img/img_1.png",
+          "image": "assets/images/images_1.png",
+          "title": "Skipping",
+          "value": "15x",
+        },
+        {
+          "image": "assets/images/images_2.png",
+          "title": "Squats",
+          "value": "20x",
+        },
+        {
+          "image": "assets/images/images_1.png",
           "title": "Arm Raises",
           "value": "00:53",
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/images/images_2.png",
           "title": "Rest and Drink",
           "value": "02:00",
         },
@@ -138,7 +162,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Image.asset(
-            "assets/img/black_btn.png",
+            "assets/images/black_btn.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -158,7 +182,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -180,7 +204,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       flexibleSpace: Align(
         alignment: Alignment.center,
         child: Image.asset(
-          "assets/img/detail_top.png",
+          "assets/images/detail_top.png",
           width: screenSize.width * 0.75,
           height: screenSize.width * 0.8,
           fit: BoxFit.contain,
@@ -248,7 +272,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         TextButton(
           onPressed: () {},
           child: Image.asset(
-            "assets/img/fav.png",
+            "assets/images/fav.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -260,7 +284,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   Widget _buildScheduleSection() {
     return IconTitleNextRow(
-      icon: "assets/img/time.png",
+      icon: "assets/images/time.png",
       title: "Schedule Workout",
       time: "5/27, 09:00 AM",
       color: TColor.primaryColor2.withOpacity(0.3),
@@ -275,7 +299,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   Widget _buildDifficultySection() {
     return IconTitleNextRow(
-      icon: "assets/img/difficulity.png",
+      icon: "assets/images/difficulity.png",
       title: "Difficulity",
       time: "Beginner",
       color: TColor.secondaryColor2.withOpacity(0.3),

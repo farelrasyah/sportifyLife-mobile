@@ -64,7 +64,7 @@ class _ResultComparisonScreenState extends State<ResultComparisonScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Image.asset(
-            "assets/img/black_btn.png",
+            "assets/images/black_btn.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -92,7 +92,7 @@ class _ResultComparisonScreenState extends State<ResultComparisonScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -109,7 +109,7 @@ class _ResultComparisonScreenState extends State<ResultComparisonScreen> {
     required VoidCallback onPressed,
   }) {
     return IconTitleNextRow(
-      icon: "assets/img/date.png",
+      icon: "assets/images/date.png",
       title: title,
       time: selectedMonth,
       onPressed: onPressed,

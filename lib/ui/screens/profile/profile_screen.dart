@@ -17,24 +17,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _notificationEnabled = false;
 
   final List<Map<String, String>> _userAccountOptions = [
-    {"icon": "assets/img/p_personal.png", "title": "Personal Data", "id": "1"},
-    {"icon": "assets/img/p_achi.png", "title": "Achievement", "id": "2"},
     {
-      "icon": "assets/img/p_activity.png",
+      "icon": "assets/images/p_personal.png",
+      "title": "Personal Data",
+      "id": "1",
+    },
+    {"icon": "assets/images/p_achi.png", "title": "Achievement", "id": "2"},
+    {
+      "icon": "assets/images/p_activity.png",
       "title": "Activity History",
       "id": "3",
     },
     {
-      "icon": "assets/img/p_workout.png",
+      "icon": "assets/images/p_workout.png",
       "title": "Workout Progress",
       "id": "4",
     },
   ];
 
   final List<Map<String, String>> _additionalOptions = [
-    {"icon": "assets/img/p_contact.png", "title": "Contact Us", "id": "5"},
-    {"icon": "assets/img/p_privacy.png", "title": "Privacy Policy", "id": "6"},
-    {"icon": "assets/img/p_setting.png", "title": "Setting", "id": "7"},
+    {"icon": "assets/images/p_contact.png", "title": "Contact Us", "id": "5"},
+    {
+      "icon": "assets/images/p_privacy.png",
+      "title": "Privacy Policy",
+      "id": "6",
+    },
+    {"icon": "assets/images/p_setting.png", "title": "Setting", "id": "7"},
   ];
 
   @override
@@ -91,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -108,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ClipRRect(
           borderRadius: BorderRadius.circular(30),
           child: Image.asset(
-            "assets/img/u2.png",
+            "assets/images/u2.png",
             width: 50,
             height: 50,
             fit: BoxFit.cover,
@@ -231,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
-                  "assets/img/p_notification.png",
+                  "assets/images/p_notification.png",
                   height: 15,
                   width: 15,
                   fit: BoxFit.contain,
@@ -263,7 +271,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       iconBuilder: (context, local, global) {
         return const SizedBox();
       },
-      onTap: (value) => setState(() => _notificationEnabled = !_notificationEnabled),
+      onTap: (value) =>
+          setState(() => _notificationEnabled = !_notificationEnabled),
       iconsTappable: false,
       wrapperBuilder: (context, global, child) {
         return Stack(

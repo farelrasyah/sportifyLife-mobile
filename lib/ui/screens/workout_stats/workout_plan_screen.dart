@@ -99,7 +99,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Image.asset(
-            "assets/img/black_btn.png",
+            "assets/images/black_btn.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -127,7 +127,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -355,7 +355,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/closed_btn.png",
+              "assets/images/closed_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -382,7 +382,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -408,7 +408,11 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
         const SizedBox(height: 4),
         Row(
           children: [
-            Image.asset("assets/img/time_workout.png", height: 20, width: 20),
+            Image.asset(
+              "assets/images/time_workout.png",
+              height: 20,
+              width: 20,
+            ),
             const SizedBox(width: 8),
             Text(
               "${getDayTitle(eventObj["start_time"].toString())}|${getStringDateToOtherFormate(eventObj["start_time"].toString(), outFormatStr: "h:mm aa")}",

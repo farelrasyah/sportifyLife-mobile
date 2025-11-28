@@ -15,19 +15,19 @@ class _ProgressGalleryScreenState extends State<ProgressGalleryScreen> {
     {
       "date": "2 June",
       "images": [
-        "assets/img/pp_1.png",
-        "assets/img/pp_2.png",
-        "assets/img/pp_3.png",
-        "assets/img/pp_4.png",
+        "assets/images/pp_1.png",
+        "assets/images/pp_2.png",
+        "assets/images/pp_3.png",
+        "assets/images/pp_4.png",
       ],
     },
     {
       "date": "5 May",
       "images": [
-        "assets/img/pp_5.png",
-        "assets/img/pp_6.png",
-        "assets/img/pp_7.png",
-        "assets/img/pp_8.png",
+        "assets/images/pp_5.png",
+        "assets/images/pp_6.png",
+        "assets/images/pp_7.png",
+        "assets/images/pp_8.png",
       ],
     },
   ];
@@ -84,7 +84,7 @@ class _ProgressGalleryScreenState extends State<ProgressGalleryScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -116,7 +116,7 @@ class _ProgressGalleryScreenState extends State<ProgressGalleryScreen> {
               height: 50,
               alignment: Alignment.center,
               child: Image.asset(
-                "assets/img/date_notifi.png",
+                "assets/images/date_notifi.png",
                 width: 30,
                 height: 30,
               ),
@@ -199,7 +199,7 @@ class _ProgressGalleryScreenState extends State<ProgressGalleryScreen> {
               ],
             ),
             Image.asset(
-              "assets/img/progress_each_photo.png",
+              "assets/images/progress_each_photo.png",
               width: screenSize.width * 0.35,
             ),
           ],

@@ -17,12 +17,12 @@ class WorkoutStatsScreen extends StatefulWidget {
 class _WorkoutStatsScreenState extends State<WorkoutStatsScreen> {
   final List<Map<String, String>> _recentWorkouts = [
     {
-      "image": "assets/img/Workout1.png",
+      "image": "assets/images/Workout1.png",
       "title": "Fullbody Workout",
       "time": "Today, 03:00pm",
     },
     {
-      "image": "assets/img/Workout2.png",
+      "image": "assets/images/Workout2.png",
       "title": "Upperbody Workout",
       "time": "June 05, 02:00pm",
     },
@@ -30,19 +30,19 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen> {
 
   final List<Map<String, String>> _workoutCategories = [
     {
-      "image": "assets/img/what_1.png",
+      "image": "assets/images/what_1.png",
       "title": "Fullbody Workout",
       "exercises": "11 Exercises",
       "time": "32mins",
     },
     {
-      "image": "assets/img/what_2.png",
+      "image": "assets/images/what_2.png",
       "title": "Lowebody Workout",
       "exercises": "12 Exercises",
       "time": "40mins",
     },
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/images/what_3.png",
       "title": "AB Workout",
       "exercises": "14 Exercises",
       "time": "20mins",
@@ -112,7 +112,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Image.asset(
-            "assets/img/black_btn.png",
+            "assets/images/black_btn.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -140,7 +140,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,

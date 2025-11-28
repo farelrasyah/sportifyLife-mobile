@@ -24,23 +24,23 @@ class _ReportScreenState extends State<ReportScreen> {
   final List<Map<String, String>> _comparisonImages = [
     {
       "category": "Front Facing",
-      "beforeImage": "assets/img/pp_1.png",
-      "afterImage": "assets/img/pp_2.png",
+      "beforeImage": "assets/images/pp_1.png",
+      "afterImage": "assets/images/pp_2.png",
     },
     {
       "category": "Back Facing",
-      "beforeImage": "assets/img/pp_3.png",
-      "afterImage": "assets/img/pp_4.png",
+      "beforeImage": "assets/images/pp_3.png",
+      "afterImage": "assets/images/pp_4.png",
     },
     {
       "category": "Left Facing",
-      "beforeImage": "assets/img/pp_5.png",
-      "afterImage": "assets/img/pp_6.png",
+      "beforeImage": "assets/images/pp_5.png",
+      "afterImage": "assets/images/pp_6.png",
     },
     {
       "category": "Right Facing",
-      "beforeImage": "assets/img/pp_7.png",
-      "afterImage": "assets/img/pp_8.png",
+      "beforeImage": "assets/images/pp_7.png",
+      "afterImage": "assets/images/pp_8.png",
     },
   ];
 
@@ -113,7 +113,7 @@ class _ReportScreenState extends State<ReportScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Image.asset(
-            "assets/img/black_btn.png",
+            "assets/images/black_btn.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -141,7 +141,7 @@ class _ReportScreenState extends State<ReportScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/share.png",
+              "assets/images/share.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -160,7 +160,7 @@ class _ReportScreenState extends State<ReportScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,

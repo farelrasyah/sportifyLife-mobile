@@ -18,29 +18,29 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   final TextEditingController searchController = TextEditingController();
 
   final List<Map<String, String>> foodCategories = [
-    {"name": "Salad", "image": "assets/img/c_1.png"},
-    {"name": "Cake", "image": "assets/img/c_2.png"},
-    {"name": "Pie", "image": "assets/img/c_3.png"},
-    {"name": "Smoothies", "image": "assets/img/c_4.png"},
-    {"name": "Salad", "image": "assets/img/c_1.png"},
-    {"name": "Cake", "image": "assets/img/c_2.png"},
-    {"name": "Pie", "image": "assets/img/c_3.png"},
-    {"name": "Smoothies", "image": "assets/img/c_4.png"},
+    {"name": "Salad", "image": "assets/images/c_1.png"},
+    {"name": "Cake", "image": "assets/images/c_2.png"},
+    {"name": "Pie", "image": "assets/images/c_3.png"},
+    {"name": "Smoothies", "image": "assets/images/c_4.png"},
+    {"name": "Salad", "image": "assets/images/c_1.png"},
+    {"name": "Cake", "image": "assets/images/c_2.png"},
+    {"name": "Pie", "image": "assets/images/c_3.png"},
+    {"name": "Smoothies", "image": "assets/images/c_4.png"},
   ];
 
   final List<Map<String, String>> trendingMeals = [
     {
       "name": "Blueberry Pancake",
-      "image": "assets/img/f_1.png",
-      "b_image": "assets/img/pancake_1.png",
+      "image": "assets/images/f_1.png",
+      "b_image": "assets/images/pancake_1.png",
       "size": "Medium",
       "time": "30mins",
       "kcal": "230kCal",
     },
     {
       "name": "Salmon Nigiri",
-      "image": "assets/img/f_2.png",
-      "b_image": "assets/img/nigiri.png",
+      "image": "assets/images/f_2.png",
+      "b_image": "assets/images/nigiri.png",
       "size": "Medium",
       "time": "20mins",
       "kcal": "120kCal",
@@ -50,14 +50,14 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   final List<Map<String, String>> suggestedMeals = [
     {
       "name": "Honey Pancake",
-      "image": "assets/img/rd_1.png",
+      "image": "assets/images/rd_1.png",
       "size": "Easy",
       "time": "30mins",
       "kcal": "180kCal",
     },
     {
       "name": "Canai Bread",
-      "image": "assets/img/m_4.png",
+      "image": "assets/images/m_4.png",
       "size": "Easy",
       "time": "20mins",
       "kcal": "230kCal",
@@ -95,7 +95,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
       centerTitle: true,
       elevation: 0,
       leading: _buildAppBarButton(
-        "assets/img/black_btn.png",
+        "assets/images/black_btn.png",
         () => Navigator.pop(context),
       ),
       title: Text(
@@ -106,7 +106,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [_buildAppBarButton("assets/img/more_btn.png", () {})],
+      actions: [_buildAppBarButton("assets/images/more_btn.png", () {})],
     );
   }
 
@@ -152,7 +152,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 prefixIcon: Image.asset(
-                  "assets/img/search.png",
+                  "assets/images/search.png",
                   width: 25,
                   height: 25,
                 ),
@@ -168,7 +168,11 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
           ),
           InkWell(
             onTap: () {},
-            child: Image.asset("assets/img/Filter.png", width: 25, height: 25),
+            child: Image.asset(
+              "assets/images/Filter.png",
+              width: 25,
+              height: 25,
+            ),
           ),
         ],
       ),

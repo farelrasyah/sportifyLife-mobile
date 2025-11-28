@@ -20,63 +20,67 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
     {
       "name": "Honey Pancake",
       "time": "07:00am",
-      "image": "assets/img/honey_pan.png",
+      "image": "assets/images/honey_pan.png",
     },
-    {"name": "Coffee", "time": "07:30am", "image": "assets/img/coffee.png"},
+    {"name": "Coffee", "time": "07:30am", "image": "assets/images/coffee.png"},
   ];
 
   final List<Map<String, String>> afternoonMeals = [
     {
       "name": "Chicken Steak",
       "time": "01:00pm",
-      "image": "assets/img/chicken.png",
+      "image": "assets/images/chicken.png",
     },
     {
       "name": "Milk",
       "time": "01:20pm",
-      "image": "assets/img/glass-of-milk 1.png",
+      "image": "assets/images/glass-of-milk 1.png",
     },
   ];
 
   final List<Map<String, String>> snackMeals = [
-    {"name": "Orange", "time": "04:30pm", "image": "assets/img/orange.png"},
+    {"name": "Orange", "time": "04:30pm", "image": "assets/images/orange.png"},
     {
       "name": "Apple Pie",
       "time": "04:40pm",
-      "image": "assets/img/apple_pie.png",
+      "image": "assets/images/apple_pie.png",
     },
   ];
 
   final List<Map<String, String>> eveningMeals = [
-    {"name": "Salad", "time": "07:10pm", "image": "assets/img/salad.png"},
-    {"name": "Oatmeal", "time": "08:10pm", "image": "assets/img/oatmeal.png"},
+    {"name": "Salad", "time": "07:10pm", "image": "assets/images/salad.png"},
+    {
+      "name": "Oatmeal",
+      "time": "08:10pm",
+      "image": "assets/images/oatmeal.png",
+    },
   ];
 
   final List<Map<String, String>> dailyNutrition = [
     {
       "title": "Calories",
-      "image": "assets/img/burn.png",
+      "image": "assets/images/burn.png",
       "unit_name": "kCal",
       "value": "350",
       "max_value": "500",
     },
     {
       "title": "Proteins",
-      "image": "assets/img/proteins.png",
+      "image": "assets/images/proteins.png",
       "unit_name": "g",
       "value": "300",
       "max_value": "1000",
     },
     {
       "title": "Fats",
-      "image": "assets/img/egg.png",
+      "image": "assets/images/egg.png",
       "unit_name": "g",
       "value": "140",
       "max_value": "1000",
     },
     {
       "title": "Carbo",
-      "image": "assets/img/carbo.png",
+      "image": "assets/images/carbo.png",
       "unit_name": "g",
       "value": "140",
       "max_value": "1000",
@@ -128,7 +132,7 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
       centerTitle: true,
       elevation: 0,
       leading: _buildAppBarButton(
-        "assets/img/black_btn.png",
+        "assets/images/black_btn.png",
         () => Navigator.pop(context),
       ),
       title: Text(
@@ -139,7 +143,7 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [_buildAppBarButton("assets/img/more_btn.png", () {})],
+      actions: [_buildAppBarButton("assets/images/more_btn.png", () {})],
     );
   }
 

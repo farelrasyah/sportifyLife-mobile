@@ -91,7 +91,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Image.asset(
-            "assets/img/closed_btn.png",
+            "assets/images/closed_btn.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -111,7 +111,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -134,7 +134,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Image.asset(
-            "assets/img/video_temp.png",
+            "assets/images/video_temp.png",
             width: screenSize.width,
             height: screenSize.width * 0.43,
             fit: BoxFit.contain,
@@ -150,7 +150,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         ),
         IconButton(
           onPressed: () {},
-          icon: Image.asset("assets/img/Play.png", width: 30, height: 30),
+          icon: Image.asset("assets/images/Play.png", width: 30, height: 30),
         ),
       ],
     );
@@ -282,7 +282,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    "assets/img/burn.png",
+                    "assets/images/burn.png",
                     width: 15,
                     height: 15,
                     fit: BoxFit.contain,

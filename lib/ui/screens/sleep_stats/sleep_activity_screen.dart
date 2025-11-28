@@ -17,13 +17,13 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
   final List<Map<String, dynamic>> _sleepScheduleData = [
     {
       "name": "Bedtime",
-      "image": "assets/img/bed.png",
+      "image": "assets/images/bed.png",
       "time": "01/06/2023 09:00 PM",
       "duration": "in 6hours 22minutes",
     },
     {
       "name": "Alarm",
-      "image": "assets/img/alaarm.png",
+      "image": "assets/images/alaarm.png",
       "time": "02/06/2023 05:10 AM",
       "duration": "in 14hours 30minutes",
     },
@@ -84,7 +84,7 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Image.asset(
-            "assets/img/black_btn.png",
+            "assets/images/black_btn.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -112,7 +112,7 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -266,7 +266,7 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
             ),
           ),
           const Spacer(),
-          Image.asset("assets/img/SleepGraph.png", width: double.maxFinite),
+          Image.asset("assets/images/SleepGraph.png", width: double.maxFinite),
         ],
       ),
     );

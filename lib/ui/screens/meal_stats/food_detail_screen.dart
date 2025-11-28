@@ -22,25 +22,25 @@ class FoodDetailScreen extends StatefulWidget {
 
 class _FoodDetailScreenState extends State<FoodDetailScreen> {
   final List<Map<String, String>> nutritionalInfo = [
-    {"icon": "assets/img/burn.png", "label": "180kCal"},
-    {"icon": "assets/img/egg.png", "label": "30g fats"},
-    {"icon": "assets/img/proteins.png", "label": "20g proteins"},
-    {"icon": "assets/img/carbo.png", "label": "50g carbo"},
+    {"icon": "assets/images/burn.png", "label": "180kCal"},
+    {"icon": "assets/images/egg.png", "label": "30g fats"},
+    {"icon": "assets/images/proteins.png", "label": "20g proteins"},
+    {"icon": "assets/images/carbo.png", "label": "50g carbo"},
   ];
 
   final List<Map<String, String>> requiredIngredients = [
     {
-      "icon": "assets/img/flour.png",
+      "icon": "assets/images/flour.png",
       "name": "Wheat Flour",
       "quantity": "100grm",
     },
-    {"icon": "assets/img/sugar.png", "name": "Sugar", "quantity": "3 tbsp"},
+    {"icon": "assets/images/sugar.png", "name": "Sugar", "quantity": "3 tbsp"},
     {
-      "icon": "assets/img/baking_soda.png",
+      "icon": "assets/images/baking_soda.png",
       "name": "Baking Soda",
       "quantity": "2tsp",
     },
-    {"icon": "assets/img/eggs.png", "name": "Eggs", "quantity": "2 items"},
+    {"icon": "assets/images/eggs.png", "name": "Eggs", "quantity": "2 items"},
   ];
 
   final List<Map<String, String>> preparationSteps = [
@@ -99,10 +99,10 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       centerTitle: true,
       elevation: 0,
       leading: _buildNavigationButton(
-        "assets/img/black_btn.png",
+        "assets/images/black_btn.png",
         () => Navigator.pop(context),
       ),
-      actions: [_buildNavigationButton("assets/img/more_btn.png", () {})],
+      actions: [_buildNavigationButton("assets/images/more_btn.png", () {})],
     );
   }
 
@@ -235,7 +235,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           TextButton(
             onPressed: () {},
             child: Image.asset(
-              "assets/img/fav.png",
+              "assets/images/fav.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,

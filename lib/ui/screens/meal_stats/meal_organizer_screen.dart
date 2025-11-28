@@ -18,12 +18,12 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
   final List<Map<String, String>> dailyMeals = [
     {
       "name": "Salmon Nigiri",
-      "image": "assets/img/m_1.png",
+      "image": "assets/images/m_1.png",
       "time": "28/05/2023 07:00 AM",
     },
     {
       "name": "Lowfat Milk",
-      "image": "assets/img/m_2.png",
+      "image": "assets/images/m_2.png",
       "time": "28/05/2023 08:00 AM",
     },
   ];
@@ -31,10 +31,10 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
   final List<Map<String, String>> mealOptions = [
     {
       "name": "Breakfast",
-      "image": "assets/img/m_3.png",
+      "image": "assets/images/m_3.png",
       "number": "120+ Foods",
     },
-    {"name": "Lunch", "image": "assets/img/m_4.png", "number": "130+ Foods"},
+    {"name": "Lunch", "image": "assets/images/m_4.png", "number": "130+ Foods"},
   ];
 
   @override
@@ -76,7 +76,7 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
       centerTitle: true,
       elevation: 0,
       leading: _buildAppBarButton(
-        "assets/img/black_btn.png",
+        "assets/images/black_btn.png",
         () => Navigator.pop(context),
       ),
       title: Text(
@@ -87,7 +87,7 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [_buildAppBarButton("assets/img/more_btn.png", () {})],
+      actions: [_buildAppBarButton("assets/images/more_btn.png", () {})],
     );
   }
 

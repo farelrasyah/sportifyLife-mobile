@@ -60,7 +60,7 @@ class _AddWorkoutPlanScreenState extends State<AddWorkoutPlanScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Image.asset(
-            "assets/img/closed_btn.png",
+            "assets/images/closed_btn.png",
             width: 15,
             height: 15,
             fit: BoxFit.contain,
@@ -88,7 +88,7 @@ class _AddWorkoutPlanScreenState extends State<AddWorkoutPlanScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Image.asset(
-              "assets/img/more_btn.png",
+              "assets/images/more_btn.png",
               width: 15,
               height: 15,
               fit: BoxFit.contain,
@@ -102,7 +102,7 @@ class _AddWorkoutPlanScreenState extends State<AddWorkoutPlanScreen> {
   Widget _buildDateSection() {
     return Row(
       children: [
-        Image.asset("assets/img/date.png", width: 20, height: 20),
+        Image.asset("assets/images/date.png", width: 20, height: 20),
         const SizedBox(width: 8),
         Text(
           dateToString(widget.selectedDate, formatStr: "E, dd MMMM yyyy"),
@@ -152,25 +152,25 @@ class _AddWorkoutPlanScreenState extends State<AddWorkoutPlanScreen> {
         ),
         const SizedBox(height: 8),
         _buildWorkoutOptionRow(
-          icon: "assets/img/choose_workout.png",
+          icon: "assets/images/choose_workout.png",
           title: "Choose Workout",
           value: "Upperbody",
         ),
         const SizedBox(height: 10),
         _buildWorkoutOptionRow(
-          icon: "assets/img/difficulity.png",
+          icon: "assets/images/difficulity.png",
           title: "Difficulity",
           value: "Beginner",
         ),
         const SizedBox(height: 10),
         _buildWorkoutOptionRow(
-          icon: "assets/img/repetitions.png",
+          icon: "assets/images/repetitions.png",
           title: "Custom Repetitions",
           value: "",
         ),
         const SizedBox(height: 10),
         _buildWorkoutOptionRow(
-          icon: "assets/img/repetitions.png",
+          icon: "assets/images/repetitions.png",
           title: "Custom Weights",
           value: "",
         ),
