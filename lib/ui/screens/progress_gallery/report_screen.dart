@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 import '../../../common/colo_extension.dart';
 import '../../../common/common.dart';
@@ -23,22 +24,22 @@ class _ReportScreenState extends State<ReportScreen> {
 
   final List<Map<String, String>> _comparisonImages = [
     {
-      "category": "Front Facing",
+      "category": tr("front_facing"),
       "beforeImage": "assets/images/pp_1.png",
       "afterImage": "assets/images/pp_2.png",
     },
     {
-      "category": "Back Facing",
+      "category": tr("back_facing"),
       "beforeImage": "assets/images/pp_3.png",
       "afterImage": "assets/images/pp_4.png",
     },
     {
-      "category": "Left Facing",
+      "category": tr("left_facing"),
       "beforeImage": "assets/images/pp_5.png",
       "afterImage": "assets/images/pp_6.png",
     },
     {
-      "category": "Right Facing",
+      "category": tr("right_facing"),
       "beforeImage": "assets/images/pp_7.png",
       "afterImage": "assets/images/pp_8.png",
     },

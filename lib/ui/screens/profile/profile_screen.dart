@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
@@ -19,30 +20,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final List<Map<String, String>> _userAccountOptions = [
     {
       "icon": "assets/images/p_personal.png",
-      "title": "Personal Data",
+      "title": tr("personal_data"),
       "id": "1",
     },
-    {"icon": "assets/images/p_achi.png", "title": "Achievement", "id": "2"},
+    {"icon": "assets/images/p_achi.png", "title": tr("achievement"), "id": "2"},
     {
       "icon": "assets/images/p_activity.png",
-      "title": "Activity History",
+      "title": tr("activity_history"),
       "id": "3",
     },
     {
       "icon": "assets/images/p_workout.png",
-      "title": "Workout Progress",
+      "title": tr("workout_progress"),
       "id": "4",
     },
   ];
 
   final List<Map<String, String>> _additionalOptions = [
-    {"icon": "assets/images/p_contact.png", "title": "Contact Us", "id": "5"},
+    {
+      "icon": "assets/images/p_contact.png",
+      "title": tr("contact_us"),
+      "id": "5",
+    },
     {
       "icon": "assets/images/p_privacy.png",
-      "title": "Privacy Policy",
+      "title": tr("privacy_policy"),
       "id": "6",
     },
-    {"icon": "assets/images/p_setting.png", "title": "Setting", "id": "7"},
+    {"icon": "assets/images/p_setting.png", "title": tr("settings"), "id": "7"},
   ];
 
   @override
@@ -79,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       elevation: 0,
       leadingWidth: 0,
       title: Text(
-        "Profile",
+        tr("profile_title"),
         style: TextStyle(
           color: TColor.black,
           fontSize: 16,
@@ -146,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           width: 70,
           height: 25,
           child: RoundButton(
-            title: "Edit",
+            title: tr("edit_profile"),
             type: RoundButtonType.bgGradient,
             fontSize: 12,
             fontWeight: FontWeight.w400,
@@ -158,18 +163,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildUserStatsRow() {
-    return const Row(
+    return Row(
       children: [
         Expanded(
-          child: TitleSubtitleCell(title: "180cm", subtitle: "Height"),
+          child: TitleSubtitleCell(
+            title: "180cm",
+            subtitle: tr("height_label"),
+          ),
         ),
-        SizedBox(width: 15),
+        const SizedBox(width: 15),
         Expanded(
-          child: TitleSubtitleCell(title: "65kg", subtitle: "Weight"),
+          child: TitleSubtitleCell(title: "65kg", subtitle: tr("weight_label")),
         ),
-        SizedBox(width: 15),
+        const SizedBox(width: 15),
         Expanded(
-          child: TitleSubtitleCell(title: "22yo", subtitle: "Age"),
+          child: TitleSubtitleCell(title: "22yo", subtitle: tr("age_label")),
         ),
       ],
     );
@@ -187,7 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Account",
+            tr("account_label"),
             style: TextStyle(
               color: TColor.black,
               fontSize: 16,
@@ -225,7 +233,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Notification",
+            tr("notification_title"),
             style: TextStyle(
               color: TColor.black,
               fontSize: 16,
@@ -247,7 +255,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(width: 15),
                 Expanded(
                   child: Text(
-                    "Pop-up Notification",
+                    tr("popup_notification"),
                     style: TextStyle(color: TColor.black, fontSize: 12),
                   ),
                 ),
@@ -327,7 +335,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Other",
+            tr("other_label"),
             style: TextStyle(
               color: TColor.black,
               fontSize: 16,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/meal_category_cell.dart';
 import '../../widgets/meal_recommed_cell.dart';
@@ -18,49 +19,49 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   final TextEditingController searchController = TextEditingController();
 
   final List<Map<String, String>> foodCategories = [
-    {"name": "Salad", "image": "assets/images/c_1.png"},
-    {"name": "Cake", "image": "assets/images/c_2.png"},
-    {"name": "Pie", "image": "assets/images/c_3.png"},
-    {"name": "Smoothies", "image": "assets/images/c_4.png"},
-    {"name": "Salad", "image": "assets/images/c_1.png"},
-    {"name": "Cake", "image": "assets/images/c_2.png"},
-    {"name": "Pie", "image": "assets/images/c_3.png"},
-    {"name": "Smoothies", "image": "assets/images/c_4.png"},
+    {"name": tr("category_salad"), "image": "assets/images/c_1.png"},
+    {"name": tr("category_cake"), "image": "assets/images/c_2.png"},
+    {"name": tr("category_pie"), "image": "assets/images/c_3.png"},
+    {"name": tr("category_smoothies"), "image": "assets/images/c_4.png"},
+    {"name": tr("category_salad"), "image": "assets/images/c_1.png"},
+    {"name": tr("category_cake"), "image": "assets/images/c_2.png"},
+    {"name": tr("category_pie"), "image": "assets/images/c_3.png"},
+    {"name": tr("category_smoothies"), "image": "assets/images/c_4.png"},
   ];
 
   final List<Map<String, String>> trendingMeals = [
     {
-      "name": "Blueberry Pancake",
+      "name": tr("blueberry_pancake"),
       "image": "assets/images/f_1.png",
       "b_image": "assets/images/pancake_1.png",
-      "size": "Medium",
-      "time": "30mins",
-      "kcal": "230kCal",
+      "size": tr("size_medium"),
+      "time": tr("time_30mins"),
+      "kcal": tr("kcal_230"),
     },
     {
-      "name": "Salmon Nigiri",
+      "name": tr("salmon_nigiri"),
       "image": "assets/images/f_2.png",
       "b_image": "assets/images/nigiri.png",
-      "size": "Medium",
-      "time": "20mins",
-      "kcal": "120kCal",
+      "size": tr("size_medium"),
+      "time": tr("time_20mins"),
+      "kcal": tr("kcal_120"),
     },
   ];
 
   final List<Map<String, String>> suggestedMeals = [
     {
-      "name": "Honey Pancake",
+      "name": tr("honey_pancake"),
       "image": "assets/images/rd_1.png",
-      "size": "Easy",
-      "time": "30mins",
-      "kcal": "180kCal",
+      "size": tr("size_easy"),
+      "time": tr("time_30mins"),
+      "kcal": tr("kcal_180"),
     },
     {
-      "name": "Canai Bread",
+      "name": tr("canai_bread"),
       "image": "assets/images/m_4.png",
-      "size": "Easy",
-      "time": "20mins",
-      "kcal": "230kCal",
+      "size": tr("size_easy"),
+      "time": tr("time_20mins"),
+      "kcal": tr("kcal_230"),
     },
   ];
 
@@ -156,7 +157,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                   width: 25,
                   height: 25,
                 ),
-                hintText: "Search Pancake",
+                hintText: tr("search_food"),
               ),
             ),
           ),
@@ -186,7 +187,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Text(
-            "Category",
+            tr("category_label"),
             style: TextStyle(
               color: TColor.black,
               fontSize: 16,
@@ -217,7 +218,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Text(
-            "Recommendation\nfor Diet",
+            tr("recommendation_for_diet"),
             style: TextStyle(
               color: TColor.black,
               fontSize: 16,
@@ -248,7 +249,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Text(
-            "Popular",
+            tr("popular_label"),
             style: TextStyle(
               color: TColor.black,
               fontSize: 16,

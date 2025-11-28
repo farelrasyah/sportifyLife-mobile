@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/latest_activity_row.dart';
@@ -14,20 +15,26 @@ class FitnessTrackerScreen extends StatefulWidget {
 
 class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
   int _touchedBarIndex = -1;
-  String _selectedPeriod = "Weekly";
+  late String _selectedPeriod;
 
-  final List<Map<String, String>> _latestActivities = [
+  List<Map<String, String>> get _latestActivities => [
     {
       "image": "assets/images/pfp_1.png",
-      "title": "Drinking 300ml Water",
-      "time": "About 1 minutes ago",
+      "title": tr("screen_drinking_water"),
+      "time": tr("screen_about_minutes_ago"),
     },
     {
       "image": "assets/images/pfp_2.png",
-      "title": "Eat Snack (Fitbar)",
-      "time": "About 3 hours ago",
+      "title": tr("screen_eat_snack"),
+      "time": tr("screen_about_hours_ago"),
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedPeriod = tr("period_weekly");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +66,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
       elevation: 0,
       leading: _buildBackButton(),
       title: Text(
-        "Activity Tracker",
+        tr("screen_activity_tracker_title"),
         style: TextStyle(
           color: TColor.black,
           fontSize: 16,
@@ -126,7 +133,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Today Target",
+                tr("screen_today_target_title"),
                 style: TextStyle(
                   color: TColor.black,
                   fontSize: 14,
@@ -137,21 +144,21 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
             ],
           ),
           const SizedBox(height: 15),
-          const Row(
+          Row(
             children: [
               Expanded(
                 child: TodayTargetCell(
                   icon: "assets/images/water.png",
                   value: "8L",
-                  title: "Water Intake",
+                  title: tr("screen_water_intake_title"),
                 ),
               ),
-              SizedBox(width: 15),
+              const SizedBox(width: 15),
               Expanded(
                 child: TodayTargetCell(
                   icon: "assets/images/foot.png",
                   value: "2400",
-                  title: "Foot Steps",
+                  title: tr("screen_foot_steps_title"),
                 ),
               ),
             ],
@@ -183,7 +190,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Activity Progress",
+          tr("screen_activity_progress_title"),
           style: TextStyle(
             color: TColor.black,
             fontSize: 16,
@@ -206,7 +213,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedPeriod,
-          items: ["Weekly", "Monthly"]
+          items: [tr("period_weekly"), tr("period_monthly")]
               .map(
                 (name) => DropdownMenuItem(
                   value: name,
@@ -260,7 +267,15 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
         tooltipHorizontalAlignment: FLHorizontalAlignment.right,
         tooltipMargin: 10,
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
-          const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+          final weekDays = [
+            tr('days_mon'),
+            tr('days_tue'),
+            tr('days_wed'),
+            tr('days_thu'),
+            tr('days_fri'),
+            tr('days_sat'),
+            tr('days_sun'),
+          ];
           return BarTooltipItem(
             '${weekDays[group.x]}\n',
             const TextStyle(
@@ -304,7 +319,15 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
         sideTitles: SideTitles(
           showTitles: true,
           getTitlesWidget: (value, meta) {
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            final days = [
+              tr('days_sun'),
+              tr('days_mon'),
+              tr('days_tue'),
+              tr('days_wed'),
+              tr('days_thu'),
+              tr('days_fri'),
+              tr('days_sat'),
+            ];
             return Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
@@ -369,7 +392,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Latest Workout",
+              tr("screen_latest_workout_title"),
               style: TextStyle(
                 color: TColor.black,
                 fontSize: 16,
@@ -379,7 +402,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
             TextButton(
               onPressed: () {},
               child: Text(
-                "See More",
+                tr("screen_see_more"),
                 style: TextStyle(
                   color: TColor.gray,
                   fontSize: 14,

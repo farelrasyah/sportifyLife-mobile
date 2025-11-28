@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/notification_row.dart';
@@ -14,33 +15,33 @@ class _NotificationScreenState extends State<NotificationScreen> {
   final List<Map<String, String>> _notifications = [
     {
       "image": "assets/images/moveSet_1.png",
-      "title": "Hey, it's time for lunch",
-      "time": "About 1 minutes ago",
+      "title": tr("notification_lunch_time"),
+      "time": tr("time_minutes_ago").replaceAll('{minutes}', '1'),
     },
     {
       "image": "assets/images/moveSet_2.png",
-      "title": "Don't miss your lowerbody workout",
-      "time": "About 3 hours ago",
+      "title": tr("notification_workout_reminder"),
+      "time": tr("time_hours_ago").replaceAll('{hours}', '3'),
     },
     {
       "image": "assets/images/moveSet_3.png",
-      "title": "Hey, let's add some meals for your b",
-      "time": "About 3 hours ago",
+      "title": tr("notification_add_meals"),
+      "time": tr("time_hours_ago").replaceAll('{hours}', '3'),
     },
     {
       "image": "assets/images/moveSet_1.png",
-      "title": "Congratulations, You have finished A..",
-      "time": "29 May",
+      "title": tr("notification_workout_complete"),
+      "time": tr("time_date_format").replaceAll('{date}', '29 May'),
     },
     {
       "image": "assets/images/moveSet_2.png",
-      "title": "Hey, it's time for lunch",
-      "time": "8 April",
+      "title": tr("notification_lunch_time"),
+      "time": tr("time_date_format").replaceAll('{date}', '8 April'),
     },
     {
       "image": "assets/images/moveSet_3.png",
-      "title": "Ups, You have missed your Lowerbo...",
-      "time": "8 April",
+      "title": tr("notification_missed_workout"),
+      "time": tr("time_date_format").replaceAll('{date}', '8 April'),
     },
   ];
 
@@ -69,7 +70,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       elevation: 0,
       leading: _buildBackButton(),
       title: Text(
-        "Notification",
+        tr("notification_title"),
         style: TextStyle(
           color: TColor.black,
           fontSize: 16,

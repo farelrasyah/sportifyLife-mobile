@@ -49,6 +49,7 @@ dependencies:
   # Localization
   flutter_localizations:
     sdk: flutter
+  easy_localization: ^3.0.7
   
   # Deep Links
   app_links: ^6.3.2

@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/find_eat_cell.dart';
 import '../../widgets/round_button.dart';
@@ -17,12 +18,12 @@ class MealOrganizerScreen extends StatefulWidget {
 class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
   final List<Map<String, String>> dailyMeals = [
     {
-      "name": "Salmon Nigiri",
+      "name": tr("salmon_nigiri"),
       "image": "assets/images/m_1.png",
       "time": "28/05/2023 07:00 AM",
     },
     {
-      "name": "Lowfat Milk",
+      "name": tr("lowfat_milk"),
       "image": "assets/images/m_2.png",
       "time": "28/05/2023 08:00 AM",
     },
@@ -30,11 +31,15 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
 
   final List<Map<String, String>> mealOptions = [
     {
-      "name": "Breakfast",
+      "name": tr("breakfast_label"),
       "image": "assets/images/m_3.png",
       "number": "120+ Foods",
     },
-    {"name": "Lunch", "image": "assets/images/m_4.png", "number": "130+ Foods"},
+    {
+      "name": tr("lunch_label"),
+      "image": "assets/images/m_4.png",
+      "number": "130+ Foods",
+    },
   ];
 
   @override

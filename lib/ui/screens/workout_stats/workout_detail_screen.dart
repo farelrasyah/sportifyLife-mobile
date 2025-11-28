@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/icon_title_next_row.dart';
@@ -19,25 +20,25 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   final List<Map<String, String>> _recentWorkouts = [
     {
       "image": "assets/images/Workout1.png",
-      "title": "Fullbody Workout",
+      "title": tr("fullbody_workout"),
       "time": "Today, 03:00pm",
     },
     {
       "image": "assets/images/Workout2.png",
-      "title": "Upperbody Workout",
+      "title": tr("upperbody_workout"),
       "time": "June 05, 02:00pm",
     },
   ];
 
   final List<Map<String, String>> _requiredEquipment = [
-    {"image": "assets/images/barbell.png", "title": "Barbell"},
-    {"image": "assets/images/skipping_rope.png", "title": "Skipping Rope"},
-    {"image": "assets/images/bottle.png", "title": "Bottle 1 Liters"},
+    {"image": "assets/images/barbell.png", "title": tr("barbell")},
+    {"image": "assets/images/skipping_rope.png", "title": tr("skipping_rope")},
+    {"image": "assets/images/bottle.png", "title": tr("bottle_1_liters")},
   ];
 
   final List<Map<String, dynamic>> _workoutSets = [
     {
-      "name": "Set 1",
+      "name": tr("set_1"),
       "set": [
         {
           "image": "assets/images/images_1.png",

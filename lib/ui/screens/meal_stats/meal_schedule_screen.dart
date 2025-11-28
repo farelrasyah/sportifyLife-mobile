@@ -1,5 +1,6 @@
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/meal_food_schedule_row.dart';
 import '../../widgets/nutritions_row.dart';
@@ -18,11 +19,15 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
 
   final List<Map<String, String>> morningMeals = [
     {
-      "name": "Honey Pancake",
+      "name": tr("honey_pancake"),
       "time": "07:00am",
       "image": "assets/images/honey_pan.png",
     },
-    {"name": "Coffee", "time": "07:30am", "image": "assets/images/coffee.png"},
+    {
+      "name": tr("coffee"),
+      "time": "07:30am",
+      "image": "assets/images/coffee.png",
+    },
   ];
 
   final List<Map<String, String>> afternoonMeals = [

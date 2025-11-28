@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/round_textfield.dart';
@@ -41,8 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all fields'),
+        SnackBar(
+          content: Text(tr('validation_fill_all_fields')),
           backgroundColor: Colors.red,
         ),
       );
@@ -67,8 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is AuthSuccess) {
             if (state.needsVerification) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Please verify your email'),
+                SnackBar(
+                  content: Text(tr('message_verify_email')),
                   backgroundColor: Colors.orange,
                 ),
               );
@@ -90,8 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
               });
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Login successful!'),
+                SnackBar(
+                  content: Text(tr('message_login_successful')),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -111,12 +112,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 20),
                         // Header Section
                         Text(
-                          "Hey there,",
+                          tr("greeting_hey_there"),
                           style: TextStyle(color: TColor.gray, fontSize: 16),
                         ),
                         SizedBox(height: 5),
                         Text(
-                          "Welcome Back",
+                          tr("greeting_welcome_back"),
                           style: TextStyle(
                             color: TColor.black,
                             fontSize: 20,
@@ -141,14 +142,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Form Section
                         RoundTextField(
                           controller: _emailController,
-                          hitText: "Email",
+                          hitText: tr("hint_email"),
                           icon: "assets/images/email.png",
                           keyboardType: TextInputType.emailAddress,
                         ),
                         SizedBox(height: 15),
                         RoundTextField(
                           controller: _passwordController,
-                          hitText: "Password",
+                          hitText: tr("hint_password"),
                           icon: "assets/images/lock.png",
                           obscureText: true,
                           rigtIcon: TextButton(
@@ -172,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Forgot your password?",
+                              tr("forgot_password_text"),
                               style: TextStyle(
                                 color: TColor.gray,
                                 fontSize: 10,
@@ -186,8 +187,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Button Section
                         RoundButton(
                           title: state is AuthLoading
-                              ? "Logging in..."
-                              : "Login",
+                              ? tr("button_logging_in")
+                              : tr("login_button"),
                           onPressed: state is AuthLoading
                               ? () {}
                               : _handleLogin,
@@ -207,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 horizontal: 10,
                               ),
                               child: Text(
-                                "Or",
+                                tr("divider_or"),
                                 style: TextStyle(
                                   color: TColor.black,
                                   fontSize: 12,
@@ -290,14 +291,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Don't have an account yet? ",
+                                tr("footer_no_account"),
                                 style: TextStyle(
                                   color: TColor.black,
                                   fontSize: 14,
                                 ),
                               ),
                               Text(
-                                "Register",
+                                tr("footer_register"),
                                 style: TextStyle(
                                   color: TColor.black,
                                   fontSize: 14,

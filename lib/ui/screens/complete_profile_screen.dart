@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../cubits/user_details_cubit.dart';
 import '../../app/routes.dart';
 import '../../config/goal_type.dart';
@@ -38,7 +39,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       initialDate: initialDate,
       firstDate: DateTime(now.year - Environment.maxAge),
       lastDate: DateTime(now.year - Environment.minAge),
-      helpText: 'Select your date of birth',
+      helpText: tr('date_of_birth_picker_help'),
     );
 
     if (picked != null) {
@@ -58,15 +59,15 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     final validationErrors = <String>[];
 
     if (_selectedGender == null) {
-      validationErrors.add('Please select your gender');
+      validationErrors.add(tr('validation_gender_required'));
     }
 
     if (_selectedDate == null) {
-      validationErrors.add('Please select your date of birth');
+      validationErrors.add(tr('validation_date_of_birth_required'));
     }
 
     if (_selectedGoalType == null) {
-      validationErrors.add('Please select your fitness goal');
+      validationErrors.add(tr('validation_fitness_goal_required'));
     }
 
     // Show validation errors
@@ -77,19 +78,27 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
     // Additional validations
     if (_selectedDate!.isAfter(DateTime.now())) {
-      _showError('Date of birth cannot be in the future');
+      _showError(tr('validation_date_future'));
       return;
     }
 
     // Calculate age
     final age = _calculateAge(_selectedDate!);
     if (age < Environment.minAge) {
-      _showError('You must be at least ${Environment.minAge} years old');
+      _showError(
+        tr(
+          'validation_age_min',
+        ).replaceAll('{age}', Environment.minAge.toString()),
+      );
       return;
     }
 
     if (age > Environment.maxAge) {
-      _showError('Age must be less than ${Environment.maxAge} years');
+      _showError(
+        tr(
+          'validation_age_max',
+        ).replaceAll('{age}', Environment.maxAge.toString()),
+      );
       return;
     }
 
@@ -125,7 +134,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
   String? _validateWeight(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Weight is required';
+      return tr('validation_weight_required');
     }
 
     final weight = double.tryParse(value);
@@ -134,7 +143,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     }
 
     if (weight < Environment.minWeight || weight > Environment.maxWeight) {
-      return 'Weight must be between ${Environment.minWeight} and ${Environment.maxWeight} kg';
+      return tr('validation_weight_range')
+          .replaceAll('{min}', Environment.minWeight.toString())
+          .replaceAll('{max}', Environment.maxWeight.toString());
     }
 
     return null;
@@ -142,7 +153,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
   String? _validateHeight(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Height is required';
+      return tr('validation_height_required');
     }
 
     final height = int.tryParse(value);
@@ -151,7 +162,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     }
 
     if (height < Environment.minHeight || height > Environment.maxHeight) {
-      return 'Height must be between ${Environment.minHeight} and ${Environment.maxHeight} cm';
+      return tr('validation_height_range')
+          .replaceAll('{min}', Environment.minHeight.toString())
+          .replaceAll('{max}', Environment.maxHeight.toString());
     }
 
     return null;
@@ -161,7 +174,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Complete Your Profile'),
+        title: Text(tr('complete_profile_title')),
         automaticallyImplyLeading: false,
       ),
       body: BlocConsumer<UserDetailsCubit, UserDetailsState>(
@@ -199,8 +212,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     const SizedBox(height: 24),
 
                     // Title
-                    const Text(
-                      'Complete Your Profile',
+                    Text(
+                      tr('complete_profile_title'),
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -210,7 +223,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     const SizedBox(height: 8),
 
                     Text(
-                      'Help us personalize your fitness journey',
+                      tr('complete_profile_subtitle'),
                       style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                       textAlign: TextAlign.center,
                     ),
@@ -225,14 +238,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       validator: _validateWeight,
                       enabled: !isLoading,
                       decoration: InputDecoration(
-                        labelText: 'Weight (kg)',
-                        hintText: 'e.g., 70.5',
+                        labelText: tr('weight_label'),
+                        hintText: tr('weight_hint'),
                         prefixIcon: const Icon(Icons.monitor_weight),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        helperText:
-                            'Enter your current weight (${Environment.minWeight}-${Environment.maxWeight} kg)',
+                        helperText: tr('weight_helper')
+                            .replaceAll(
+                              '{min}',
+                              Environment.minWeight.toString(),
+                            )
+                            .replaceAll(
+                              '{max}',
+                              Environment.maxWeight.toString(),
+                            ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -244,14 +264,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       validator: _validateHeight,
                       enabled: !isLoading,
                       decoration: InputDecoration(
-                        labelText: 'Height (cm)',
-                        hintText: 'e.g., 175',
+                        labelText: tr('height_label'),
+                        hintText: tr('height_hint'),
                         prefixIcon: const Icon(Icons.height),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        helperText:
-                            'Enter your height (${Environment.minHeight}-${Environment.maxHeight} cm)',
+                        helperText: tr('height_helper')
+                            .replaceAll(
+                              '{min}',
+                              Environment.minHeight.toString(),
+                            )
+                            .replaceAll(
+                              '{max}',
+                              Environment.maxHeight.toString(),
+                            ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -260,12 +287,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     DropdownButtonFormField<Gender>(
                       value: _selectedGender,
                       decoration: InputDecoration(
-                        labelText: 'Gender *',
+                        labelText: tr('gender_label'),
                         prefixIcon: const Icon(Icons.wc),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        helperText: 'Select your gender',
+                        helperText: tr('gender_helper'),
                       ),
                       items: Gender.values
                           .map(
@@ -290,12 +317,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       onTap: isLoading ? null : _selectDate,
                       child: InputDecorator(
                         decoration: InputDecoration(
-                          labelText: 'Date of Birth *',
+                          labelText: tr('date_of_birth_label'),
                           prefixIcon: const Icon(Icons.calendar_today),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          helperText: 'Tap to select your birth date',
+                          helperText: tr('date_of_birth_helper'),
                           enabled: !isLoading,
                         ),
                         child: Row(
@@ -306,7 +333,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                                   ? DateFormat(
                                       'dd MMM yyyy',
                                     ).format(_selectedDate!)
-                                  : 'Select date',
+                                  : tr('select_date_placeholder'),
                               style: TextStyle(
                                 color: _selectedDate != null
                                     ? Colors.black
@@ -316,7 +343,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             ),
                             if (_selectedDate != null)
                               Text(
-                                '${_calculateAge(_selectedDate!)} years old',
+                                '${_calculateAge(_selectedDate!)} ${tr('years_old_suffix')}',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 14,

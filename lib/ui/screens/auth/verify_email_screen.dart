@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../../cubits/verify_cubit.dart';
@@ -98,10 +99,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
       if (await canLaunchUrl(emailUri)) {
         await launchUrl(emailUri);
       } else {
-        _showSnackBar('Could not open email app', isError: true);
+        _showSnackBar(tr('verify_error_open_email'), isError: true);
       }
     } catch (e) {
-      _showSnackBar('Error opening email app', isError: true);
+      _showSnackBar(tr('verify_error_email_app'), isError: true);
     }
   }
 
@@ -109,7 +110,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     context.read<VerifyCubit>().resendVerification(widget.email);
     final newExpiry = DateTime.now().add(const Duration(minutes: 1));
     await StorageHelper().saveVerificationExpiry(newExpiry);
-    _showSnackBar('Verification email sent!', isError: false);
+    _showSnackBar(tr('verify_email_sent_success'), isError: false);
   }
 
   void _checkStatus() {
@@ -130,7 +131,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
   }
 
   void _handleVerificationSuccess(UserModel user) async {
-    _showSnackBar('Email verified! Logging you in...', isError: false);
+    _showSnackBar(tr('verify_email_verified_success'), isError: false);
     context.read<AuthCubit>().updateUserAfterVerification(user);
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
@@ -218,7 +219,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                           child: Column(
                             children: [
                               Text(
-                                "Verify Your Email",
+                                tr("verify_email_title"),
                                 style: TextStyle(
                                   color: TColor.black,
                                   fontSize: 28,
@@ -228,7 +229,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                               ),
                               SizedBox(height: 10),
                               Text(
-                                "We've sent a verification link to",
+                                tr("verify_email_sent_to"),
                                 style: TextStyle(
                                   color: TColor.gray,
                                   fontSize: 14,
@@ -253,9 +254,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                                 child: Text(
                                   widget.email,
                                   style: TextStyle(
-                                    color: TColor.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
+                                    color: TColor.primary,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -377,7 +378,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
               Icon(Icons.access_time, color: TColor.primary, size: 24),
               SizedBox(width: 12),
               Text(
-                "Expires in",
+                tr("verify_expires_in_label"),
                 style: TextStyle(
                   color: TColor.gray,
                   fontSize: 16,
@@ -416,7 +417,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                 ),
                 SizedBox(width: 12),
                 Text(
-                  "Checking status...",
+                  tr("verify_checking_status"),
                   style: TextStyle(
                     fontSize: 14,
                     color: TColor.primary,
@@ -441,7 +442,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
           ),
           SizedBox(height: 16),
           Text(
-            "Link Expired",
+            tr("verify_link_expired"),
             style: TextStyle(
               fontSize: 20,
               color: Colors.orange,
@@ -450,7 +451,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
           ),
           SizedBox(height: 8),
           Text(
-            "Please request a new verification email",
+            tr("verify_request_new"),
             style: TextStyle(fontSize: 13, color: TColor.gray),
             textAlign: TextAlign.center,
           ),
@@ -490,19 +491,19 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
           children: [
             _buildInstructionItem(
               Icons.email_outlined,
-              "Check your email inbox",
+              tr("verify_instruction_check_inbox"),
               0,
             ),
             SizedBox(height: 12),
             _buildInstructionItem(
               Icons.touch_app_outlined,
-              "Click the verification link",
+              tr("verify_instruction_click_link"),
               1,
             ),
             SizedBox(height: 12),
             _buildInstructionItem(
               Icons.check_circle_outline,
-              "We'll log you in automatically",
+              tr("verify_instruction_auto_login"),
               2,
             ),
           ],
@@ -567,7 +568,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
             },
             child: Column(
               children: [
-                RoundButton(title: "Check Status", onPressed: _checkStatus),
+                RoundButton(
+                  title: tr("verify_button_check_status"),
+                  onPressed: _checkStatus,
+                ),
                 SizedBox(height: 15),
               ],
             ),
@@ -585,7 +589,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
             );
           },
           child: _buildOutlineButton(
-            "Open Email App",
+            tr("verify_button_open_email"),
             Icons.email_outlined,
             _openEmailApp,
             TColor.primary,
@@ -605,7 +609,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
             );
           },
           child: _buildOutlineButton(
-            state is VerifyExpired ? "Send New Email" : "Resend Verification",
+            state is VerifyExpired
+                ? tr("verify_button_send_new")
+                : tr("verify_button_resend"),
             Icons.send_outlined,
             _resendVerification,
             state is VerifyExpired ? Colors.orange : TColor.secondary,
@@ -619,7 +625,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
             Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
           },
           child: Text(
-            "Back to Login",
+            tr("verify_back_to_login"),
             style: TextStyle(
               color: TColor.gray,
               fontSize: 14,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
@@ -58,7 +59,7 @@ class WorkoutCompleteScreen extends StatelessWidget {
 
   Widget _buildTitle() {
     return Text(
-      "Congratulations, You Have Finished Your Workout",
+      tr("workout_finished_message"),
       textAlign: TextAlign.center,
       style: TextStyle(
         color: TColor.black,
@@ -70,7 +71,7 @@ class WorkoutCompleteScreen extends StatelessWidget {
 
   Widget _buildSubtitle() {
     return Text(
-      "Exercises is king and nutrition is queen. Combine the two and you will have a kingdom",
+      tr("workout_complete_quote"),
       textAlign: TextAlign.center,
       style: TextStyle(color: TColor.gray, fontSize: 12),
     );
@@ -78,7 +79,7 @@ class WorkoutCompleteScreen extends StatelessWidget {
 
   Widget _buildBackButton(BuildContext context) {
     return RoundButton(
-      title: "Back To Home",
+      title: tr("back_to_home"),
       onPressed: () => Navigator.pop(context),
     );
   }

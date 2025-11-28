@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/round_textfield.dart';
@@ -28,35 +29,35 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     {"icon": "assets/images/carbo.png", "label": "50g carbo"},
   ];
 
-  final List<Map<String, String>> requiredIngredients = [
+  List<Map<String, String>> get requiredIngredients => [
     {
       "icon": "assets/images/flour.png",
-      "name": "Wheat Flour",
-      "quantity": "100grm",
+      "name": tr("ingredient_wheat_flour"),
+      "quantity": tr("quantity_100grm"),
     },
-    {"icon": "assets/images/sugar.png", "name": "Sugar", "quantity": "3 tbsp"},
+    {
+      "icon": "assets/images/sugar.png",
+      "name": tr("ingredient_sugar"),
+      "quantity": tr("quantity_3tbsp"),
+    },
     {
       "icon": "assets/images/baking_soda.png",
-      "name": "Baking Soda",
-      "quantity": "2tsp",
+      "name": tr("ingredient_baking_soda"),
+      "quantity": tr("quantity_2tsp"),
     },
-    {"icon": "assets/images/eggs.png", "name": "Eggs", "quantity": "2 items"},
+    {
+      "icon": "assets/images/eggs.png",
+      "name": tr("ingredient_eggs"),
+      "quantity": tr("quantity_2items"),
+    },
   ];
 
-  final List<Map<String, String>> preparationSteps = [
-    {"step": "1", "instruction": "Prepare all of the ingredients that needed"},
-    {"step": "2", "instruction": "Mix flour, sugar, salt, and baking powder"},
-    {
-      "step": "3",
-      "instruction":
-          "In a seperate place, mix the eggs and liquid milk until blended",
-    },
-    {
-      "step": "4",
-      "instruction":
-          "Put the egg and milk mixture into the dry ingredients, Stir untul smooth and smooth",
-    },
-    {"step": "5", "instruction": "Prepare all of the ingredients that needed"},
+  List<Map<String, String>> get preparationSteps => [
+    {"step": "1", "instruction": tr("step_1_instruction")},
+    {"step": "2", "instruction": tr("step_2_instruction")},
+    {"step": "3", "instruction": tr("step_3_instruction")},
+    {"step": "4", "instruction": tr("step_4_instruction")},
+    {"step": "5", "instruction": tr("step_5_instruction")},
   ];
 
   @override
@@ -226,7 +227,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   ),
                 ),
                 Text(
-                  "by James Ruth",
+                  tr("food_by_author"),
                   style: TextStyle(color: TColor.gray, fontSize: 12),
                 ),
               ],
@@ -253,7 +254,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Text(
-            "Nutrition",
+            tr("food_nutrition_title"),
             style: TextStyle(
               color: TColor.black,
               fontSize: 16,
@@ -320,7 +321,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Text(
-            "Descriptions",
+            tr("food_descriptions_title"),
             style: TextStyle(
               color: TColor.black,
               fontSize: 16,
@@ -332,12 +333,12 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: ReadMoreText(
-            'Pancakes are some people\'s favorite breakfast, who doesn\'t like pancakes? Especially with the real honey splash on top of the pancakes, of course everyone loves that! besides being Pancakes are some people\'s favorite breakfast, who doesn\'t like pancakes? Especially with the real honey splash on top of the pancakes, of course everyone loves that! besides being',
+            tr('food_description_text'),
             trimLines: 4,
             colorClickableText: TColor.black,
             trimMode: TrimMode.Line,
-            trimCollapsedText: ' Read More ...',
-            trimExpandedText: ' Read Less',
+            trimCollapsedText: tr('food_read_more'),
+            trimExpandedText: tr('food_read_less'),
             style: TextStyle(color: TColor.gray, fontSize: 12),
             moreStyle: const TextStyle(
               fontSize: 12,
@@ -358,7 +359,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Ingredients That You\nWill Need",
+                tr("food_ingredients_title"),
                 style: TextStyle(
                   color: TColor.black,
                   fontSize: 16,
@@ -368,7 +369,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               TextButton(
                 onPressed: () {},
                 child: Text(
-                  "${requiredIngredients.length} Items",
+                  "${requiredIngredients.length} ${tr('food_items_count')}",
                   style: TextStyle(color: TColor.gray, fontSize: 12),
                 ),
               ),
@@ -438,7 +439,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Step by Step",
+                tr("food_steps_title"),
                 style: TextStyle(
                   color: TColor.black,
                   fontSize: 16,
@@ -448,7 +449,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               TextButton(
                 onPressed: () {},
                 child: Text(
-                  "${preparationSteps.length} Steps",
+                  "${preparationSteps.length} ${tr('food_steps_count')}",
                   style: TextStyle(color: TColor.gray, fontSize: 12),
                 ),
               ),
@@ -484,7 +485,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: RoundButton(
-              title: "Add to ${widget.mealData["name"]} Meal",
+              title:
+                  "${tr('food_add_to_meal')} ${widget.mealData["name"]} ${tr('food_meal_suffix')}",
               onPressed: () {},
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:dotted_dashed_line/dotted_dashed_line.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
@@ -435,7 +436,7 @@ class _MainScreenState extends State<MainScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Water Intake",
+                  tr("screen_water_intake_title"),
                   style: TextStyle(
                     color: TColor.black,
                     fontSize: 12,
@@ -458,7 +459,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Real time updates",
+                  tr("screen_real_time_updates"),
                   style: TextStyle(color: TColor.gray, fontSize: 12),
                 ),
                 ..._waterIntake

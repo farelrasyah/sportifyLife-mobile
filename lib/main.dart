@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'app/routes.dart';
 import 'ui/theme/app_theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const SportifyLifeApp());
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('id')],
+      path: 'assets/languages',
+      fallbackLocale: const Locale('en'),
+      child: const SportifyLifeApp(),
+    ),
+  );
 }
 
 class SportifyLifeApp extends StatelessWidget {
@@ -21,15 +31,9 @@ class SportifyLifeApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
 
       // Localization
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en', ''), // English
-        Locale('id', ''), // Indonesian
-      ],
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
 
       // Routing
       initialRoute: Routes.splashScreen,

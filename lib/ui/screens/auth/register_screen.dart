@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/round_textfield.dart';
@@ -52,9 +53,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else {
       String message = '';
       if (!isCheck) {
-        message = 'Please accept terms and conditions';
+        message = tr('validation_accept_terms');
       } else {
-        message = 'Please fill in all fields';
+        message = tr('validation_fill_all_fields');
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.red),
@@ -80,10 +81,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           } else if (state is AuthSuccess) {
             if (state.needsVerification) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Registration successful! Please verify your email',
-                  ),
+                SnackBar(
+                  content: Text(tr('message_register_success_verify')),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -105,8 +104,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               });
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Registration successful!'),
+                SnackBar(
+                  content: Text(tr('message_register_success')),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -126,12 +125,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         SizedBox(height: 20),
                         // Header Section
                         Text(
-                          "Hey there,",
+                          tr("greeting_hey_there"),
                           style: TextStyle(color: TColor.gray, fontSize: 16),
                         ),
                         SizedBox(height: 5),
                         Text(
-                          "Create an Account",
+                          tr("register_greeting_create_account"),
                           style: TextStyle(
                             color: TColor.black,
                             fontSize: 20,
@@ -156,26 +155,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // Form Section
                         RoundTextField(
                           controller: _firstNameController,
-                          hitText: "First Name",
+                          hitText: tr("hint_first_name"),
                           icon: "assets/images/user.png",
                         ),
                         SizedBox(height: 15),
                         RoundTextField(
                           controller: _lastNameController,
-                          hitText: "Last Name",
+                          hitText: tr("hint_last_name"),
                           icon: "assets/images/user.png",
                         ),
                         SizedBox(height: 15),
                         RoundTextField(
                           controller: _emailController,
-                          hitText: "Email",
+                          hitText: tr("hint_email"),
                           icon: "assets/images/email.png",
                           keyboardType: TextInputType.emailAddress,
                         ),
                         SizedBox(height: 15),
                         RoundTextField(
                           controller: _passwordController,
-                          hitText: "Password",
+                          hitText: tr("hint_password"),
                           icon: "assets/images/lock.png",
                           obscureText: true,
                           rigtIcon: TextButton(
@@ -215,7 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             Expanded(
                               child: Text(
-                                "By continuing you accept our Privacy Policy and Term of Use",
+                                tr("terms_conditions_text"),
                                 style: TextStyle(
                                   color: TColor.gray,
                                   fontSize: 10,
@@ -229,8 +228,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // Button Section
                         RoundButton(
                           title: state is AuthLoading
-                              ? "Registering..."
-                              : "Register",
+                              ? tr("button_registering")
+                              : tr("register_button"),
                           onPressed: state is AuthLoading
                               ? () {}
                               : _handleRegister,
@@ -250,7 +249,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 horizontal: 10,
                               ),
                               child: Text(
-                                "Or",
+                                tr("divider_or"),
                                 style: TextStyle(
                                   color: TColor.black,
                                   fontSize: 12,
@@ -333,14 +332,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Already have an account? ",
+                                tr("footer_already_have_account"),
                                 style: TextStyle(
                                   color: TColor.black,
                                   fontSize: 14,
                                 ),
                               ),
                               Text(
-                                "Login",
+                                tr("footer_login"),
                                 style: TextStyle(
                                   color: TColor.black,
                                   fontSize: 14,
