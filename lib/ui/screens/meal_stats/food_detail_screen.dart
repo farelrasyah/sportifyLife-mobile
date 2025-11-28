@@ -23,10 +23,10 @@ class FoodDetailScreen extends StatefulWidget {
 
 class _FoodDetailScreenState extends State<FoodDetailScreen> {
   final List<Map<String, String>> nutritionalInfo = [
-    {"icon": "assets/images/burn.png", "label": "180kCal"},
-    {"icon": "assets/images/egg.png", "label": "30g fats"},
+    {"icon": "assets/images/fire.json", "label": "180kCal"},
+    {"icon": "assets/images/egg.json", "label": "30g fats"},
     {"icon": "assets/images/proteins.png", "label": "20g proteins"},
-    {"icon": "assets/images/carbo.png", "label": "50g carbo"},
+    {"icon": "assets/images/paddy.json", "label": "50g carbo"},
   ];
 
   List<Map<String, String>> get requiredIngredients => [
@@ -41,12 +41,12 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       "quantity": tr("quantity_3tbsp"),
     },
     {
-      "icon": "assets/images/baking_soda.png",
-      "name": tr("ingredient_baking_soda"),
+      "icon": "assets/images/baking_soda.json.png",
+      "name": tr("ingredient_baking_soda.json"),
       "quantity": tr("quantity_2tsp"),
     },
     {
-      "icon": "assets/images/eggs.png",
+      "icon": "assets/images/egg.json",
       "name": tr("ingredient_eggs"),
       "quantity": tr("quantity_2items"),
     },

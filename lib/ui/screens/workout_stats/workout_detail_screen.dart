@@ -31,9 +31,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   ];
 
   final List<Map<String, String>> _requiredEquipment = [
-    {"image": "assets/images/barbell.png", "title": tr("barbell")},
+    {"image": "assets/images/dumbell.json", "title": tr("barbell")},
     {"image": "assets/images/skipping_rope.png", "title": tr("skipping_rope")},
-    {"image": "assets/images/bottle.png", "title": tr("bottle_1_liters")},
+    {"image": "assets/images/bottle.json", "title": tr("bottle_1_liters")},
   ];
 
   final List<Map<String, dynamic>> _workoutSets = [
@@ -205,7 +205,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       flexibleSpace: Align(
         alignment: Alignment.center,
         child: Image.asset(
-          "assets/images/detail_top.png",
+          "assets/images/jump.json",
           width: screenSize.width * 0.75,
           height: screenSize.width * 0.8,
           fit: BoxFit.contain,

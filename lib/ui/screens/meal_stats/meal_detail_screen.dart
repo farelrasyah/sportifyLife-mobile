@@ -19,21 +19,21 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   final TextEditingController searchController = TextEditingController();
 
   final List<Map<String, String>> foodCategories = [
-    {"name": tr("category_salad"), "image": "assets/images/c_1.png"},
-    {"name": tr("category_cake"), "image": "assets/images/c_2.png"},
-    {"name": tr("category_pie"), "image": "assets/images/c_3.png"},
-    {"name": tr("category_smoothies"), "image": "assets/images/c_4.png"},
-    {"name": tr("category_salad"), "image": "assets/images/c_1.png"},
-    {"name": tr("category_cake"), "image": "assets/images/c_2.png"},
-    {"name": tr("category_pie"), "image": "assets/images/c_3.png"},
-    {"name": tr("category_smoothies"), "image": "assets/images/c_4.png"},
+    {"name": tr("category_salad"), "image": "assets/images/salad.json"},
+    {"name": tr("category_cake"), "image": "assets/images/pancakes.json"},
+    {"name": tr("category_pie"), "image": "assets/images/Pie.json"},
+    {"name": tr("category_smoothies"), "image": "assets/images/orange.json"},
+    {"name": tr("category_salad"), "image": "assets/images/salad.json"},
+    {"name": tr("category_cake"), "image": "assets/images/pancakes.json"},
+    {"name": tr("category_pie"), "image": "assets/images/Pie.json"},
+    {"name": tr("category_smoothies"), "image": "assets/images/orange.json"},
   ];
 
   final List<Map<String, String>> trendingMeals = [
     {
       "name": tr("blueberry_pancake"),
-      "image": "assets/images/f_1.png",
-      "b_image": "assets/images/pancake_1.png",
+      "image": "assets/images/pancakes.json",
+      "b_image": "assets/images/pancakes.json",
       "size": tr("size_medium"),
       "time": tr("time_30mins"),
       "kcal": tr("kcal_230"),
@@ -51,7 +51,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   final List<Map<String, String>> suggestedMeals = [
     {
       "name": tr("honey_pancake"),
-      "image": "assets/images/rd_1.png",
+      "image": "assets/images/pancakes.json",
       "size": tr("size_easy"),
       "time": tr("time_30mins"),
       "kcal": tr("kcal_180"),

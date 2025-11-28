@@ -18,13 +18,13 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
   final List<Map<String, dynamic>> _sleepScheduleData = [
     {
       "name": "Bedtime",
-      "image": "assets/images/bed.png",
+      "image": "assets/images/bedroom.json",
       "time": "01/06/2023 09:00 PM",
       "duration": "in 6hours 22minutes",
     },
     {
       "name": "Alarm",
-      "image": "assets/images/alaarm.png",
+      "image": "assets/images/alarm.josn",
       "time": "02/06/2023 05:10 AM",
       "duration": "in 14hours 30minutes",
     },

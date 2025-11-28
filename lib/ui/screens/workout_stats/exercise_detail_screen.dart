@@ -283,7 +283,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    "assets/images/burn.png",
+                    "assets/images/fire.json",
                     width: 15,
                     height: 15,
                     fit: BoxFit.contain,

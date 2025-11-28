@@ -21,12 +21,12 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
     {
       "name": tr("honey_pancake"),
       "time": "07:00am",
-      "image": "assets/images/honey_pan.png",
+      "image": "assets/images/pancakes.json",
     },
     {
       "name": tr("coffee"),
       "time": "07:30am",
-      "image": "assets/images/coffee.png",
+      "image": "assets/images/chicken.json",
     },
   ];
 
@@ -34,7 +34,7 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
     {
       "name": "Chicken Steak",
       "time": "01:00pm",
-      "image": "assets/images/chicken.png",
+      "image": "assets/images/chicken.json",
     },
     {
       "name": "Milk",
@@ -44,16 +44,12 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
   ];
 
   final List<Map<String, String>> snackMeals = [
-    {"name": "Orange", "time": "04:30pm", "image": "assets/images/orange.png"},
-    {
-      "name": "Apple Pie",
-      "time": "04:40pm",
-      "image": "assets/images/apple_pie.png",
-    },
+    {"name": "Orange", "time": "04:30pm", "image": "assets/images/orange.json"},
+    {"name": "Apple Pie", "time": "04:40pm", "image": "assets/images/pie.json"},
   ];
 
   final List<Map<String, String>> eveningMeals = [
-    {"name": "Salad", "time": "07:10pm", "image": "assets/images/salad.png"},
+    {"name": "Salad", "time": "07:10pm", "image": "assets/images/salad.json"},
     {
       "name": "Oatmeal",
       "time": "08:10pm",
@@ -64,7 +60,7 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
   final List<Map<String, String>> dailyNutrition = [
     {
       "title": "Calories",
-      "image": "assets/images/burn.png",
+      "image": "assets/images/fire.json",
       "unit_name": "kCal",
       "value": "350",
       "max_value": "500",
@@ -78,14 +74,14 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
     },
     {
       "title": "Fats",
-      "image": "assets/images/egg.png",
+      "image": "assets/images/egg.json",
       "unit_name": "g",
       "value": "140",
       "max_value": "1000",
     },
     {
       "title": "Carbo",
-      "image": "assets/images/carbo.png",
+      "image": "assets/images/paddy.json",
       "unit_name": "g",
       "value": "140",
       "max_value": "1000",
