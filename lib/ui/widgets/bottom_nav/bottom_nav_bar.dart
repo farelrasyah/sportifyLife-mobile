@@ -52,7 +52,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
       notchMargin: 8,
       color: Colors.white,
       child: Container(
-        height: 60,
+        height: 65,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -75,12 +75,13 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
     return GestureDetector(
       onTap: () => _switchToTab(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 24, color: color),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
