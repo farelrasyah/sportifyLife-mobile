@@ -111,6 +111,28 @@ flutter:
     - assets/icon/
     - assets/images/
     - assets/languages/
+    # Explicitly include all JSON files for Lottie animations
+    - assets/images/alarm.json
+    - assets/images/baking_soda.json
+    - assets/images/bedroom.json
+    - assets/images/boot.json
+    - assets/images/bottle.json
+    - assets/images/chicken.json
+    - assets/images/coffe.json
+    - assets/images/dumbell.json
+    - assets/images/egg.json
+    - assets/images/fire.json
+    - assets/images/flour.json
+    - assets/images/jump.json
+    - assets/images/meditating.json
+    - assets/images/onboarding_2.json
+    - assets/images/onboarding_3.json
+    - assets/images/orange.json
+    - assets/images/paddy.json
+    - assets/images/pancakes.json
+    - assets/images/Pie.json
+    - assets/images/salad.json
+    - assets/images/verification.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

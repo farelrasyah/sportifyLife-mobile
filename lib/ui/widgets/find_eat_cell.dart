@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import '../../common/colo_extension.dart';
 import 'round_button.dart';
 
@@ -6,6 +7,28 @@ class FindEatCell extends StatelessWidget {
   final Map fObj;
   final int index;
   const FindEatCell({super.key, required this.index, required this.fObj});
+
+  Widget _buildImage(
+    String path, {
+    required double width,
+    required double height,
+    BoxFit? fit,
+  }) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit ?? BoxFit.contain,
+      );
+    }
+    return Image.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit ?? BoxFit.contain,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +62,7 @@ class FindEatCell extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Image.asset(
+              _buildImage(
                 fObj["image"].toString(),
                 width: media.width * 0.3,
                 height: media.width * 0.25,

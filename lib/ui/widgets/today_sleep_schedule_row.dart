@@ -1,5 +1,6 @@
 import '../../common/colo_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class TodaySleepScheduleRow extends StatefulWidget {
   final Map sObj;
@@ -27,12 +28,7 @@ class _TodaySleepScheduleRowState extends State<TodaySleepScheduleRow> {
           const SizedBox(width: 15),
           ClipRRect(
             borderRadius: BorderRadius.circular(30),
-            child: Image.asset(
-              widget.sObj["image"].toString(),
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
-            ),
+            child: _buildImage(widget.sObj["image"].toString()),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -100,5 +96,12 @@ class _TodaySleepScheduleRowState extends State<TodaySleepScheduleRow> {
         ],
       ),
     );
+  }
+
+  Widget _buildImage(String path) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(path, width: 40, height: 40, fit: BoxFit.cover);
+    }
+    return Image.asset(path, width: 40, height: 40, fit: BoxFit.cover);
   }
 }

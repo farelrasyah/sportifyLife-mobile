@@ -1,5 +1,6 @@
 import '../../common/colo_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class MealFoodScheduleRow extends StatelessWidget {
   final Map mObj;
@@ -28,12 +29,7 @@ class MealFoodScheduleRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
-              child: Image.asset(
-                mObj["image"].toString(),
-                width: 40,
-                height: 40,
-                fit: BoxFit.contain,
-              ),
+              child: _buildImage(mObj["image"].toString()),
             ),
           ),
           const SizedBox(width: 15),
@@ -67,5 +63,12 @@ class MealFoodScheduleRow extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildImage(String path) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(path, width: 40, height: 40, fit: BoxFit.contain);
+    }
+    return Image.asset(path, width: 40, height: 40, fit: BoxFit.contain);
   }
 }

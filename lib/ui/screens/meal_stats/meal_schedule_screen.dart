@@ -45,7 +45,7 @@ class _MealScheduleScreenState extends State<MealScheduleScreen> {
 
   final List<Map<String, String>> snackMeals = [
     {"name": "Orange", "time": "04:30pm", "image": "assets/images/orange.json"},
-    {"name": "Apple Pie", "time": "04:40pm", "image": "assets/images/pie.json"},
+    {"name": "Apple Pie", "time": "04:40pm", "image": "assets/images/Pie.json"},
   ];
 
   final List<Map<String, String>> eveningMeals = [

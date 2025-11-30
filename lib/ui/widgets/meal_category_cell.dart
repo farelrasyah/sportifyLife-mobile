@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../common/colo_extension.dart';
+import 'package:lottie/lottie.dart';
 
 class MealCategoryCell extends StatelessWidget {
   final Map cObj;
@@ -38,12 +39,7 @@ class MealCategoryCell extends StatelessWidget {
                 borderRadius: BorderRadius.circular(17.5),
               ),
 
-              child: Image.asset(
-                cObj["image"].toString(),
-                width: 35,
-                height: 35,
-                fit: BoxFit.contain,
-              ),
+              child: _buildImage(cObj["image"].toString()),
             ),
           ),
           Padding(
@@ -61,5 +57,12 @@ class MealCategoryCell extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildImage(String path) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(path, width: 35, height: 35, fit: BoxFit.contain);
+    }
+    return Image.asset(path, width: 35, height: 35, fit: BoxFit.contain);
   }
 }

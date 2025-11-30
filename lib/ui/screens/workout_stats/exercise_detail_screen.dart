@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:readmore/readmore.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
@@ -282,7 +283,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
+                  Lottie.asset(
                     "assets/images/fire.json",
                     width: 15,
                     height: 15,

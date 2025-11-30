@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../common/colo_extension.dart';
 
@@ -27,7 +28,7 @@ class NutritionRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Image.asset(nObj["image"].toString(), width: 15, height: 15),
+              _buildImage(nObj["image"].toString()),
               const Spacer(),
               Text(
                 "${nObj["value"].toString()} ${nObj["unit_name"].toString()}",
@@ -55,5 +56,12 @@ class NutritionRow extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildImage(String path) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(path, width: 15, height: 15);
+    }
+    return Image.asset(path, width: 15, height: 15);
   }
 }

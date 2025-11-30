@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../common/colo_extension.dart';
+import 'package:lottie/lottie.dart';
 
 class ExercisesRow extends StatelessWidget {
   final Map eObj;
@@ -14,12 +15,7 @@ class ExercisesRow extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: Image.asset(
-              eObj["image"].toString(),
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-            ),
+            child: _buildImage(eObj["image"].toString()),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -53,5 +49,12 @@ class ExercisesRow extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildImage(String path) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(path, width: 60, height: 60, fit: BoxFit.cover);
+    }
+    return Image.asset(path, width: 60, height: 60, fit: BoxFit.cover);
   }
 }

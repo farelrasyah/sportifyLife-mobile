@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:lottie/lottie.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/find_eat_cell.dart';
 import '../../widgets/round_button.dart';
@@ -19,12 +20,12 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
   final List<Map<String, String>> dailyMeals = [
     {
       "name": tr("salmon_nigiri"),
-      "image": "assets/images/m_1.png",
+      "image": "assets/images/Pie.json",
       "time": "28/05/2023 07:00 AM",
     },
     {
       "name": tr("lowfat_milk"),
-      "image": "assets/images/m_2.png",
+      "image": "assets/images/glass.json",
       "time": "28/05/2023 08:00 AM",
     },
   ];
@@ -32,15 +33,37 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
   final List<Map<String, String>> mealOptions = [
     {
       "name": tr("breakfast_label"),
-      "image": "assets/images/m_3.png",
+      "image": "assets/images/Pie.json",
       "number": "120+ Foods",
     },
     {
       "name": tr("lunch_label"),
-      "image": "assets/images/m_4.png",
+      "image": "assets/images/chicken_1.json",
       "number": "130+ Foods",
     },
   ];
+
+  Widget _buildImage(
+    String path, {
+    required double width,
+    required double height,
+    BoxFit? fit,
+  }) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit ?? BoxFit.contain,
+      );
+    }
+    return Image.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit ?? BoxFit.contain,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +131,7 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
           color: TColor.lightGray,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Image.asset(
+        child: _buildImage(
           iconPath,
           width: 15,
           height: 15,

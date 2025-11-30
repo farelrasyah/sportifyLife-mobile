@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/icon_title_next_row.dart';
@@ -109,9 +110,31 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     },
   ];
 
+  Widget _buildImage(
+    String path, {
+    required double width,
+    required double height,
+    BoxFit? fit,
+  }) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit ?? BoxFit.contain,
+      );
+    }
+    return Image.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit ?? BoxFit.contain,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.of(context).size;
 
     return Container(
       decoration: BoxDecoration(
@@ -204,7 +227,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       expandedHeight: screenSize.width * 0.5,
       flexibleSpace: Align(
         alignment: Alignment.center,
-        child: Image.asset(
+        child: _buildImage(
           "assets/images/jump.json",
           width: screenSize.width * 0.75,
           height: screenSize.width * 0.8,
@@ -365,7 +388,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               borderRadius: BorderRadius.circular(15),
             ),
             alignment: Alignment.center,
-            child: Image.asset(
+            child: _buildImage(
               equipmentItem["image"].toString(),
               width: screenSize.width * 0.2,
               height: screenSize.width * 0.2,

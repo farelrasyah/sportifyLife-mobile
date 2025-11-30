@@ -156,7 +156,7 @@ class _FitnessTrackerScreenState extends State<FitnessTrackerScreen> {
               const SizedBox(width: 15),
               Expanded(
                 child: TodayTargetCell(
-                  icon: "assets/images/foot.png",
+                  icon: "assets/images/boot.png",
                   value: "2400",
                   title: tr("screen_foot_steps_title"),
                 ),

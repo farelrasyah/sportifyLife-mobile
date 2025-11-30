@@ -116,7 +116,7 @@ class ActivitySelectionScreen extends StatelessWidget {
   }
 
   void _navigateToMealStats(BuildContext context) {
-    Navigator.pushNamed(context, Routes.mealScheduleScreen);
+    Navigator.pushNamed(context, Routes.mealOrganizerScreen);
   }
 
   void _navigateToSleepStats(BuildContext context) {

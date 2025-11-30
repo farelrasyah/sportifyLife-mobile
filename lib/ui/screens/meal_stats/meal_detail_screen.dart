@@ -58,7 +58,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
     },
     {
       "name": tr("canai_bread"),
-      "image": "assets/images/m_4.png",
+      "image": "assets/images/chicken_1.json",
       "size": tr("size_easy"),
       "time": tr("time_20mins"),
       "kcal": tr("kcal_230"),

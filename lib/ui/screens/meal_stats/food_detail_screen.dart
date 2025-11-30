@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:lottie/lottie.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/round_textfield.dart';
@@ -31,7 +32,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
   List<Map<String, String>> get requiredIngredients => [
     {
-      "icon": "assets/images/flour.png",
+      "icon": "assets/images/flour.json",
       "name": tr("ingredient_wheat_flour"),
       "quantity": tr("quantity_100grm"),
     },
@@ -41,8 +42,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       "quantity": tr("quantity_3tbsp"),
     },
     {
-      "icon": "assets/images/baking_soda.json.png",
-      "name": tr("ingredient_baking_soda.json"),
+      "icon": "assets/images/baking_soda.json",
+      "name": tr("ingredient_baking_soda"),
       "quantity": tr("quantity_2tsp"),
     },
     {
@@ -59,6 +60,28 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     {"step": "4", "instruction": tr("step_4_instruction")},
     {"step": "5", "instruction": tr("step_5_instruction")},
   ];
+
+  Widget _buildImage(
+    String path, {
+    required double width,
+    required double height,
+    BoxFit? fit,
+  }) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit ?? BoxFit.contain,
+      );
+    }
+    return Image.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit ?? BoxFit.contain,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +142,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           color: TColor.lightGray,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Image.asset(
+        child: _buildImage(
           iconPath,
           width: 15,
           height: 15,
@@ -156,7 +179,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               scale: 1.25,
               child: Align(
                 alignment: Alignment.bottomCenter,
-                child: Image.asset(
+                child: _buildImage(
                   widget.foodData["b_image"].toString(),
                   width: screenSize.width * 0.50,
                   height: screenSize.width * 0.50,
@@ -296,7 +319,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
+          _buildImage(
             nutritionItem["icon"]!,
             width: 15,
             height: 15,
@@ -409,7 +432,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Image.asset(
+            child: _buildImage(
               ingredient["icon"]!,
               width: 45,
               height: 45,
