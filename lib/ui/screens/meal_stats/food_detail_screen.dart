@@ -37,7 +37,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       "quantity": tr("quantity_100grm"),
     },
     {
-      "icon": "assets/images/sugar.png",
+      "icon": "assets/images/honey.json",
       "name": tr("ingredient_sugar"),
       "quantity": tr("quantity_3tbsp"),
     },
@@ -400,7 +400,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           ),
         ),
         SizedBox(
-          height: (screenSize.width * 0.25) + 40,
+          height: (screenSize.width * 0.25) + 60,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             scrollDirection: Axis.horizontal,
@@ -434,8 +434,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             alignment: Alignment.center,
             child: _buildImage(
               ingredient["icon"]!,
-              width: 45,
-              height: 45,
+              width: 70,
+              height: 70,
               fit: BoxFit.contain,
             ),
           ),

@@ -118,11 +118,14 @@ flutter:
     - assets/images/boot.json
     - assets/images/bottle.json
     - assets/images/chicken.json
+    - assets/images/chicken_1.json
     - assets/images/coffe.json
     - assets/images/dumbell.json
     - assets/images/egg.json
     - assets/images/fire.json
     - assets/images/flour.json
+    - assets/images/glass.json
+    - assets/images/honey.json
     - assets/images/jump.json
     - assets/images/meditating.json
     - assets/images/onboarding_2.json
@@ -132,6 +135,7 @@ flutter:
     - assets/images/pancakes.json
     - assets/images/Pie.json
     - assets/images/salad.json
+    - assets/images/sandwich.json
     - assets/images/verification.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

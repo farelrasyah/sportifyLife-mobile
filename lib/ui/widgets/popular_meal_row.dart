@@ -1,9 +1,32 @@
 import '../../common/colo_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class PopularMealRow extends StatelessWidget {
   final Map mObj;
   const PopularMealRow({super.key, required this.mObj});
+
+  Widget _buildImage(
+    String path, {
+    required double width,
+    required double height,
+    BoxFit? fit,
+  }) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit ?? BoxFit.contain,
+      );
+    }
+    return Image.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit ?? BoxFit.contain,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +40,7 @@ class PopularMealRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset(
+          _buildImage(
             mObj["image"].toString(),
             width: 50,
             height: 50,

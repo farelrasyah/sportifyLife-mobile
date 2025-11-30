@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import '../../common/colo_extension.dart';
 import 'round_button.dart';
 
@@ -6,6 +7,28 @@ class MealRecommendCell extends StatelessWidget {
   final Map fObj;
   final int index;
   const MealRecommendCell({super.key, required this.index, required this.fObj});
+
+  Widget _buildImage(
+    String path, {
+    required double width,
+    required double height,
+    BoxFit? fit,
+  }) {
+    if (path.endsWith('.json')) {
+      return Lottie.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit ?? BoxFit.contain,
+      );
+    }
+    return Image.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit ?? BoxFit.contain,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +55,7 @@ class MealRecommendCell extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
+          _buildImage(
             fObj["image"].toString(),
             width: media.width * 0.3,
             height: media.width * 0.25,

@@ -40,8 +40,8 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
     },
     {
       "name": tr("salmon_nigiri"),
-      "image": "assets/images/f_2.png",
-      "b_image": "assets/images/nigiri.png",
+      "image": "assets/images/sandwich.json",
+      "b_image": "assets/images/sandwich.json",
       "size": tr("size_medium"),
       "time": tr("time_20mins"),
       "kcal": tr("kcal_120"),
