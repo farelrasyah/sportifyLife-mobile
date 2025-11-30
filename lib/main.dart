@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'app/routes.dart';
 import 'ui/theme/app_theme.dart';
+import 'utils/route_logger.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +39,9 @@ class SportifyLifeApp extends StatelessWidget {
       // Routing
       initialRoute: Routes.splashScreen,
       onGenerateRoute: RouteGenerator.generateRoute,
+
+      // Navigation Observer untuk logging
+      navigatorObservers: [RouteLogger()],
     );
   }
 }

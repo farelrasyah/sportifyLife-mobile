@@ -142,10 +142,14 @@ class RouteGenerator {
     switch (settings.name) {
       // Core Routes
       case Routes.splashScreen:
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SplashScreen(),
+        );
 
       case Routes.completeProfileScreen:
         return MaterialPageRoute(
+          settings: settings,
           builder: (_) => BlocProvider(
             create: (_) => UserDetailsCubit(UserDetailsRepository()),
             child: const CompleteProfileScreen(),
@@ -153,17 +157,22 @@ class RouteGenerator {
         );
 
       case Routes.homeScreen:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const HomeScreen(),
+        );
 
       // Onboarding Routes
       case Routes.onboardingScreen:
         return MaterialPageRoute(
+          settings: settings,
           builder: (_) => const AnimatedOnboardingScreen(),
         );
 
       // Auth Routes
       case Routes.loginScreen:
         return MaterialPageRoute(
+          settings: settings,
           builder: (_) => BlocProvider(
             create: (_) => AuthCubit(),
             child: const LoginScreen(),
@@ -172,6 +181,7 @@ class RouteGenerator {
 
       case Routes.registerScreen:
         return MaterialPageRoute(
+          settings: settings,
           builder: (_) => BlocProvider(
             create: (_) => AuthCubit(),
             child: const RegisterScreen(),
@@ -181,6 +191,7 @@ class RouteGenerator {
       case Routes.verifyEmailScreen:
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
+            settings: settings,
             builder: (_) => BlocProvider(
               create: (_) => VerifyCubit(),
               child: VerifyEmailScreen(email: args['email'] as String),
@@ -191,32 +202,47 @@ class RouteGenerator {
 
       // Home Routes
       case Routes.mainScreen:
-        return MaterialPageRoute(builder: (_) => const MainScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const MainScreen(),
+        );
 
       case Routes.fitnessTrackerScreen:
-        return MaterialPageRoute(builder: (_) => const FitnessTrackerScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const FitnessTrackerScreen(),
+        );
 
       case Routes.notificationScreen:
-        return MaterialPageRoute(builder: (_) => const NotificationScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const NotificationScreen(),
+        );
 
       case Routes.workoutCompleteScreen:
-        return MaterialPageRoute(builder: (_) => const WorkoutCompleteScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const WorkoutCompleteScreen(),
+        );
 
       // Navigation Routes
       case Routes.activitySelectionScreen:
         return MaterialPageRoute(
+          settings: settings,
           builder: (_) => const ActivitySelectionScreen(),
         );
 
       case Routes.mainBottomNavigationScreen:
-        return MaterialPageRoute(builder: (_) => const MainBottomNavigation());
-
-
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const MainBottomNavigation(),
+        );
 
       // Meal Stats Routes
       case Routes.foodDetailScreen:
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
+            settings: settings,
             builder: (_) => FoodDetailScreen(
               foodData: args['foodData'],
               mealData: args['mealData'],
@@ -228,6 +254,7 @@ class RouteGenerator {
       case Routes.mealDetailScreen:
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
+            settings: settings,
             builder: (_) =>
                 MealDetailScreen(mealCategory: args['mealCategory']),
           );
@@ -235,22 +262,35 @@ class RouteGenerator {
         return _errorRoute();
 
       case Routes.mealOrganizerScreen:
-        return MaterialPageRoute(builder: (_) => const MealOrganizerScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const MealOrganizerScreen(),
+        );
 
       case Routes.mealScheduleScreen:
-        return MaterialPageRoute(builder: (_) => const MealScheduleScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const MealScheduleScreen(),
+        );
 
       // Profile Routes
       case Routes.profileScreen:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ProfileScreen(),
+        );
 
       // Progress Gallery Routes
       case Routes.progressGalleryScreen:
-        return MaterialPageRoute(builder: (_) => const ProgressGalleryScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ProgressGalleryScreen(),
+        );
 
       case Routes.reportScreen:
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
+            settings: settings,
             builder: (_) => ReportScreen(
               startDate: args['startDate'] as DateTime,
               endDate: args['endDate'] as DateTime,
@@ -261,6 +301,7 @@ class RouteGenerator {
 
       case Routes.resultComparisonScreen:
         return MaterialPageRoute(
+          settings: settings,
           builder: (_) => const ResultComparisonScreen(),
         );
 
@@ -268,6 +309,7 @@ class RouteGenerator {
       case Routes.addAlarmScreen:
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
+            settings: settings,
             builder: (_) =>
                 AddAlarmScreen(selectedDate: args['selectedDate'] as DateTime),
           );
@@ -275,15 +317,22 @@ class RouteGenerator {
         return _errorRoute();
 
       case Routes.sleepActivityScreen:
-        return MaterialPageRoute(builder: (_) => const SleepActivityScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SleepActivityScreen(),
+        );
 
       case Routes.sleepPlanScreen:
-        return MaterialPageRoute(builder: (_) => const SleepPlanScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SleepPlanScreen(),
+        );
 
       // Workout Stats Routes
       case Routes.addWorkoutPlanScreen:
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
+            settings: settings,
             builder: (_) => AddWorkoutPlanScreen(
               selectedDate: args['selectedDate'] as DateTime,
             ),
@@ -294,6 +343,7 @@ class RouteGenerator {
       case Routes.exerciseDetailScreen:
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
+            settings: settings,
             builder: (_) =>
                 ExerciseDetailScreen(exerciseData: args['exerciseData']),
           );
@@ -303,6 +353,7 @@ class RouteGenerator {
       case Routes.workoutDetailScreen:
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
+            settings: settings,
             builder: (_) =>
                 WorkoutDetailScreen(workoutData: args['workoutData']),
           );
@@ -310,10 +361,16 @@ class RouteGenerator {
         return _errorRoute();
 
       case Routes.workoutPlanScreen:
-        return MaterialPageRoute(builder: (_) => const WorkoutPlanScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const WorkoutPlanScreen(),
+        );
 
       case Routes.workoutStatsScreen:
-        return MaterialPageRoute(builder: (_) => const WorkoutStatsScreen());
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const WorkoutStatsScreen(),
+        );
 
       default:
         return _errorRoute();
