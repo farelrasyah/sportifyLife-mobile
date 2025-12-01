@@ -24,7 +24,7 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
     },
     {
       "name": "Alarm",
-      "image": "assets/images/alarm.josn",
+      "image": "assets/images/alarm.json",
       "time": "02/06/2023 05:10 AM",
       "duration": "in 14hours 30minutes",
     },

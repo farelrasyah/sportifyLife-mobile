@@ -20,7 +20,7 @@ class WorkoutDetailScreen extends StatefulWidget {
 class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   final List<Map<String, String>> _recentWorkouts = [
     {
-      "image": "assets/images/Workout1.png",
+      "image": "assets/images/jumping_jack.json",
       "title": tr("fullbody_workout"),
       "time": "Today, 03:00pm",
     },

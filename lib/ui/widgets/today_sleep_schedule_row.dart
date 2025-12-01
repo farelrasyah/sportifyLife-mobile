@@ -37,17 +37,23 @@ class _TodaySleepScheduleRowState extends State<TodaySleepScheduleRow> {
               children: [
                 Row(
                   children: [
-                    Text(
-                      widget.sObj["name"].toString(),
-                      style: TextStyle(
-                        color: TColor.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                    Flexible(
+                      child: Text(
+                        widget.sObj["name"].toString(),
+                        style: TextStyle(
+                          color: TColor.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Text(
-                      ", ${widget.sObj["time"].toString()}",
-                      style: TextStyle(color: TColor.black, fontSize: 12),
+                    Flexible(
+                      child: Text(
+                        ", ${widget.sObj["time"].toString()}",
+                        style: TextStyle(color: TColor.black, fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),

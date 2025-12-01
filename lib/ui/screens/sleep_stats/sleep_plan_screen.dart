@@ -1,6 +1,7 @@
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:lottie/lottie.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 
 import '../../../common/colo_extension.dart';
@@ -29,7 +30,7 @@ class _SleepPlanScreenState extends State<SleepPlanScreen> {
     },
     {
       "name": "Alarm",
-      "image": "assets/images/alarm.josn",
+      "image": "assets/images/alarm.json",
       "time": "02/06/2023 05:10 AM",
       "duration": "in 14hours 30minutes",
     },
@@ -190,9 +191,13 @@ class _SleepPlanScreenState extends State<SleepPlanScreen> {
   }
 
   Widget _buildIdealHoursImage(Size screenSize) {
-    return Image.asset(
-      "assets/images/sleep_schedule.png",
+    return Lottie.asset(
+      "assets/images/sleep.json",
       width: screenSize.width * 0.35,
+      height: screenSize.width * 0.35,
+      fit: BoxFit.contain,
+      repeat: true,
+      animate: true,
     );
   }
 
