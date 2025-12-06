@@ -3,9 +3,9 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../../common/colo_extension.dart';
-import '../../widgets/round_button.dart';
 import '../../widgets/setting_row.dart';
 import '../../widgets/title_subtitle_cell.dart';
+import '../../widgets/home_container_appbar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -53,112 +53,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
       backgroundColor: TColor.white,
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildUserProfileHeader(),
-              const SizedBox(height: 15),
-              _buildUserStatsRow(),
-              const SizedBox(height: 25),
-              _buildAccountSection(),
-              const SizedBox(height: 25),
-              _buildNotificationSection(),
-              const SizedBox(height: 25),
-              _buildAdditionalOptionsSection(),
-            ],
+      body: Column(
+        children: [
+          HomeContainerAppbar(
+            profileImage: "assets/images/u2.png",
+            title: "Farasyah",
+            welcomeText: "Your Profile",
+            primaryColor: const Color(0xFF7B8FE8),
+            lightColor: const Color(0xFF8FA3F5),
+            darkColor: const Color(0xFF6578DC),
+            actionIcon: Icons.settings,
+            onActionPressed: () {
+              // Navigate to settings
+            },
+            showActionButton: true,
+            enableProfileZoom: true,
           ),
-        ),
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leadingWidth: 0,
-      title: Text(
-        tr("profile_title"),
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildUserProfileHeader() {
-    return Row(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: Image.asset(
-            "assets/images/u2.png",
-            width: 50,
-            height: 50,
-            fit: BoxFit.cover,
-          ),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Farasyah",
-                style: TextStyle(
-                  color: TColor.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+          Expanded(
+            child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 15,
+                  horizontal: 25,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildUserStatsRow(),
+                    const SizedBox(height: 25),
+                    _buildAccountSection(),
+                    const SizedBox(height: 25),
+                    _buildNotificationSection(),
+                    const SizedBox(height: 25),
+                    _buildAdditionalOptionsSection(),
+                  ],
                 ),
               ),
-              Text(
-                "Lose a Fat Program",
-                style: TextStyle(color: TColor.gray, fontSize: 12),
-              ),
-            ],
+            ),
           ),
-        ),
-        SizedBox(
-          width: 70,
-          height: 25,
-          child: RoundButton(
-            title: tr("edit_profile"),
-            type: RoundButtonType.bgGradient,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-            onPressed: () {},
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

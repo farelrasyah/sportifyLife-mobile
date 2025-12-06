@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../../app/routes.dart';
 import '../../widgets/round_button.dart';
+import '../../widgets/home_container_appbar.dart';
 
 /// Activity selection screen for choosing different app modules
 ///
@@ -17,24 +18,24 @@ class ActivitySelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: TColor.white,
-      appBar: _buildAppBar(),
-      body: _buildBody(context),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: const SizedBox(),
-      title: Text(
-        "Choose Activity",
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
+      body: Column(
+        children: [
+          HomeContainerAppbar(
+            profileImage: "",
+            title: "Activities",
+            welcomeText: "Choose Your",
+            primaryColor: const Color(0xFF7B8FE8),
+            lightColor: const Color(0xFF8FA3F5),
+            darkColor: const Color(0xFF6578DC),
+            actionIcon: Icons.fitness_center,
+            onActionPressed: () {
+              // Action button callback
+            },
+            showActionButton: false,
+            enableProfileZoom: false,
+          ),
+          Expanded(child: _buildBody(context)),
+        ],
       ),
     );
   }

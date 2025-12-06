@@ -8,6 +8,7 @@ import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/workout_row.dart';
+import '../../widgets/home_container_appbar.dart';
 import 'fitness_tracker_screen.dart';
 import 'notification_screen.dart';
 import 'workout_complete_screen.dart';
@@ -94,67 +95,52 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       backgroundColor: TColor.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              SizedBox(height: media.width * 0.05),
-              _buildBMICard(media),
-              SizedBox(height: media.width * 0.05),
-              _buildTodayTarget(),
-              SizedBox(height: media.width * 0.05),
-              _buildActivityStatus(media),
-              SizedBox(height: media.width * 0.05),
-              _buildMetricsRow(media),
-              SizedBox(height: media.width * 0.1),
-              _buildWorkoutProgress(media),
-              SizedBox(height: media.width * 0.05),
-              _buildLatestWorkout(),
-              SizedBox(height: media.width * 0.1),
-            ],
+      body: Column(
+        children: [
+          HomeContainerAppbar(
+            profileImage: "assets/images/u2.png",
+            title: "Farasyah",
+            welcomeText: "Welcome Back",
+            primaryColor: const Color(0xFF7B8FE8),
+            lightColor: const Color(0xFF8FA3F5),
+            darkColor: const Color(0xFF6578DC),
+            actionIcon: Icons.notifications_active_rounded,
+            onActionPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationScreen(),
+                ),
+              );
+            },
+            showActionButton: true,
+            enableProfileZoom: true,
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Welcome Back,",
-              style: TextStyle(color: TColor.gray, fontSize: 12),
-            ),
-            Text(
-              "Farasyah",
-              style: TextStyle(
-                color: TColor.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: media.width * 0.05),
+                  _buildBMICard(media),
+                  SizedBox(height: media.width * 0.05),
+                  _buildTodayTarget(),
+                  SizedBox(height: media.width * 0.05),
+                  _buildActivityStatus(media),
+                  SizedBox(height: media.width * 0.05),
+                  _buildMetricsRow(media),
+                  SizedBox(height: media.width * 0.1),
+                  _buildWorkoutProgress(media),
+                  SizedBox(height: media.width * 0.05),
+                  _buildLatestWorkout(),
+                  SizedBox(height: media.width * 0.1),
+                ],
               ),
             ),
-          ],
-        ),
-        IconButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const NotificationScreen()),
           ),
-          icon: Image.asset(
-            "assets/images/notification.png",
-            width: 25,
-            height: 25,
-            fit: BoxFit.fitHeight,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
