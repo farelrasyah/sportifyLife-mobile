@@ -103,7 +103,7 @@ class _ElegantTextFieldState extends State<ElegantTextField>
           boxShadow: _isFocused
               ? [
                   BoxShadow(
-                    color: ColorPalette.kAuthButtonPrimary.withOpacity(0.25),
+                    color: ColorPalette.kButton.withOpacity(0.25),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),
@@ -116,9 +116,7 @@ class _ElegantTextFieldState extends State<ElegantTextField>
                   ),
                 ],
           border: Border.all(
-            color: _isFocused
-                ? ColorPalette.kAuthButtonPrimary
-                : ColorPalette.kAuthInputBorder,
+            color: _isFocused ? ColorPalette.kButton : ColorPalette.kBorder,
             width: 1.5,
           ),
         ),
@@ -131,8 +129,8 @@ class _ElegantTextFieldState extends State<ElegantTextField>
                 widget.labelText,
                 style: AppTypography.authInputLabel.copyWith(
                   color: _isFocused
-                      ? ColorPalette.kAuthButtonPrimary
-                      : ColorPalette.kAuthPlaceholder,
+                      ? ColorPalette.kButton
+                      : ColorPalette.kDisabled,
                   fontSize: isSmallScreen ? 12 : 13,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -153,7 +151,7 @@ class _ElegantTextFieldState extends State<ElegantTextField>
               decoration: InputDecoration(
                 hintText: widget.hintText,
                 hintStyle: AppTypography.authInputText.copyWith(
-                  color: ColorPalette.kAuthPlaceholder,
+                  color: ColorPalette.kDisabled,
                   fontWeight: FontWeight.w400,
                 ),
                 prefixIcon: Padding(
@@ -164,8 +162,8 @@ class _ElegantTextFieldState extends State<ElegantTextField>
                   child: Icon(
                     widget.icon,
                     color: _isFocused
-                        ? ColorPalette.kAuthButtonPrimary
-                        : ColorPalette.kAuthPlaceholder,
+                        ? ColorPalette.kButton
+                        : ColorPalette.kDisabled,
                     size: isSmallScreen ? 20 : 22,
                   ),
                 ),

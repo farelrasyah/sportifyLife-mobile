@@ -74,12 +74,12 @@ class _AuthInputFieldState extends State<AuthInputField> {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: ColorPalette.kAuthInputFill,
+              color: ColorPalette.kSurface,
               borderRadius: BorderRadius.circular(12.0),
               border: Border.all(
                 color: _isFocused
-                    ? ColorPalette.kAuthInputFocused
-                    : ColorPalette.kAuthInputBorder,
+                    ? ColorPalette.kBorderFocus
+                    : ColorPalette.kBorder,
                 width: _isFocused ? 2.0 : 1.0,
               ),
             ),
@@ -109,7 +109,7 @@ class _AuthInputFieldState extends State<AuthInputField> {
                           _obscureText
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: ColorPalette.kAuthPlaceholder,
+                          color: ColorPalette.kDisabled,
                           size: 20.0,
                         ),
                         onPressed: _togglePasswordVisibility,

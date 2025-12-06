@@ -37,25 +37,25 @@ class AuthButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isOutlined
               ? Colors.transparent
-              : (backgroundColor ?? ColorPalette.kAuthButtonPrimary),
+              : (backgroundColor ?? ColorPalette.kButton),
           foregroundColor: isOutlined
-              ? (textColor ?? ColorPalette.kAuthButtonPrimary)
-              : (textColor ?? ColorPalette.kAuthButtonText),
-          elevation: isOutlined ? 0 : 2,
-          shadowColor: ColorPalette.kAuthButtonPrimary.withOpacity(0.3),
+              ? (textColor ?? ColorPalette.kButton)
+              : (textColor ?? ColorPalette.kButtonText),
+          elevation: isOutlined ? 0 : 8,
+          shadowColor: ColorPalette.kButton.withOpacity(0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
             side: isOutlined
                 ? BorderSide(
-                    color: borderColor ?? ColorPalette.kAuthInputBorder,
+                    color: borderColor ?? ColorPalette.kBorder,
                     width: 1.0,
                   )
                 : BorderSide.none,
           ),
           disabledBackgroundColor: isOutlined
               ? Colors.transparent
-              : ColorPalette.kAuthInputBorder,
-          disabledForegroundColor: ColorPalette.kAuthPlaceholder,
+              : ColorPalette.kBorder,
+          disabledForegroundColor: ColorPalette.kDisabled,
         ),
         child: isLoading
             ? SizedBox(
@@ -65,8 +65,8 @@ class AuthButton extends StatelessWidget {
                   strokeWidth: 2.0,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     isOutlined
-                        ? ColorPalette.kAuthButtonPrimary
-                        : ColorPalette.kAuthButtonText,
+                        ? ColorPalette.kButton
+                        : ColorPalette.kButtonText,
                   ),
                 ),
               )
@@ -78,8 +78,8 @@ class AuthButton extends StatelessWidget {
                     text,
                     style: AppTypography.authButtonText.copyWith(
                       color: isOutlined
-                          ? (textColor ?? ColorPalette.kAuthButtonPrimary)
-                          : (textColor ?? ColorPalette.kAuthButtonText),
+                          ? (textColor ?? ColorPalette.kButton)
+                          : (textColor ?? ColorPalette.kButtonText),
                     ),
                   ),
                 ],
@@ -111,11 +111,8 @@ class SocialLoginButton extends StatelessWidget {
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
-          foregroundColor: ColorPalette.kAuthTitle,
-          side: const BorderSide(
-            color: ColorPalette.kAuthSocialBorder,
-            width: 1.0,
-          ),
+          foregroundColor: ColorPalette.kTextPrimary,
+          side: const BorderSide(color: ColorPalette.kBorder, width: 1.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
           ),
@@ -129,7 +126,7 @@ class SocialLoginButton extends StatelessWidget {
             Text(
               text,
               style: AppTypography.authButtonText.copyWith(
-                color: ColorPalette.kAuthTitle,
+                color: ColorPalette.kTextPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),

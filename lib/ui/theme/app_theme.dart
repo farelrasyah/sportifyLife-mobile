@@ -17,8 +17,8 @@ class AppTheme {
       // Color scheme
       colorScheme: const ColorScheme.light(
         primary: ColorPalette.kPrimary,
-        primaryContainer: ColorPalette.kPrimaryLight,
-        secondary: ColorPalette.kAccent,
+        primaryContainer: ColorPalette.kPrimaryVariant,
+        secondary: ColorPalette.kSecondary,
         surface: ColorPalette.kSurface,
         background: ColorPalette.kBackground,
         onPrimary: ColorPalette.kTextOnPrimary,
@@ -47,10 +47,10 @@ class AppTheme {
       // Elevated button theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorPalette.kButtonPrimary,
-          foregroundColor: ColorPalette.kButtonTextPrimary,
+          backgroundColor: ColorPalette.kButton,
+          foregroundColor: ColorPalette.kButtonText,
           elevation: 8,
-          shadowColor: ColorPalette.kShadowMedium,
+          shadowColor: ColorPalette.kShadow,
           shape: RoundedRectangleBorder(borderRadius: Spacing.radiusButton),
           padding: Spacing.buttonPadding,
           minimumSize: const Size(double.infinity, Spacing.buttonHeight),
@@ -135,7 +135,7 @@ class AppTheme {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: ColorPalette.kPrimaryDark,
+        systemNavigationBarColor: ColorPalette.kPrimary,
         systemNavigationBarIconBrightness: Brightness.light,
       );
 }

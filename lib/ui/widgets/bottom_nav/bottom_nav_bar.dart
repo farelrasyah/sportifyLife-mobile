@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../app/routes.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../screens/home/main_screen.dart';
 import '../../screens/navigation/activity_selection_screen.dart';
-import '../../screens/progress_gallery/progress_gallery_screen.dart';
 import '../../screens/profile/profile_screen.dart';
+import '../../theme/color_palette.dart';
+import 'bottom_nav_painter.dart';
 
-/// Main bottom navigation container with floating action button
+/// Main bottom navigation container with animated floating circle
 class MainBottomNavigation extends StatefulWidget {
   const MainBottomNavigation({super.key});
 
@@ -13,16 +14,91 @@ class MainBottomNavigation extends StatefulWidget {
   State<MainBottomNavigation> createState() => _MainBottomNavigationState();
 }
 
-class _MainBottomNavigationState extends State<MainBottomNavigation> {
+class _MainBottomNavigationState extends State<MainBottomNavigation>
+    with TickerProviderStateMixin {
   int _selectedTabIndex = 0;
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
+
+  final double horizontalPadding = 40.0;
+  final double horizontalMargin = 0.0; // Full width navbar
+
+  late double position;
+  late AnimationController controller;
+  late Animation<double> animation;
 
   final List<Widget> _screens = [
     const MainScreen(),
     const ActivitySelectionScreen(),
-    const ProgressGalleryScreen(),
     const ProfileScreen(),
   ];
+
+  final List<_NavItem> _navItems = [
+    const _NavItem(
+      iconPath: 'assets/images/home.svg',
+      activeIconPath: 'assets/images/home_active.svg',
+      label: 'Home',
+    ),
+    const _NavItem(
+      iconPath: 'assets/images/activity.svg',
+      activeIconPath: 'assets/images/activity_active.svg',
+      label: 'Activity',
+    ),
+    const _NavItem(
+      iconPath: 'assets/images/profile.svg',
+      activeIconPath: 'assets/images/profile_active.svg',
+      label: 'Profile',
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 375),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    position = _getEndPosition(_selectedTabIndex);
+    animation = Tween(begin: position, end: position).animate(controller);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  double _getEndPosition(int index) {
+    // Calculate the width of each item section
+    double totalWidth =
+        MediaQuery.of(context).size.width - (2 * horizontalMargin);
+    double itemWidth =
+        (totalWidth - (2 * horizontalPadding)) / _navItems.length;
+
+    // Calculate the center position of the selected item
+    double itemCenterX =
+        horizontalPadding + (itemWidth * index) + (itemWidth / 2);
+
+    // Center the circle on the item (subtract half the circle width)
+    return itemCenterX - 70.0;
+  }
+
+  void _animateDrop(int index) {
+    double newPosition = _getEndPosition(index);
+    animation = Tween(
+      begin: position,
+      end: newPosition,
+    ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOutBack));
+
+    controller.reset();
+    controller.forward().then((value) {
+      position = newPosition;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,64 +108,103 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
         bucket: _pageStorageBucket,
         child: _screens[_selectedTabIndex],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: _buildFloatingActionButton(),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      extendBody: true,
+      bottomNavigationBar: _buildAnimatedBottomNavigation(),
     );
   }
 
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: _handleSearchButtonTap,
-      backgroundColor: const Color(0xFF92A3FD),
-      child: const Icon(Icons.search, color: Colors.white),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomAppBar(
-      elevation: 8,
-      notchMargin: 8,
-      color: Colors.white,
-      child: Container(
-        height: 65,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildTabItem(Icons.home, 0, 'Home'),
-            _buildTabItem(Icons.fitness_center, 1, 'Activity'),
-            const SizedBox(width: 40), // Space for FAB
-            _buildTabItem(Icons.photo_camera, 2, 'Progress'),
-            _buildTabItem(Icons.person, 3, 'Profile'),
-          ],
-        ),
+  Widget _buildAnimatedBottomNavigation() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
+      child: AnimatedBuilder(
+        animation: controller,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: AppBarPainter(
+              animation.value,
+              circleColor: ColorPalette.kPrimary,
+              navigationBarColor: Colors.white,
+              selectedIndex: _selectedTabIndex,
+            ),
+            size: Size(
+              MediaQuery.of(context).size.width - (2 * horizontalMargin),
+              140.0,
+            ),
+            child: SizedBox(
+              height: 140.0,
+              width: MediaQuery.of(context).size.width - (2 * horizontalMargin),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(_navItems.length, (index) {
+                    final item = _navItems[index];
+                    final isSelected = index == _selectedTabIndex;
+                    return _buildNavItem(item, index, isSelected);
+                  }),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildTabItem(IconData icon, int index, String label) {
-    final isSelected = _selectedTabIndex == index;
-    final color = isSelected ? const Color(0xFF92A3FD) : Colors.grey;
+  Widget _buildNavItem(_NavItem item, int index, bool isSelected) {
+    final double itemWidth =
+        (MediaQuery.of(context).size.width -
+            (2 * horizontalMargin) -
+            (2 * horizontalPadding)) /
+        _navItems.length;
 
     return GestureDetector(
       onTap: () => _switchToTab(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 375),
+        curve: Curves.easeOut,
+        height: 125,
+        width: itemWidth,
+        padding: const EdgeInsets.only(top: 14.0, bottom: 22.5),
+        alignment: isSelected ? Alignment.topCenter : Alignment.bottomCenter,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 24, color: color),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: color,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            SizedBox(
+              height: 35.0,
+              width: 35.0,
+              child: Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 375),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeOut,
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(scale: animation, child: child);
+                  },
+                  child: SvgPicture.asset(
+                    isSelected ? item.activeIconPath : item.iconPath,
+                    key: ValueKey(
+                      '${isSelected ? 'selected' : 'normal'}${item.iconPath}',
+                    ),
+                    height: 28.0,
+                    width: 28.0,
+                    // SVG sudah memiliki warna yang tepat dari file
+                  ),
+                ),
               ),
             ),
+            if (!isSelected) ...[
+              const SizedBox(height: 5),
+              Text(
+                item.label,
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w500,
+                  color: ColorPalette.kPrimary.withOpacity(0.7),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -101,11 +216,20 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
       setState(() {
         _selectedTabIndex = index;
       });
+      _animateDrop(index);
     }
   }
+}
 
-  void _handleSearchButtonTap() {
-    // Navigate to notification screen
-    Navigator.pushNamed(context, Routes.notificationScreen);
-  }
+/// Navigation item model
+class _NavItem {
+  final String iconPath;
+  final String activeIconPath;
+  final String label;
+
+  const _NavItem({
+    required this.iconPath,
+    required this.activeIconPath,
+    required this.label,
+  });
 }

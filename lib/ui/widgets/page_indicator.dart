@@ -8,7 +8,7 @@ class PageIndicator extends StatelessWidget {
 
   const PageIndicator({
     super.key,
-      required this.currentPage,
+    required this.currentPage,
     required this.pageCount,
   });
 
@@ -25,8 +25,8 @@ class PageIndicator extends StatelessWidget {
           height: 8.0,
           decoration: BoxDecoration(
             color: currentPage == index
-                ? ColorPalette.kOnboardingDotActive
-                : ColorPalette.kOnboardingDotInactive,
+                ? ColorPalette.kPrimary
+                : ColorPalette.kMediumGray,
             borderRadius: BorderRadius.circular(4.0),
           ),
         ),

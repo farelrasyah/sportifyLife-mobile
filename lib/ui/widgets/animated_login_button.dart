@@ -81,9 +81,8 @@ class _AnimatedLoginButtonState extends State<AnimatedLoginButton>
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
-    final primaryColor = widget.primaryColor ?? ColorPalette.kAuthButtonPrimary;
-    final secondaryColor =
-        widget.secondaryColor ?? ColorPalette.kAuthInputFocused;
+    final primaryColor = widget.primaryColor ?? ColorPalette.kButton;
+    final secondaryColor = widget.secondaryColor ?? ColorPalette.kBorderFocus;
 
     return SlideTransition(
       position: _slideAnimation,

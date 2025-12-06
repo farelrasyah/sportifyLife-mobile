@@ -129,7 +129,7 @@ class AppTypography {
     fontWeight: FontWeight.bold,
     letterSpacing: 0.5,
     height: 1.25,
-    color: ColorPalette.kButtonTextPrimary,
+    color: ColorPalette.kButtonText,
   );
 
   /// Style for secondary button text
@@ -149,7 +149,7 @@ class AppTypography {
     fontWeight: FontWeight.bold,
     letterSpacing: 0.2,
     height: 1.4,
-    color: ColorPalette.kOnboardingTitle,
+    color: ColorPalette.kTextPrimary,
   );
 
   /// Style for onboarding description
@@ -158,7 +158,7 @@ class AppTypography {
     fontWeight: FontWeight.w400,
     letterSpacing: 0.3,
     height: 1.6,
-    color: ColorPalette.kOnboardingDescription,
+    color: ColorPalette.kTextSecondary,
   );
 
   // Auth screen text styles
@@ -169,7 +169,7 @@ class AppTypography {
     fontWeight: FontWeight.w700,
     letterSpacing: -0.5,
     height: 1.2,
-    color: ColorPalette.kAuthTitle,
+    color: ColorPalette.kTextPrimary,
   );
 
   /// Style for auth screen subtitle
@@ -178,7 +178,7 @@ class AppTypography {
     fontWeight: FontWeight.w400,
     letterSpacing: 0.0,
     height: 1.5,
-    color: ColorPalette.kAuthSubtitle,
+    color: ColorPalette.kTextSecondary,
   );
 
   /// Style for auth input labels
@@ -187,7 +187,7 @@ class AppTypography {
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
     height: 1.4,
-    color: ColorPalette.kAuthTitle,
+    color: ColorPalette.kTextPrimary,
   );
 
   /// Style for auth input text
@@ -196,7 +196,7 @@ class AppTypography {
     fontWeight: FontWeight.w400,
     letterSpacing: 0.0,
     height: 1.5,
-    color: ColorPalette.kAuthTitle,
+    color: ColorPalette.kTextPrimary,
   );
 
   /// Style for auth input placeholder
@@ -205,7 +205,7 @@ class AppTypography {
     fontWeight: FontWeight.w400,
     letterSpacing: 0.0,
     height: 1.5,
-    color: ColorPalette.kAuthPlaceholder,
+    color: ColorPalette.kDisabled,
   );
 
   /// Style for auth button text
@@ -214,7 +214,7 @@ class AppTypography {
     fontWeight: FontWeight.w600,
     letterSpacing: 0.2,
     height: 1.25,
-    color: ColorPalette.kAuthButtonText,
+    color: ColorPalette.kButtonText,
   );
 
   /// Style for auth link text
@@ -223,7 +223,7 @@ class AppTypography {
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
     height: 1.4,
-    color: ColorPalette.kAuthLinkText,
+    color: ColorPalette.kPrimary,
   );
 
   /// Style for auth small text
@@ -232,7 +232,7 @@ class AppTypography {
     fontWeight: FontWeight.w400,
     letterSpacing: 0.2,
     height: 1.4,
-    color: ColorPalette.kAuthSubtitle,
+    color: ColorPalette.kTextSecondary,
   );
 
   // Text theme for Material Design integration

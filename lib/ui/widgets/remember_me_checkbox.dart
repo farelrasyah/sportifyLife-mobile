@@ -72,12 +72,12 @@ class _RememberMeCheckboxState extends State<RememberMeCheckbox>
               child: Checkbox(
                 value: widget.value,
                 onChanged: (value) => widget.onChanged(value ?? false),
-                activeColor: ColorPalette.kAuthButtonPrimary,
+                activeColor: ColorPalette.kButton,
                 checkColor: Colors.white,
                 side: BorderSide(
                   color: widget.value
-                      ? ColorPalette.kAuthButtonPrimary
-                      : ColorPalette.kAuthInputBorder,
+                      ? ColorPalette.kButton
+                      : ColorPalette.kBorder,
                   width: 2,
                 ),
                 shape: RoundedRectangleBorder(
