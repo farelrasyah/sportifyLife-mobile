@@ -189,7 +189,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
                     ),
                     height: 28.0,
                     width: 28.0,
-                    // SVG sudah memiliki warna yang tepat dari file
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),

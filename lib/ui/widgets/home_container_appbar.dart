@@ -434,7 +434,7 @@ class _HomeContainerAppbarState extends State<HomeContainerAppbar>
         backgroundColor: Colors.white,
         radius: 25,
         backgroundImage: widget.profileImage.isNotEmpty
-            ? NetworkImage(widget.profileImage)
+            ? AssetImage(widget.profileImage)
             : null,
         child: widget.profileImage.isEmpty
             ? Icon(Icons.person, color: widget.primaryColor, size: 30)
@@ -534,7 +534,7 @@ class _HomeContainerAppbarState extends State<HomeContainerAppbar>
                   minScale: 0.5,
                   maxScale: 4.0,
                   child: Center(
-                    child: Image.network(
+                    child: Image.asset(
                       widget.profileImage,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) => Center(
@@ -544,16 +544,6 @@ class _HomeContainerAppbarState extends State<HomeContainerAppbar>
                           size: 50,
                         ),
                       ),
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              widget.primaryColor,
-                            ),
-                          ),
-                        );
-                      },
                     ),
                   ),
                 ),

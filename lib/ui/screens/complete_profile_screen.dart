@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:lottie/lottie.dart';
 import '../../cubits/user_details_cubit.dart';
 import '../../app/routes.dart';
 import '../../config/goal_type.dart';
@@ -14,25 +15,55 @@ class CompleteProfileScreen extends StatefulWidget {
   State<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
 }
 
-class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
+class _CompleteProfileScreenState extends State<CompleteProfileScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  // Form Controllers
   final _formKey = GlobalKey<FormState>();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
+  final _dateController = TextEditingController();
 
+  // Form Data
   Gender? _selectedGender;
   GoalType? _selectedGoalType;
   DateTime? _selectedDate;
 
+  // UI Constants
+  final String _weightUnit = 'KG';
+  final String _heightUnit = 'CM';
+
+  // Color Constants
+  static const Color _lightGray = Color(0xFFF7F8F8);
+  static const Color _gray = Color(0xFFADA4A5);
+  static const Color _black = Color(0xFF1D1617);
+  static const Color _brandBlue = Color(0xFF92A3FD);
+  static const Color _brandPurple = Color(0xFFC58BF2);
+  static const Color _secondaryColor1 = Color(0xFFC58BF2);
+  static const Color _secondaryColor2 = Color(0xFFEEA4CE);
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..forward();
+  }
+
   @override
   void dispose() {
+    _animationController.dispose();
     _weightController.dispose();
     _heightController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 
+  // ==================== Date Selection ====================
   Future<void> _selectDate() async {
     final now = DateTime.now();
-    final initialDate = DateTime(now.year - 25); // Default to 25 years old
+    final initialDate = DateTime(now.year - 25);
 
     final picked = await showDatePicker(
       context: context,
@@ -40,22 +71,35 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       firstDate: DateTime(now.year - Environment.maxAge),
       lastDate: DateTime(now.year - Environment.minAge),
       helpText: tr('date_of_birth_picker_help'),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: _brandBlue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: _black,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
+        _dateController.text = DateFormat('dd MMM yyyy').format(picked);
       });
     }
   }
 
+  // ==================== Form Submission ====================
   Future<void> _completeProfile() async {
-    // Validate form fields
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    // Validate required selections
     final validationErrors = <String>[];
 
     if (_selectedGender == null) {
@@ -70,19 +114,16 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       validationErrors.add(tr('validation_fitness_goal_required'));
     }
 
-    // Show validation errors
     if (validationErrors.isNotEmpty) {
       _showError(validationErrors.join('\n'));
       return;
     }
 
-    // Additional validations
     if (_selectedDate!.isAfter(DateTime.now())) {
       _showError(tr('validation_date_future'));
       return;
     }
 
-    // Calculate age
     final age = _calculateAge(_selectedDate!);
     if (age < Environment.minAge) {
       _showError(
@@ -102,7 +143,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       return;
     }
 
-    // Submit to backend
     context.read<UserDetailsCubit>().completeProfile(
       weight: double.parse(_weightController.text),
       height: int.parse(_heightController.text),
@@ -112,6 +152,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     );
   }
 
+  // ==================== Validation Methods ====================
   int _calculateAge(DateTime birthDate) {
     final now = DateTime.now();
     int age = now.year - birthDate.year;
@@ -170,13 +211,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     return null;
   }
 
+  // ==================== Build Method ====================
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context).size;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(tr('complete_profile_title')),
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: Colors.white,
       body: BlocConsumer<UserDetailsCubit, UserDetailsState>(
         listener: (context, state) {
           if (state is UserDetailsSuccess) {
@@ -188,7 +229,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             );
             Navigator.of(context).pushReplacementNamed(Routes.homeScreen);
           } else if (state is UserDetailsError) {
-            // Show detailed error message from backend
             _showError(state.error);
           }
         },
@@ -197,273 +237,701 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Icon
-                    Icon(
-                      Icons.person_add_alt_1,
-                      size: 80,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Title
-                    Text(
-                      tr('complete_profile_title'),
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-
-                    Text(
-                      tr('complete_profile_subtitle'),
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Weight Field
-                    TextFormField(
-                      controller: _weightController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      validator: _validateWeight,
-                      enabled: !isLoading,
-                      decoration: InputDecoration(
-                        labelText: tr('weight_label'),
-                        hintText: tr('weight_hint'),
-                        prefixIcon: const Icon(Icons.monitor_weight),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        helperText: tr('weight_helper')
-                            .replaceAll(
-                              '{min}',
-                              Environment.minWeight.toString(),
-                            )
-                            .replaceAll(
-                              '{max}',
-                              Environment.maxWeight.toString(),
-                            ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Height Field
-                    TextFormField(
-                      controller: _heightController,
-                      keyboardType: TextInputType.number,
-                      validator: _validateHeight,
-                      enabled: !isLoading,
-                      decoration: InputDecoration(
-                        labelText: tr('height_label'),
-                        hintText: tr('height_hint'),
-                        prefixIcon: const Icon(Icons.height),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        helperText: tr('height_helper')
-                            .replaceAll(
-                              '{min}',
-                              Environment.minHeight.toString(),
-                            )
-                            .replaceAll(
-                              '{max}',
-                              Environment.maxHeight.toString(),
-                            ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Gender Dropdown
-                    DropdownButtonFormField<Gender>(
-                      value: _selectedGender,
-                      decoration: InputDecoration(
-                        labelText: tr('gender_label'),
-                        prefixIcon: const Icon(Icons.wc),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        helperText: tr('gender_helper'),
-                      ),
-                      items: Gender.values
-                          .map(
-                            (gender) => DropdownMenuItem<Gender>(
-                              value: gender,
-                              child: Text(gender.label),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: isLoading
-                          ? null
-                          : (value) {
-                              setState(() {
-                                _selectedGender = value;
-                              });
-                            },
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Date of Birth
-                    InkWell(
-                      onTap: isLoading ? null : _selectDate,
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          labelText: tr('date_of_birth_label'),
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 15.0,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Animated Lottie Header
+                      FadeTransition(
+                        opacity: _animationController,
+                        child: SlideTransition(
+                          position:
+                              Tween<Offset>(
+                                begin: const Offset(0, -0.3),
+                                end: Offset.zero,
+                              ).animate(
+                                CurvedAnimation(
+                                  parent: _animationController,
+                                  curve: Curves.easeOutCubic,
+                                ),
+                              ),
+                          child: Lottie.asset(
+                            'assets/images/people.json',
+                            width: media.width * 0.6,
+                            height: media.width * 0.6,
+                            fit: BoxFit.contain,
+                            repeat: true,
+                            animate: true,
                           ),
-                          helperText: tr('date_of_birth_helper'),
-                          enabled: !isLoading,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _selectedDate != null
-                                  ? DateFormat(
-                                      'dd MMM yyyy',
-                                    ).format(_selectedDate!)
-                                  : tr('select_date_placeholder'),
-                              style: TextStyle(
-                                color: _selectedDate != null
-                                    ? Colors.black
-                                    : Colors.grey[600],
-                                fontSize: 16,
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Animated Title
+                      FadeTransition(
+                        opacity: _animationController,
+                        child: SlideTransition(
+                          position:
+                              Tween<Offset>(
+                                begin: const Offset(0, 0.5),
+                                end: Offset.zero,
+                              ).animate(
+                                CurvedAnimation(
+                                  parent: _animationController,
+                                  curve: Curves.easeOutCubic,
+                                ),
                               ),
-                            ),
-                            if (_selectedDate != null)
-                              Text(
-                                '${_calculateAge(_selectedDate!)} ${tr('years_old_suffix')}',
+                          child: Column(
+                            children: [
+                              ShaderMask(
+                                shaderCallback: (bounds) =>
+                                    const LinearGradient(
+                                      colors: [_brandBlue, _brandPurple],
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                    ).createShader(bounds),
+                                child: const Text(
+                                  "Complete Your Profile",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.5,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                "Let's get to know you better for a\npersonalized experience!",
                                 style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
+                                  color: _gray,
+                                  fontSize: 13,
+                                  height: 1.5,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 32),
 
-                    // Goal Type Dropdown with proper mapping
-                    DropdownButtonFormField<GoalType>(
-                      value: _selectedGoalType,
-                      decoration: InputDecoration(
-                        labelText: 'Fitness Goal *',
-                        prefixIcon: const Icon(Icons.flag),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        helperText: 'What is your primary fitness goal?',
+                      // Animated Form Fields
+                      _buildAnimatedField(
+                        delay: 100,
+                        child: _buildGenderDropdown(isLoading),
                       ),
-                      items: GoalType.values
-                          .map(
-                            (goal) => DropdownMenuItem<GoalType>(
-                              value: goal,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    goal.label,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Text(
-                                    goal.description,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: isLoading
-                          ? null
-                          : (value) {
-                              setState(() {
-                                _selectedGoalType = value;
-                              });
-                            },
-                      isExpanded: true,
-                    ),
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 16),
 
-                    // Info text about required fields
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        '* Required fields',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                          fontStyle: FontStyle.italic,
+                      _buildAnimatedField(
+                        delay: 200,
+                        child: _buildDateField(isLoading),
+                      ),
+                      const SizedBox(height: 16),
+
+                      _buildAnimatedField(
+                        delay: 300,
+                        child: _buildWeightField(isLoading),
+                      ),
+                      const SizedBox(height: 16),
+
+                      _buildAnimatedField(
+                        delay: 400,
+                        child: _buildHeightField(isLoading),
+                      ),
+                      const SizedBox(height: 16),
+
+                      _buildAnimatedField(
+                        delay: 500,
+                        child: _buildGoalTypeDropdown(isLoading),
+                      ),
+                      const SizedBox(height: 40),
+
+                      // Submit Button with Animation
+                      _buildAnimatedField(
+                        delay: 600,
+                        child: _buildGradientButton(
+                          title: "Complete Profile",
+                          onPressed: isLoading ? null : _completeProfile,
+                          isLoading: isLoading,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Complete Profile Button
-                    ElevatedButton(
-                      onPressed: isLoading ? null : _completeProfile,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                          : const Text(
-                              'Complete Profile',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Skip Button
-                    TextButton(
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                              Navigator.of(
-                                context,
-                              ).pushReplacementNamed(Routes.homeScreen);
-                            },
-                      child: const Text('Skip for now'),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  // ==================== Custom Widget Builders ====================
+
+  Widget _buildAnimatedField({required int delay, required Widget child}) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 400 + delay),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: child,
+    );
+  }
+
+  Widget _buildGenderDropdown(bool isLoading) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _lightGray,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _selectedGender != null
+              ? _brandBlue.withOpacity(0.3)
+              : Colors.transparent,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _selectedGender != null
+                ? _brandBlue.withOpacity(0.08)
+                : Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 56,
+            height: 56,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    _brandBlue.withOpacity(0.1),
+                    _brandPurple.withOpacity(0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.wc_rounded, color: _brandBlue, size: 22),
+            ),
+          ),
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<Gender>(
+                value: _selectedGender,
+                items: Gender.values
+                    .map(
+                      (gender) => DropdownMenuItem<Gender>(
+                        value: gender,
+                        child: Text(
+                          gender.label,
+                          style: const TextStyle(
+                            color: _black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: isLoading
+                    ? null
+                    : (value) {
+                        setState(() {
+                          _selectedGender = value;
+                        });
+                      },
+                isExpanded: true,
+                hint: const Text(
+                  "Choose Gender",
+                  style: TextStyle(color: _gray, fontSize: 14),
+                ),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: _gray,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDateField(bool isLoading) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _lightGray,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _dateController.text.isNotEmpty
+              ? _brandBlue.withOpacity(0.3)
+              : Colors.transparent,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _dateController.text.isNotEmpty
+                ? _brandBlue.withOpacity(0.08)
+                : Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 56,
+            height: 56,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    _brandBlue.withOpacity(0.1),
+                    _brandPurple.withOpacity(0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.calendar_today_rounded,
+                color: _brandBlue,
+                size: 20,
+              ),
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: _dateController,
+              readOnly: true,
+              enabled: !isLoading,
+              onTap: isLoading ? null : _selectDate,
+              decoration: const InputDecoration(
+                hintText: "Date of Birth",
+                hintStyle: TextStyle(color: _gray, fontSize: 14),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 18),
+              ),
+              style: const TextStyle(
+                color: _black,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeightField(bool isLoading) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: _lightGray,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: _weightController.text.isNotEmpty
+                    ? _brandBlue.withOpacity(0.3)
+                    : Colors.transparent,
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: _weightController.text.isNotEmpty
+                      ? _brandBlue.withOpacity(0.08)
+                      : Colors.black.withOpacity(0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  width: 56,
+                  height: 56,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          _brandBlue.withOpacity(0.1),
+                          _brandPurple.withOpacity(0.1),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.monitor_weight_rounded,
+                      color: _brandBlue,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TextFormField(
+                    controller: _weightController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator: _validateWeight,
+                    enabled: !isLoading,
+                    decoration: const InputDecoration(
+                      hintText: "Your Weight",
+                      hintStyle: TextStyle(color: _gray, fontSize: 14),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 18),
+                      errorStyle: TextStyle(fontSize: 0.01),
+                    ),
+                    style: const TextStyle(
+                      color: _black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Container(
+          width: 64,
+          height: 56,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [_secondaryColor2, _secondaryColor1],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: _secondaryColor1.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Text(
+            _weightUnit,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeightField(bool isLoading) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: _lightGray,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: _heightController.text.isNotEmpty
+                    ? _brandBlue.withOpacity(0.3)
+                    : Colors.transparent,
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: _heightController.text.isNotEmpty
+                      ? _brandBlue.withOpacity(0.08)
+                      : Colors.black.withOpacity(0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  width: 56,
+                  height: 56,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          _brandBlue.withOpacity(0.1),
+                          _brandPurple.withOpacity(0.1),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.height_rounded,
+                      color: _brandBlue,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TextFormField(
+                    controller: _heightController,
+                    keyboardType: TextInputType.number,
+                    validator: _validateHeight,
+                    enabled: !isLoading,
+                    decoration: const InputDecoration(
+                      hintText: "Your Height",
+                      hintStyle: TextStyle(color: _gray, fontSize: 14),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 18),
+                      errorStyle: TextStyle(fontSize: 0.01),
+                    ),
+                    style: const TextStyle(
+                      color: _black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Container(
+          width: 64,
+          height: 56,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [_secondaryColor2, _secondaryColor1],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: _secondaryColor1.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Text(
+            _heightUnit,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGoalTypeDropdown(bool isLoading) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _lightGray,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _selectedGoalType != null
+              ? _brandBlue.withOpacity(0.3)
+              : Colors.transparent,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _selectedGoalType != null
+                ? _brandBlue.withOpacity(0.08)
+                : Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 56,
+            height: 56,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    _brandBlue.withOpacity(0.1),
+                    _brandPurple.withOpacity(0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.emoji_events_rounded,
+                color: _brandBlue,
+                size: 22,
+              ),
+            ),
+          ),
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<GoalType>(
+                value: _selectedGoalType,
+                items: GoalType.values
+                    .map(
+                      (goal) => DropdownMenuItem<GoalType>(
+                        value: goal,
+                        child: Text(
+                          goal.label,
+                          style: const TextStyle(
+                            color: _black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: isLoading
+                    ? null
+                    : (value) {
+                        setState(() {
+                          _selectedGoalType = value;
+                        });
+                      },
+                isExpanded: true,
+                hint: const Text(
+                  "Choose Your Fitness Goal",
+                  style: TextStyle(color: _gray, fontSize: 14),
+                ),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: _gray,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGradientButton({
+    required String title,
+    required VoidCallback? onPressed,
+    required bool isLoading,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: onPressed == null
+            ? LinearGradient(
+                colors: [Colors.grey.shade300, Colors.grey.shade400],
+              )
+            : const LinearGradient(
+                colors: [_brandBlue, _brandPurple],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+        borderRadius: BorderRadius.circular(99),
+        boxShadow: onPressed == null
+            ? []
+            : [
+                BoxShadow(
+                  color: _brandBlue.withOpacity(0.4),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: _brandPurple.withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                  spreadRadius: 0,
+                ),
+              ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(99),
+          splashColor: Colors.white.withOpacity(0.2),
+          highlightColor: Colors.white.withOpacity(0.1),
+          child: Container(
+            height: 60,
+            alignment: Alignment.center,
+            child: isLoading
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+          ),
+        ),
       ),
     );
   }

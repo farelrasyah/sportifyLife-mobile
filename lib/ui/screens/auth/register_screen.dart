@@ -35,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _handleRegister() {
-    // TEMPORARY: Direct navigation to MainScreen for testing
+    // TEMPORARY: Direct navigation to Complete Profile Screen for testing
     // TODO: Uncomment below code when ready to use authentication
     /*
     if (_firstNameController.text.isNotEmpty &&
@@ -63,8 +63,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     */
 
-    // Navigate to bottom navigation (main app)
-    RouteHelper.navigateToMainApp(context);
+    // Navigate to Complete Profile Screen for new users
+    Navigator.of(context).pushReplacementNamed(Routes.completeProfileScreen);
   }
 
   @override
@@ -103,12 +103,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
               });
             } else {
+              // Registration successful, navigate to Complete Profile Screen
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(tr('message_register_success')),
                   backgroundColor: Colors.green,
                 ),
               );
+
+              // Navigate to Complete Profile Screen for new users
+              Future.delayed(const Duration(milliseconds: 500), () {
+                if (mounted) {
+                  Navigator.of(
+                    context,
+                  ).pushReplacementNamed(Routes.completeProfileScreen);
+                }
+              });
             }
           }
         },
