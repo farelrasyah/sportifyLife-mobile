@@ -26,7 +26,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
 
   // Form Data
   Gender? _selectedGender;
-  GoalType? _selectedGoalType;
   DateTime? _selectedDate;
 
   // UI Constants
@@ -110,10 +109,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       validationErrors.add(tr('validation_date_of_birth_required'));
     }
 
-    if (_selectedGoalType == null) {
-      validationErrors.add(tr('validation_fitness_goal_required'));
-    }
-
     if (validationErrors.isNotEmpty) {
       _showError(validationErrors.join('\n'));
       return;
@@ -148,7 +143,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       height: int.parse(_heightController.text),
       gender: _selectedGender!,
       dateOfBirth: _selectedDate!,
-      goalType: _selectedGoalType!,
+      goalType: GoalType.improveShape,
     );
   }
 
@@ -247,120 +242,46 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Animated Lottie Header
-                      FadeTransition(
-                        opacity: _animationController,
-                        child: SlideTransition(
-                          position:
-                              Tween<Offset>(
-                                begin: const Offset(0, -0.3),
-                                end: Offset.zero,
-                              ).animate(
-                                CurvedAnimation(
-                                  parent: _animationController,
-                                  curve: Curves.easeOutCubic,
-                                ),
-                              ),
-                          child: Lottie.asset(
-                            'assets/images/people.json',
-                            width: media.width * 0.6,
-                            height: media.width * 0.6,
-                            fit: BoxFit.contain,
-                            repeat: true,
-                            animate: true,
-                          ),
+                      Lottie.asset(
+                        'assets/images/people.json',
+                        width: media.width,
+                        fit: BoxFit.fitWidth,
+                      ),
+                      SizedBox(height: media.width * 0.05),
+
+                      Text(
+                        "Let's complete your profile",
+                        style: TextStyle(
+                          color: _black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 24),
-
-                      // Animated Title
-                      FadeTransition(
-                        opacity: _animationController,
-                        child: SlideTransition(
-                          position:
-                              Tween<Offset>(
-                                begin: const Offset(0, 0.5),
-                                end: Offset.zero,
-                              ).animate(
-                                CurvedAnimation(
-                                  parent: _animationController,
-                                  curve: Curves.easeOutCubic,
-                                ),
-                              ),
-                          child: Column(
-                            children: [
-                              ShaderMask(
-                                shaderCallback: (bounds) =>
-                                    const LinearGradient(
-                                      colors: [_brandBlue, _brandPurple],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                    ).createShader(bounds),
-                                child: const Text(
-                                  "Complete Your Profile",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.5,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text(
-                                "Let's get to know you better for a\npersonalized experience!",
-                                style: TextStyle(
-                                  color: _gray,
-                                  fontSize: 13,
-                                  height: 1.5,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ),
+                      Text(
+                        "It will help us to know more about you!",
+                        style: TextStyle(color: _gray, fontSize: 12),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 32),
-
-                      // Animated Form Fields
-                      _buildAnimatedField(
-                        delay: 100,
-                        child: _buildGenderDropdown(isLoading),
-                      ),
-                      const SizedBox(height: 16),
-
-                      _buildAnimatedField(
-                        delay: 200,
-                        child: _buildDateField(isLoading),
-                      ),
-                      const SizedBox(height: 16),
-
-                      _buildAnimatedField(
-                        delay: 300,
-                        child: _buildWeightField(isLoading),
-                      ),
-                      const SizedBox(height: 16),
-
-                      _buildAnimatedField(
-                        delay: 400,
-                        child: _buildHeightField(isLoading),
-                      ),
-                      const SizedBox(height: 16),
-
-                      _buildAnimatedField(
-                        delay: 500,
-                        child: _buildGoalTypeDropdown(isLoading),
-                      ),
-                      const SizedBox(height: 40),
-
-                      // Submit Button with Animation
-                      _buildAnimatedField(
-                        delay: 600,
-                        child: _buildGradientButton(
-                          title: "Complete Profile",
-                          onPressed: isLoading ? null : _completeProfile,
-                          isLoading: isLoading,
+                      SizedBox(height: media.width * 0.05),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Column(
+                          children: [
+                            _buildGenderDropdown(isLoading),
+                            SizedBox(height: media.width * 0.04),
+                            _buildDateField(isLoading),
+                            SizedBox(height: media.width * 0.04),
+                            _buildWeightField(isLoading),
+                            SizedBox(height: media.width * 0.04),
+                            _buildHeightField(isLoading),
+                            SizedBox(height: media.width * 0.07),
+                            _buildGradientButton(
+                              title: "Next",
+                              onPressed: isLoading ? null : _completeProfile,
+                              isLoading: isLoading,
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -377,61 +298,25 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
 
   // ==================== Custom Widget Builders ====================
 
-  Widget _buildAnimatedField({required int delay, required Widget child}) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: Duration(milliseconds: 400 + delay),
-      curve: Curves.easeOutCubic,
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(0, 20 * (1 - value)),
-          child: Opacity(opacity: value, child: child),
-        );
-      },
-      child: child,
-    );
-  }
-
   Widget _buildGenderDropdown(bool isLoading) {
     return Container(
       decoration: BoxDecoration(
         color: _lightGray,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _selectedGender != null
-              ? _brandBlue.withOpacity(0.3)
-              : Colors.transparent,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _selectedGender != null
-                ? _brandBlue.withOpacity(0.08)
-                : Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         children: [
           Container(
             alignment: Alignment.center,
-            width: 56,
-            height: 56,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    _brandBlue.withOpacity(0.1),
-                    _brandPurple.withOpacity(0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.wc_rounded, color: _brandBlue, size: 22),
+            width: 50,
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Image.asset(
+              "assets/images/gender.png",
+              width: 20,
+              height: 20,
+              fit: BoxFit.contain,
+              color: _gray,
             ),
           ),
           Expanded(
@@ -444,11 +329,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                         value: gender,
                         child: Text(
                           gender.label,
-                          style: const TextStyle(
-                            color: _black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: TextStyle(color: _gray, fontSize: 14),
                         ),
                       ),
                     )
@@ -461,18 +342,15 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                         });
                       },
                 isExpanded: true,
-                hint: const Text(
+                hint: Text(
                   "Choose Gender",
-                  style: TextStyle(color: _gray, fontSize: 14),
+                  style: TextStyle(color: _gray, fontSize: 12),
                 ),
-                icon: const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: _gray,
-                ),
+                underline: Container(),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 8),
         ],
       ),
     );
@@ -482,46 +360,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
     return Container(
       decoration: BoxDecoration(
         color: _lightGray,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _dateController.text.isNotEmpty
-              ? _brandBlue.withOpacity(0.3)
-              : Colors.transparent,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _dateController.text.isNotEmpty
-                ? _brandBlue.withOpacity(0.08)
-                : Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         children: [
           Container(
             alignment: Alignment.center,
-            width: 56,
-            height: 56,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    _brandBlue.withOpacity(0.1),
-                    _brandPurple.withOpacity(0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.calendar_today_rounded,
-                color: _brandBlue,
-                size: 20,
-              ),
+            width: 50,
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Image.asset(
+              "assets/images/date.png",
+              width: 20,
+              height: 20,
+              fit: BoxFit.contain,
+              color: _gray,
             ),
           ),
           Expanded(
@@ -530,20 +383,17 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
               readOnly: true,
               enabled: !isLoading,
               onTap: isLoading ? null : _selectDate,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: "Date of Birth",
-                hintStyle: TextStyle(color: _gray, fontSize: 14),
+                hintStyle: TextStyle(color: _gray, fontSize: 12),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 18),
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
               ),
-              style: const TextStyle(
-                color: _black,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: TextStyle(color: _gray, fontSize: 12),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 8),
         ],
       ),
     );
@@ -556,46 +406,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
           child: Container(
             decoration: BoxDecoration(
               color: _lightGray,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: _weightController.text.isNotEmpty
-                    ? _brandBlue.withOpacity(0.3)
-                    : Colors.transparent,
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _weightController.text.isNotEmpty
-                      ? _brandBlue.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
               children: [
                 Container(
                   alignment: Alignment.center,
-                  width: 56,
-                  height: 56,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          _brandBlue.withOpacity(0.1),
-                          _brandPurple.withOpacity(0.1),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.monitor_weight_rounded,
-                      color: _brandBlue,
-                      size: 20,
-                    ),
+                  width: 50,
+                  height: 50,
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Image.asset(
+                    "assets/images/weight.png",
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.contain,
+                    color: _gray,
                   ),
                 ),
                 Expanded(
@@ -606,18 +431,16 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                     ),
                     validator: _validateWeight,
                     enabled: !isLoading,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: "Your Weight",
-                      hintStyle: TextStyle(color: _gray, fontSize: 14),
+                      hintStyle: TextStyle(color: _gray, fontSize: 12),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 18),
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
                       errorStyle: TextStyle(fontSize: 0.01),
                     ),
-                    style: const TextStyle(
-                      color: _black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: _gray, fontSize: 12),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -625,34 +448,20 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         Container(
-          width: 64,
-          height: 56,
+          width: 50,
+          height: 50,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               colors: [_secondaryColor2, _secondaryColor1],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: _secondaryColor1.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Text(
             _weightUnit,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 12),
           ),
         ),
       ],
@@ -666,46 +475,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
           child: Container(
             decoration: BoxDecoration(
               color: _lightGray,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: _heightController.text.isNotEmpty
-                    ? _brandBlue.withOpacity(0.3)
-                    : Colors.transparent,
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _heightController.text.isNotEmpty
-                      ? _brandBlue.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
               children: [
                 Container(
                   alignment: Alignment.center,
-                  width: 56,
-                  height: 56,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          _brandBlue.withOpacity(0.1),
-                          _brandPurple.withOpacity(0.1),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.height_rounded,
-                      color: _brandBlue,
-                      size: 20,
-                    ),
+                  width: 50,
+                  height: 50,
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Image.asset(
+                    "assets/images/hight.png",
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.contain,
+                    color: _gray,
                   ),
                 ),
                 Expanded(
@@ -714,18 +498,16 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                     keyboardType: TextInputType.number,
                     validator: _validateHeight,
                     enabled: !isLoading,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: "Your Height",
-                      hintStyle: TextStyle(color: _gray, fontSize: 14),
+                      hintStyle: TextStyle(color: _gray, fontSize: 12),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 18),
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
                       errorStyle: TextStyle(fontSize: 0.01),
                     ),
-                    style: const TextStyle(
-                      color: _black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: _gray, fontSize: 12),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -733,127 +515,23 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         Container(
-          width: 64,
-          height: 56,
+          width: 50,
+          height: 50,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               colors: [_secondaryColor2, _secondaryColor1],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: _secondaryColor1.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Text(
             _heightUnit,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 12),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildGoalTypeDropdown(bool isLoading) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _lightGray,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _selectedGoalType != null
-              ? _brandBlue.withOpacity(0.3)
-              : Colors.transparent,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _selectedGoalType != null
-                ? _brandBlue.withOpacity(0.08)
-                : Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            alignment: Alignment.center,
-            width: 56,
-            height: 56,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    _brandBlue.withOpacity(0.1),
-                    _brandPurple.withOpacity(0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.emoji_events_rounded,
-                color: _brandBlue,
-                size: 22,
-              ),
-            ),
-          ),
-          Expanded(
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<GoalType>(
-                value: _selectedGoalType,
-                items: GoalType.values
-                    .map(
-                      (goal) => DropdownMenuItem<GoalType>(
-                        value: goal,
-                        child: Text(
-                          goal.label,
-                          style: const TextStyle(
-                            color: _black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: isLoading
-                    ? null
-                    : (value) {
-                        setState(() {
-                          _selectedGoalType = value;
-                        });
-                      },
-                isExpanded: true,
-                hint: const Text(
-                  "Choose Your Fitness Goal",
-                  style: TextStyle(color: _gray, fontSize: 14),
-                ),
-                icon: const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: _gray,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
     );
   }
 
