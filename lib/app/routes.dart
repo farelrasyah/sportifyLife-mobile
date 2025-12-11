@@ -27,6 +27,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Core Screens
 import '../ui/screens/splash_screen.dart';
 import '../ui/screens/complete_profile_screen.dart';
+import '../ui/screens/goal_screen.dart';
 import '../ui/screens/home_screen.dart';
 
 // Onboarding Screens
@@ -85,6 +86,7 @@ class Routes {
   // Core Routes
   static const String splashScreen = '/';
   static const String completeProfileScreen = '/completeProfile';
+  static const String goalScreen = '/goal';
   static const String homeScreen = '/home';
 
   // Onboarding Routes
@@ -154,6 +156,12 @@ class RouteGenerator {
             create: (_) => UserDetailsCubit(UserDetailsRepository()),
             child: const CompleteProfileScreen(),
           ),
+        );
+
+      case Routes.goalScreen:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const GoalScreen(),
         );
 
       case Routes.homeScreen:

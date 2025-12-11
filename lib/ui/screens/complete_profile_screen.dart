@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
-import '../../cubits/user_details_cubit.dart';
 import '../../app/routes.dart';
 import '../../config/goal_type.dart';
 import '../../config/environment.dart';
@@ -69,7 +67,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       initialDate: initialDate,
       firstDate: DateTime(now.year - Environment.maxAge),
       lastDate: DateTime(now.year - Environment.minAge),
-      helpText: tr('date_of_birth_picker_help'),
+      helpText: 'Select your date of birth',
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -102,11 +100,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
     final validationErrors = <String>[];
 
     if (_selectedGender == null) {
-      validationErrors.add(tr('validation_gender_required'));
+      validationErrors.add('Please select your gender');
     }
 
     if (_selectedDate == null) {
-      validationErrors.add(tr('validation_date_of_birth_required'));
+      validationErrors.add('Please select your date of birth');
     }
 
     if (validationErrors.isNotEmpty) {
@@ -115,36 +113,32 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
     }
 
     if (_selectedDate!.isAfter(DateTime.now())) {
-      _showError(tr('validation_date_future'));
+      _showError('Date of birth cannot be in the future');
       return;
     }
 
     final age = _calculateAge(_selectedDate!);
     if (age < Environment.minAge) {
-      _showError(
-        tr(
-          'validation_age_min',
-        ).replaceAll('{age}', Environment.minAge.toString()),
-      );
+      _showError('Minimum age is ${Environment.minAge} years');
       return;
     }
 
     if (age > Environment.maxAge) {
-      _showError(
-        tr(
-          'validation_age_max',
-        ).replaceAll('{age}', Environment.maxAge.toString()),
-      );
+      _showError('Maximum age is ${Environment.maxAge} years');
       return;
     }
 
-    context.read<UserDetailsCubit>().completeProfile(
-      weight: double.parse(_weightController.text),
-      height: int.parse(_heightController.text),
-      gender: _selectedGender!,
-      dateOfBirth: _selectedDate!,
-      goalType: GoalType.improveShape,
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Profile completed successfully!'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
     );
+
+    // Navigate to next screen
+    Navigator.of(context).pushReplacementNamed(Routes.goalScreen);
   }
 
   // ==================== Validation Methods ====================
@@ -170,7 +164,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
 
   String? _validateWeight(String? value) {
     if (value == null || value.isEmpty) {
-      return tr('validation_weight_required');
+      return 'Please enter your weight';
     }
 
     final weight = double.tryParse(value);
@@ -179,9 +173,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
     }
 
     if (weight < Environment.minWeight || weight > Environment.maxWeight) {
-      return tr('validation_weight_range')
-          .replaceAll('{min}', Environment.minWeight.toString())
-          .replaceAll('{max}', Environment.maxWeight.toString());
+      return 'Weight must be between ${Environment.minWeight} and ${Environment.maxWeight} kg';
     }
 
     return null;
@@ -189,7 +181,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
 
   String? _validateHeight(String? value) {
     if (value == null || value.isEmpty) {
-      return tr('validation_height_required');
+      return 'Please enter your height';
     }
 
     final height = int.tryParse(value);
@@ -198,9 +190,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
     }
 
     if (height < Environment.minHeight || height > Environment.maxHeight) {
-      return tr('validation_height_range')
-          .replaceAll('{min}', Environment.minHeight.toString())
-          .replaceAll('{max}', Environment.maxHeight.toString());
+      return 'Height must be between ${Environment.minHeight} and ${Environment.maxHeight} cm';
     }
 
     return null;
@@ -213,85 +203,66 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: BlocConsumer<UserDetailsCubit, UserDetailsState>(
-        listener: (context, state) {
-          if (state is UserDetailsSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.green,
-              ),
-            );
-            Navigator.of(context).pushReplacementNamed(Routes.homeScreen);
-          } else if (state is UserDetailsError) {
-            _showError(state.error);
-          }
-        },
-        builder: (context, state) {
-          final isLoading = state is UserDetailsLoading;
-
-          return SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 15.0,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Lottie.asset(
-                        'assets/images/people.json',
-                        width: media.width,
-                        fit: BoxFit.fitWidth,
-                      ),
-                      SizedBox(height: media.width * 0.05),
-
-                      Text(
-                        "Let's complete your profile",
-                        style: TextStyle(
-                          color: _black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        "It will help us to know more about you!",
-                        style: TextStyle(color: _gray, fontSize: 12),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: media.width * 0.05),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Column(
-                          children: [
-                            _buildGenderDropdown(isLoading),
-                            SizedBox(height: media.width * 0.04),
-                            _buildDateField(isLoading),
-                            SizedBox(height: media.width * 0.04),
-                            _buildWeightField(isLoading),
-                            SizedBox(height: media.width * 0.04),
-                            _buildHeightField(isLoading),
-                            SizedBox(height: media.width * 0.07),
-                            _buildGradientButton(
-                              title: "Next",
-                              onPressed: isLoading ? null : _completeProfile,
-                              isLoading: isLoading,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 15.0,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Lottie.asset(
+                    'assets/images/people.json',
+                    width: media.width,
+                    fit: BoxFit.fitWidth,
                   ),
-                ),
+                  SizedBox(height: media.width * 0.05),
+
+                  Text(
+                    "Let's complete your profile",
+                    style: TextStyle(
+                      color: _black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    "It will help us to know more about you!",
+                    style: TextStyle(color: _gray, fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: media.width * 0.05),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: Column(
+                      children: [
+                        _buildGenderDropdown(false),
+                        SizedBox(height: media.width * 0.04),
+                        _buildDateField(false),
+                        SizedBox(height: media.width * 0.04),
+                        _buildWeightField(false),
+                        SizedBox(height: media.width * 0.04),
+                        _buildHeightField(false),
+                        SizedBox(height: media.width * 0.07),
+                        _buildGradientButton(
+                          title: "Next",
+                          onPressed: _completeProfile,
+                          isLoading: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

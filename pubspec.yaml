@@ -62,6 +62,7 @@ dependencies:
   # UI
   google_fonts: ^6.1.0
   flutter_svg: ^2.0.9
+  carousel_slider: ^5.0.0
   
   # Animations
   lottie: ^3.1.2
@@ -128,16 +129,19 @@ flutter:
     - assets/images/honey.json
     - assets/images/jump.json
     - assets/images/jumping_jack.json
+    - assets/images/jumping_squat.json
     - assets/images/meditating.json
     - assets/images/onboarding_2.json
     - assets/images/onboarding_3.json
     - assets/images/orange.json
     - assets/images/paddy.json
     - assets/images/pancakes.json
+    - assets/images/people.json
     - assets/images/Pie.json
     - assets/images/salad.json
     - assets/images/sandwich.json
     - assets/images/sleep.json
+    - assets/images/split_jump.json
     - assets/images/verification.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
