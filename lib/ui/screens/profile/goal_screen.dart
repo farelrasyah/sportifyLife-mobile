@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart' hide CarouselController;
 import 'package:lottie/lottie.dart';
-import '../../../app/routes.dart';
+ import '../../../app/routes.dart';
 
 class GoalScreen extends StatefulWidget {
   const GoalScreen({super.key});
@@ -27,7 +27,7 @@ class _GoalScreenState extends State<GoalScreen> {
 
   List goalArr = [
     {
-      "lottie": "assets/images/jump_rope.json",
+      "lottie": "assets/images/punches.json",
       "title": "Improve Shape",
       "subtitle":
           "I have a low amount of body fat\nand need / want to build more\nmuscle",
@@ -39,7 +39,7 @@ class _GoalScreenState extends State<GoalScreen> {
           "I'm skinny fat. look thin but have\nno shape. I want to add lean\nmuscle in the right way",
     },
     {
-      "lottie": "assets/images/jumping_squats.json",
+      "lottie": "assets/images/exercise.json",
       "title": "Lose a Fat",
       "subtitle":
           "I have over 20 lbs to lose. I want to\ndrop all this fat and gain muscle\nmass",

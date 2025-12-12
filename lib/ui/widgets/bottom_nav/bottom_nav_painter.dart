@@ -15,9 +15,9 @@ class AppBarPainter extends CustomPainter {
     this.selectedIndex = 0, // Default to home (first tab)
   });
 
-  double height = 100.0; // Height of the navigation bar
+  double height = 120.0; // Height of the navigation bar
   double start = 40.0; // Start position from top
-  double end = 140.0; // End position (total height)
+  double end = 120.0; // End position (total height)
 
   @override
   void paint(Canvas canvas, Size size) {

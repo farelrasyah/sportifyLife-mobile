@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import '../../../app/routes.dart';
 import '../../common/colo_extension.dart';
 import '../widgets/round_button.dart';
-import 'home_screen.dart';
 
 /// Welcome screen displayed after user completes goal selection
 /// Shows a congratulatory message with Lottie animation and navigation to home
@@ -17,9 +17,9 @@ class WelcomeView extends StatefulWidget {
 class _WelcomeViewState extends State<WelcomeView> {
   static const double _horizontalPadding = 25.0;
   static const double _verticalPadding = 15.0;
-  static const double _topSpacingMultiplier = 0.1;
-  static const double _lottieWidthMultiplier = 0.75;
-  static const double _bottomSpacingMultiplier = 0.1;
+  static const double _topSpacingMultiplier = 0.15;
+  static const double _lottieWidthMultiplier = 2.0;
+  static const double _bottomSpacingMultiplier = 0.05;
 
   static const String _welcomeTitle = "Welcome, Farasyah";
   static const String _welcomeSubtitle =
@@ -59,7 +59,7 @@ class _WelcomeViewState extends State<WelcomeView> {
   }
 
   Widget _buildTopSpacing(Size media) {
-    return SizedBox(height: media.width * _topSpacingMultiplier);
+    return SizedBox(height: media.height * _topSpacingMultiplier);
   }
 
   Widget _buildLottieAnimation(Size media) {
@@ -71,7 +71,7 @@ class _WelcomeViewState extends State<WelcomeView> {
   }
 
   Widget _buildBottomSpacing(Size media) {
-    return SizedBox(height: media.width * _bottomSpacingMultiplier);
+    return SizedBox(height: media.height * _bottomSpacingMultiplier);
   }
 
   Widget _buildWelcomeTitle() {
@@ -98,9 +98,6 @@ class _WelcomeViewState extends State<WelcomeView> {
   }
 
   void _navigateToHome() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-    );
+    Navigator.pushReplacementNamed(context, Routes.mainBottomNavigationScreen);
   }
 }

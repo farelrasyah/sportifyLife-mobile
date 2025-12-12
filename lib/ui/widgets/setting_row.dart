@@ -18,7 +18,7 @@ class SettingRow extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       child: SizedBox(
-        height: 30,
+        height: 25,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

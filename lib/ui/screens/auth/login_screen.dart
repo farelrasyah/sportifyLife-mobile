@@ -23,6 +23,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  // Color Constants
+  static const Color _lightGray = Color(0xFFF7F8F8);
+  static const Color _gray = Color(0xFFADA4A5);
+  static const Color _black = Color(0xFF1D1617);
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -52,6 +57,56 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Navigate to bottom navigation (main app)
     RouteHelper.navigateToMainApp(context);
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required String iconPath,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+    Widget? rightIcon,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _lightGray,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 50,
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Image.asset(
+              iconPath,
+              width: 20,
+              height: 20,
+              fit: BoxFit.contain,
+              color: _gray,
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              keyboardType: keyboardType,
+              obscureText: obscureText,
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: TextStyle(color: _gray, fontSize: 12),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+              ),
+              style: TextStyle(color: _black, fontSize: 14),
+            ),
+          ),
+          if (rightIcon != null) rightIcon,
+          const SizedBox(width: 8),
+        ],
+      ),
+    );
   }
 
   @override
@@ -140,19 +195,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 30),
 
                         // Form Section
-                        RoundTextField(
+                        _buildTextField(
                           controller: _emailController,
-                          hitText: tr("hint_email"),
-                          icon: "assets/images/email.png",
+                          hintText: tr("hint_email"),
+                          iconPath: "assets/images/email.png",
                           keyboardType: TextInputType.emailAddress,
                         ),
                         SizedBox(height: 15),
-                        RoundTextField(
+                        _buildTextField(
                           controller: _passwordController,
-                          hitText: tr("hint_password"),
-                          icon: "assets/images/lock.png",
+                          hintText: tr("hint_password"),
+                          iconPath: "assets/images/lock.png",
                           obscureText: true,
-                          rigtIcon: TextButton(
+                          rightIcon: TextButton(
                             onPressed: () {},
                             child: Container(
                               alignment: Alignment.center,
@@ -163,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: 20,
                                 height: 20,
                                 fit: BoxFit.contain,
-                                color: TColor.gray,
+                                color: _gray,
                               ),
                             ),
                           ),

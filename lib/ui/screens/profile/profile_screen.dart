@@ -73,19 +73,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Expanded(
             child: SingleChildScrollView(
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                  horizontal: 25,
+                padding: const EdgeInsets.only(
+                  top: 15,
+                  bottom: 140, // Add bottom padding to avoid bottom nav
+                  left: 25,
+                  right: 25,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildUserStatsRow(),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 20),
                     _buildAccountSection(),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 20),
                     _buildNotificationSection(),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 20),
                     _buildAdditionalOptionsSection(),
                   ],
                 ),
@@ -120,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildAccountSection() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
       decoration: BoxDecoration(
         color: TColor.white,
         borderRadius: BorderRadius.circular(15),
@@ -137,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -158,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildNotificationSection() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
       decoration: BoxDecoration(
         color: TColor.white,
         borderRadius: BorderRadius.circular(15),
@@ -175,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           SizedBox(
             height: 30,
             child: Row(
@@ -277,7 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             padding: EdgeInsets.zero,

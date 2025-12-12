@@ -29,7 +29,7 @@ import '../ui/screens/splash_screen.dart';
 import '../ui/screens/profile/complete_profile_screen.dart';
 import '../ui/screens/profile/goal_screen.dart';
 import '../ui/screens/welcome_screen.dart';
-import '../ui/screens/home_screen.dart';
+
 
 // Onboarding Screens
 import '../ui/screens/onboarding/view/onboarding_screen.dart';
@@ -172,11 +172,6 @@ class RouteGenerator {
           builder: (_) => const WelcomeView(),
         );
 
-      case Routes.homeScreen:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const HomeScreen(),
-        );
 
       // Onboarding Routes
       case Routes.onboardingScreen:

@@ -128,10 +128,10 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
             ),
             size: Size(
               MediaQuery.of(context).size.width - (2 * horizontalMargin),
-              140.0,
+              120.0,
             ),
             child: SizedBox(
-              height: 140.0,
+              height: 120.0,
               width: MediaQuery.of(context).size.width - (2 * horizontalMargin),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -164,9 +164,9 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 375),
         curve: Curves.easeOut,
-        height: 125,
+        height: 105,
         width: itemWidth,
-        padding: const EdgeInsets.only(top: 14.0, bottom: 22.5),
+        padding: const EdgeInsets.only(top: 12.0, bottom: 18.0),
         alignment: isSelected ? Alignment.topCenter : Alignment.bottomCenter,
         child: Column(
           mainAxisSize: MainAxisSize.min,
