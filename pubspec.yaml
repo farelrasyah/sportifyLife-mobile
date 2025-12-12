@@ -129,7 +129,8 @@ flutter:
     - assets/images/honey.json
     - assets/images/jump.json
     - assets/images/jumping_jack.json
-    - assets/images/jumping_squat.json
+    - assets/images/jumping_squats.json
+    - assets/images/jump_rope.json
     - assets/images/meditating.json
     - assets/images/onboarding_2.json
     - assets/images/onboarding_3.json
@@ -143,6 +144,8 @@ flutter:
     - assets/images/sleep.json
     - assets/images/split_jump.json
     - assets/images/verification.json
+    - assets/images/punches.json
+    - assets/images/exercise.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

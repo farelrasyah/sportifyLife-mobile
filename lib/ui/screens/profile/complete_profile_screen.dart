@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
-import '../../app/routes.dart';
-import '../../config/goal_type.dart';
-import '../../config/environment.dart';
+import '../../../app/routes.dart';
+import '../../../config/goal_type.dart';
+import '../../../config/environment.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
   const CompleteProfileScreen({Key? key}) : super(key: key);
