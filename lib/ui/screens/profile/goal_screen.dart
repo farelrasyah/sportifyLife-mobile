@@ -1,7 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart' hide CarouselController;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
- import '../../../app/routes.dart';
+import '../../../app/routes.dart';
+import '../../../cubits/goal_cubit.dart';
+
 
 class GoalScreen extends StatefulWidget {
   const GoalScreen({super.key});
@@ -49,183 +52,203 @@ class _GoalScreenState extends State<GoalScreen> {
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: _white,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Center(
-              child: CarouselSlider(
-                items: goalArr
-                    .asMap()
-                    .entries
-                    .map(
-                      (entry) => GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedGoalIndex = entry.key;
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: _primaryGradient,
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+    return BlocListener<GoalCubit, GoalState>(
+      listener: (context, state) {
+        if (state is GoalSuccess) {
+          // Navigate to welcome screen on success
+          Navigator.pushReplacementNamed(context, Routes.welcomeScreen);
+        } else if (state is GoalFailure) {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to save goal: ${state.error}')),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: _white,
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Center(
+                child: CarouselSlider(
+                  items: goalArr
+                      .asMap()
+                      .entries
+                      .map(
+                        (entry) => GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedGoalIndex = entry.key;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: _primaryGradient,
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(25),
+                              border: _selectedGoalIndex == entry.key
+                                  ? Border.all(
+                                      color: _white,
+                                      width: 2,
+                                    ) // Selected indicator: white border
+                                  : null, // Unselected: no border
+                              boxShadow: _selectedGoalIndex == entry.key
+                                  ? [
+                                      BoxShadow(
+                                        color: _primaryGradient[0].withOpacity(
+                                          0.3,
+                                        ),
+                                        blurRadius: 8,
+                                        spreadRadius: 1,
+                                      ),
+                                    ] // Selected: subtle shadow
+                                  : null, // Unselected: no shadow
                             ),
-                            borderRadius: BorderRadius.circular(25),
-                            border: _selectedGoalIndex == entry.key
-                                ? Border.all(
-                                    color: _white,
-                                    width: 2,
-                                  ) // Selected indicator: white border
-                                : null, // Unselected: no border
-                            boxShadow: _selectedGoalIndex == entry.key
-                                ? [
-                                    BoxShadow(
-                                      color: _primaryGradient[0].withOpacity(
-                                        0.3,
-                                      ),
-                                      blurRadius: 8,
-                                      spreadRadius: 1,
+                            padding: EdgeInsets.symmetric(
+                              vertical: media.width * 0.03,
+                              horizontal: 15,
+                            ),
+                            alignment: Alignment.center,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    height: media.width * 0.6,
+                                    width: media.width * 0.6,
+                                    child: Lottie.asset(
+                                      entry.value["lottie"].toString(),
+                                      fit: BoxFit.contain,
+                                      repeat: true,
                                     ),
-                                  ] // Selected: subtle shadow
-                                : null, // Unselected: no shadow
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            vertical: media.width * 0.03,
-                            horizontal: 15,
-                          ),
-                          alignment: Alignment.center,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  height: media.width * 0.6,
-                                  width: media.width * 0.6,
-                                  child: Lottie.asset(
-                                    entry.value["lottie"].toString(),
-                                    fit: BoxFit.contain,
-                                    repeat: true,
                                   ),
-                                ),
-                                SizedBox(height: media.width * 0.02),
+                                  SizedBox(height: media.width * 0.02),
 
-                                // Text Content - Properly sized and centered
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Text(
-                                          entry.value["title"].toString(),
-                                          style: TextStyle(
+                                  // Text Content - Properly sized and centered
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            entry.value["title"].toString(),
+                                            style: TextStyle(
+                                              color: _white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                        Container(
+                                          width: media.width * 0.12,
+                                          height: 2,
+                                          margin: const EdgeInsets.symmetric(
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
                                             color: _white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w800,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                      Container(
-                                        width: media.width * 0.12,
-                                        height: 2,
-                                        margin: const EdgeInsets.symmetric(
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: _white,
-                                          borderRadius: BorderRadius.circular(
-                                            1,
+                                            borderRadius: BorderRadius.circular(
+                                              1,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Text(
-                                          entry.value["subtitle"].toString(),
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: _white.withOpacity(0.9),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                            height: 1.3,
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            entry.value["subtitle"].toString(),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: _white.withOpacity(0.9),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.3,
+                                            ),
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                    .toList(),
-                options: CarouselOptions(
-                  autoPlay: false,
-                  enlargeCenterPage: true,
-                  viewportFraction: 0.7,
-                  aspectRatio: 0.74,
-                  initialPage: 0,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _selectedGoalIndex = index;
-                    });
-                  },
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              width: media.width,
-              child: Column(
-                children: [
-                  SizedBox(height: media.width * 0.05),
-                  Text(
-                    "What is your goal ?",
-                    style: TextStyle(
-                      color: _black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Text(
-                    "It will help us to choose a best\nprogram for you",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: _gray, fontSize: 12),
-                  ),
-                  const Spacer(),
-                  SizedBox(height: media.width * 0.05),
-                  _buildRoundButton(
-                    title: "Confirm",
-                    onPressed: () {
-                      // Get selected goal data
-                      final selectedGoal = goalArr[_selectedGoalIndex];
-                      print("Selected Goal: ${selectedGoal["title"]}");
-
-                      // TODO: Save selected goal to user preferences or state management
-                      // For now, navigate to welcome screen
-                      Navigator.pushReplacementNamed(
-                        context,
-                        Routes.welcomeScreen,
-                      );
+                      )
+                      .toList(),
+                  options: CarouselOptions(
+                    autoPlay: false,
+                    enlargeCenterPage: true,
+                    viewportFraction: 0.7,
+                    aspectRatio: 0.74,
+                    initialPage: 0,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        _selectedGoalIndex = index;
+                      });
                     },
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                width: media.width,
+                child: Column(
+                  children: [
+                    SizedBox(height: media.width * 0.05),
+                    Text(
+                      "What is your goal ?",
+                      style: TextStyle(
+                        color: _black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      "It will help us to choose a best\nprogram for you",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: _gray, fontSize: 12),
+                    ),
+                    const Spacer(),
+                    SizedBox(height: media.width * 0.05),
+                    BlocBuilder<GoalCubit, GoalState>(
+                      builder: (context, state) {
+                        return _buildRoundButton(
+                          title: state is GoalLoading ? "Saving..." : "Confirm",
+                          onPressed: state is GoalLoading
+                              ? null
+                              : () {
+                                  // Get selected goal data
+                                  final selectedGoal =
+                                      goalArr[_selectedGoalIndex];
+                                  final goalType = selectedGoal["title"]
+                                      .toString();
+                                  print("Selected Goal: $goalType");
+
+                                  // Submit goal via cubit
+                                  context.read<GoalCubit>().submitGoal(
+                                    goalType,
+                                  );
+                                },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -233,7 +256,7 @@ class _GoalScreenState extends State<GoalScreen> {
 
   Widget _buildRoundButton({
     required String title,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
   }) {
     return Container(
       width: double.infinity,

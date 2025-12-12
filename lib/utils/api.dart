@@ -22,18 +22,20 @@ class Api {
   static String resendVerification =
       "${AppConstants.apiUrl}/auth/resend-verification";
   static String currentUser = "${AppConstants.apiUrl}/auth/me";
+  static String completeProfile =
+      "${AppConstants.apiUrl}/auth/complete-profile";
+  static String postGoal = "${AppConstants.apiUrl}/auth/goals";
+    static String getUserDetails = "${AppConstants.apiUrl}/user/details";
+  static String updateUserDetails = "${AppConstants.apiUrl}/user/details";
+  static String updateProfile = "${AppConstants.apiUrl}/user/profile";
+  static String uploadProfilePhoto =
+      "${AppConstants.apiUrl}/user/profile-photo";
 
   // Password Endpoints
   static String forgotPassword = "${AppConstants.apiUrl}/auth/forgot-password";
   static String resetPassword = "${AppConstants.apiUrl}/auth/reset-password";
   static String changePassword = "${AppConstants.apiUrl}/auth/change-password";
 
-  // Profile Endpoints (Auth-based)
-  static String completeProfile =
-      "${AppConstants.apiUrl}/auth/complete-profile";
-  static String getUserDetails = "${AppConstants.apiUrl}/user/details";
-  static String updateUserDetails = "${AppConstants.apiUrl}/user/details";
-  static String updateProfile = "${AppConstants.apiUrl}/user/profile";
-  static String uploadProfilePhoto =
-      "${AppConstants.apiUrl}/user/profile-photo";
+
+
 }

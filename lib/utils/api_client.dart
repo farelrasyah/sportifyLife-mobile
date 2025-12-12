@@ -82,4 +82,50 @@ class ApiClient {
   Future<void> reset() async {
     await _storage.clearAll();
   }
+
+  /// POST request wrapper
+  Future<Response> postRequest(String path, {dynamic data}) async {
+    try {
+      final response = await dio.post(path, data: data);
+      return response;
+    } on DioException catch (e) {
+      throw Exception('POST request failed: ${e.message}');
+    }
+  }
+
+  /// GET request wrapper
+  Future<Response> getRequest(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      final response = await dio.get(path, queryParameters: queryParameters);
+      return response;
+    } on DioException catch (e) {
+      throw Exception('GET request failed: ${e.message}');
+    }
+  }
+
+  /// PUT request wrapper
+  Future<Response> putRequest(String path, {dynamic data}) async {
+    try {
+      final response = await dio.put(path, data: data);
+      return response;
+    } on DioException catch (e) {
+      throw Exception('PUT request failed: ${e.message}');
+    }
+  }
+
+  /// DELETE request wrapper
+  Future<Response> deleteRequest(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      final response = await dio.delete(path, queryParameters: queryParameters);
+      return response;
+    } on DioException catch (e) {
+      throw Exception('DELETE request failed: ${e.message}');
+    }
+  }
 }

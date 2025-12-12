@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../app/routes.dart';
 import '../../../config/goal_type.dart';
 import '../../../config/environment.dart';
+import '../../../cubits/complete_profile_cubit.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
   const CompleteProfileScreen({Key? key}) : super(key: key);
@@ -25,6 +27,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
   // Form Data
   Gender? _selectedGender;
   DateTime? _selectedDate;
+  GoalType? _selectedGoal;
 
   // UI Constants
   final String _weightUnit = 'KG';
@@ -107,6 +110,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       validationErrors.add('Please select your date of birth');
     }
 
+    if (_selectedGoal == null) {
+      validationErrors.add('Please select your goal');
+    }
+
     if (validationErrors.isNotEmpty) {
       _showError(validationErrors.join('\n'));
       return;
@@ -128,17 +135,17 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       return;
     }
 
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Profile completed successfully!'),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ),
-    );
+    // Submit profile using cubit
+    final weight = double.parse(_weightController.text);
+    final height = double.parse(_heightController.text);
 
-    // Navigate to next screen
-    Navigator.of(context).pushReplacementNamed(Routes.goalScreen);
+    context.read<CompleteProfileCubit>().submitProfile(
+      gender: _selectedGender!.name,
+      dateOfBirth: _selectedDate!,
+      weight: weight,
+      height: height,
+      goalType: _selectedGoal!.value,
+    );
   }
 
   // ==================== Validation Methods ====================
@@ -201,69 +208,94 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context).size;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 15.0,
+    return BlocConsumer<CompleteProfileCubit, CompleteProfileState>(
+      listener: (context, state) {
+        if (state is CompleteProfileSuccess) {
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile completed successfully!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
             ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Lottie.asset(
-                    'assets/images/people.json',
-                    width: media.width,
-                    fit: BoxFit.fitWidth,
-                  ),
-                  SizedBox(height: media.width * 0.05),
+          );
 
-                  Text(
-                    "Let's complete your profile",
-                    style: TextStyle(
-                      color: _black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    "It will help us to know more about you!",
-                    style: TextStyle(color: _gray, fontSize: 12),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: media.width * 0.05),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Column(
-                      children: [
-                        _buildGenderDropdown(false),
-                        SizedBox(height: media.width * 0.04),
-                        _buildDateField(false),
-                        SizedBox(height: media.width * 0.04),
-                        _buildWeightField(false),
-                        SizedBox(height: media.width * 0.04),
-                        _buildHeightField(false),
-                        SizedBox(height: media.width * 0.07),
-                        _buildGradientButton(
-                          title: "Next",
-                          onPressed: _completeProfile,
-                          isLoading: false,
+          // Navigate to next screen
+          Navigator.of(context).pushReplacementNamed(Routes.welcomeScreen);
+        } else if (state is CompleteProfileFailure) {
+          _showError(state.error);
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is CompleteProfileLoading;
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 15.0,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Lottie.asset(
+                        'assets/images/people.json',
+                        width: media.width,
+                        fit: BoxFit.fitWidth,
+                      ),
+                      SizedBox(height: media.width * 0.05),
+
+                      Text(
+                        "Let's complete your profile",
+                        style: TextStyle(
+                          color: _black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
                         ),
-                      ],
-                    ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        "It will help us to know more about you!",
+                        style: TextStyle(color: _gray, fontSize: 12),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: media.width * 0.05),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Column(
+                          children: [
+                            _buildGenderDropdown(isLoading),
+                            SizedBox(height: media.width * 0.04),
+                            _buildDateField(isLoading),
+                            SizedBox(height: media.width * 0.04),
+                            _buildWeightField(isLoading),
+                            SizedBox(height: media.width * 0.04),
+                            _buildHeightField(isLoading),
+                            SizedBox(height: media.width * 0.04),
+                            _buildGoalDropdown(isLoading),
+                            SizedBox(height: media.width * 0.07),
+                            _buildGradientButton(
+                              title: "Next",
+                              onPressed: isLoading ? null : _completeProfile,
+                              isLoading: isLoading,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -456,7 +488,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                   height: 50,
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Image.asset(
-                    "assets/images/hight.png",
+                    "assets/images/height.png", // Assuming you have a height icon; adjust if needed
                     width: 20,
                     height: 20,
                     fit: BoxFit.contain,
@@ -503,6 +535,64 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildGoalDropdown(bool isLoading) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _lightGray,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 50,
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Image.asset(
+              "assets/images/exercise.json", // You can change this to a goal icon
+              width: 20,
+              height: 20,
+              fit: BoxFit.contain,
+              color: _gray,
+            ),
+          ),
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<GoalType>(
+                value: _selectedGoal,
+                items: GoalType.values
+                    .map(
+                      (goal) => DropdownMenuItem<GoalType>(
+                        value: goal,
+                        child: Text(
+                          goal.label,
+                          style: TextStyle(color: _gray, fontSize: 14),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: isLoading
+                    ? null
+                    : (value) {
+                        setState(() {
+                          _selectedGoal = value;
+                        });
+                      },
+                isExpanded: true,
+                hint: Text(
+                  "Choose Your Goal",
+                  style: TextStyle(color: _gray, fontSize: 12),
+                ),
+                underline: Container(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
     );
   }
 

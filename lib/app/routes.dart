@@ -78,9 +78,15 @@ import '../ui/screens/workout_stats/workout_stats_screen.dart';
 import '../cubits/auth_cubit.dart';
 import '../cubits/verify_cubit.dart';
 import '../cubits/user_details_cubit.dart';
+import '../cubits/complete_profile_cubit.dart';
+import '../cubits/goal_cubit.dart';
 
 // Repositories
 import '../data/repositories/user_details_repository.dart';
+import '../data/repositories/user_repository.dart';
+
+// API Client
+import '../../utils/api_client.dart';
 
 /// Route names
 class Routes {
@@ -155,7 +161,7 @@ class RouteGenerator {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => BlocProvider(
-            create: (_) => UserDetailsCubit(UserDetailsRepository()),
+            create: (_) => CompleteProfileCubit(UserRepository(ApiClient())),
             child: const CompleteProfileScreen(),
           ),
         );
@@ -163,7 +169,10 @@ class RouteGenerator {
       case Routes.goalScreen:
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const GoalScreen(),
+          builder: (_) => BlocProvider(
+            create: (_) => GoalCubit(UserRepository(ApiClient())),
+            child: const GoalScreen(),
+          ),
         );
 
       case Routes.welcomeScreen:
