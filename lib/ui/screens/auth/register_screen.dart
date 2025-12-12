@@ -40,9 +40,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _handleRegister() {
-    // TEMPORARY: Direct navigation to Complete Profile Screen for testing
-    // TODO: Uncomment below code when ready to use authentication
-    /*
     if (_firstNameController.text.isNotEmpty &&
         _lastNameController.text.isNotEmpty &&
         _emailController.text.isNotEmpty &&
@@ -66,10 +63,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     }
-    */
-
-    // Navigate to Complete Profile Screen for new users
-    Navigator.of(context).pushReplacementNamed(Routes.completeProfileScreen);
   }
 
   Widget _buildTextField({

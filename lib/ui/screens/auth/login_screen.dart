@@ -36,9 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
-    // TEMPORARY: Direct navigation to MainScreen for testing
-    // TODO: Uncomment below code when ready to use authentication
-    /*
     if (_emailController.text.isNotEmpty &&
         _passwordController.text.isNotEmpty) {
       context.read<AuthCubit>().login(
@@ -53,10 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    */
-
-    // Navigate to bottom navigation (main app)
-    RouteHelper.navigateToMainApp(context);
   }
 
   Widget _buildTextField({

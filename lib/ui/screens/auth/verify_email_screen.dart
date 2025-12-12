@@ -93,19 +93,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     return '$minutes:$seconds';
   }
 
-  Future<void> _openEmailApp() async {
-    final Uri emailUri = Uri(scheme: 'mailto');
-    try {
-      if (await canLaunchUrl(emailUri)) {
-        await launchUrl(emailUri);
-      } else {
-        _showSnackBar(tr('verify_error_open_email'), isError: true);
-      }
-    } catch (e) {
-      _showSnackBar(tr('verify_error_email_app'), isError: true);
-    }
-  }
-
   Future<void> _resendVerification() async {
     context.read<VerifyCubit>().resendVerification(widget.email);
     final newExpiry = DateTime.now().add(const Duration(minutes: 1));
@@ -156,26 +143,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: TColor.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: TColor.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Icon(Icons.arrow_back, color: TColor.black, size: 20),
-          ),
-          onPressed: () {
-            Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
-          },
-        ),
+        leading: null,
       ),
       body: BlocConsumer<VerifyCubit, VerifyState>(
         listener: (context, state) {
@@ -211,8 +179,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
-                        SizedBox(height: 20),
-
                         // Animated Header
                         FadeTransition(
                           opacity: _fadeAnimation,
@@ -342,13 +308,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
         decoration: BoxDecoration(
           color: TColor.white,
           borderRadius: BorderRadius.circular(20),
-          gradient: state is VerifyExpired
-              ? LinearGradient(
-                  colors: [
-                    Colors.orange.withOpacity(0.1),
-                    Colors.orange.withOpacity(0.05),
-                  ],
-                )
+          gradient:
+              (state is VerifyExpired ||
+                  (state is VerifyPending &&
+                      state.remainingTime <= Duration.zero))
+              ? null
               : LinearGradient(
                   colors: [
                     TColor.primary.withOpacity(0.1),
@@ -369,7 +333,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
   }
 
   Widget _buildStatusContent(VerifyState state) {
-    if (state is VerifyPending) {
+    if (state is VerifyPending && state.remainingTime > Duration.zero) {
       return Column(
         children: [
           Row(
@@ -429,25 +393,19 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
           ],
         ],
       );
-    } else if (state is VerifyExpired) {
+    } else {
+      // Expired or time is up
       return Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.access_time, color: Colors.orange, size: 40),
-          ),
           SizedBox(height: 16),
           Text(
             tr("verify_link_expired"),
             style: TextStyle(
               fontSize: 20,
-              color: Colors.orange,
+              color: TColor.black,
               fontWeight: FontWeight.w800,
             ),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Text(
@@ -458,7 +416,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
         ],
       );
     }
-    return const SizedBox.shrink();
   }
 
   Widget _buildInstructionsCard() {
@@ -489,30 +446,18 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInstructionItem(
-              Icons.email_outlined,
-              tr("verify_instruction_check_inbox"),
-              0,
-            ),
+            _buildInstructionItem(tr("verify_instruction_check_inbox"), 0),
             SizedBox(height: 12),
-            _buildInstructionItem(
-              Icons.touch_app_outlined,
-              tr("verify_instruction_click_link"),
-              1,
-            ),
+            _buildInstructionItem(tr("verify_instruction_click_link"), 1),
             SizedBox(height: 12),
-            _buildInstructionItem(
-              Icons.check_circle_outline,
-              tr("verify_instruction_auto_login"),
-              2,
-            ),
+            _buildInstructionItem(tr("verify_instruction_auto_login"), 2),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInstructionItem(IconData icon, String text, int index) {
+  Widget _buildInstructionItem(String text, int index) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 600 + (index * 100)),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -526,14 +471,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            width: 8,
+            height: 8,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [TColor.primary, TColor.secondary],
-              ),
-              borderRadius: BorderRadius.circular(10),
+              color: TColor.gray,
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 18, color: TColor.white),
           ),
           SizedBox(width: 12),
           Expanded(
@@ -555,7 +498,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     return Column(
       children: [
         // Check Status Button
-        if (state is VerifyPending)
+        if (state is VerifyPending && state.remainingTime > Duration.zero)
           TweenAnimationBuilder<double>(
             duration: const Duration(milliseconds: 800),
             tween: Tween(begin: 0.0, end: 1.0),
@@ -577,26 +520,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
             ),
           ),
 
-        // Open Email Button
-        TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 900),
-          tween: Tween(begin: 0.0, end: 1.0),
-          curve: Curves.easeOutCubic,
-          builder: (context, value, child) {
-            return Transform.translate(
-              offset: Offset(0, 30 * (1 - value)),
-              child: Opacity(opacity: value, child: child),
-            );
-          },
-          child: _buildOutlineButton(
-            tr("verify_button_open_email"),
-            Icons.email_outlined,
-            _openEmailApp,
-            TColor.primary,
-          ),
-        ),
-        SizedBox(height: 15),
-
         // Resend Button
         TweenAnimationBuilder<double>(
           duration: const Duration(milliseconds: 1000),
@@ -609,12 +532,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
             );
           },
           child: _buildOutlineButton(
-            state is VerifyExpired
+            (state is VerifyExpired ||
+                    (state is VerifyPending &&
+                        state.remainingTime <= Duration.zero))
                 ? tr("verify_button_send_new")
                 : tr("verify_button_resend"),
-            Icons.send_outlined,
             _resendVerification,
-            state is VerifyExpired ? Colors.orange : TColor.secondary,
+            TColor.secondary,
           ),
         ),
         SizedBox(height: 20),
@@ -640,7 +564,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
 
   Widget _buildOutlineButton(
     String title,
-    IconData icon,
     VoidCallback onPressed,
     Color color,
   ) {
@@ -664,8 +587,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 20),
-            SizedBox(width: 8),
             Text(
               title,
               style: TextStyle(
