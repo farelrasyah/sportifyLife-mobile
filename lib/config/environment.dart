@@ -12,7 +12,7 @@ class Environment {
   /// Example: flutter run --dart-define=BASE_URL=http://192.168.1.27:3000
   static const String baseUrl = String.fromEnvironment(
     'BASE_URL',
-    defaultValue: 'http://192.168.1.27:3000',
+    defaultValue: 'http://192.168.1.7:3000',
   );
 
   /// API version prefix

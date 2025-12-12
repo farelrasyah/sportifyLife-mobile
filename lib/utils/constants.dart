@@ -8,7 +8,7 @@ class AppConstants {
   // - Windows: buka CMD, ketik "ipconfig" -> lihat IPv4 Address
   // - Mac/Linux: buka Terminal, ketik "ifconfig" atau "ip addr show"
 
-  static const String baseUrl = "http://192.168.1.27:3000"; // ✅ IP Laptop Anda
+  static const String baseUrl = "http://192.168.1.7:3000"; // ✅ IP Laptop Anda
   // static const String baseUrl = "http://localhost:3000"; // Untuk emulator Android
   // static const String baseUrl = "http://10.0.2.2:3000"; // Untuk emulator Android (alternatif)
   // static const String baseUrl = "https://api.sportifylife.com";

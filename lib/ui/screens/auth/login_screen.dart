@@ -124,16 +124,10 @@ class _LoginScreenState extends State<LoginScreen> {
               // Navigate to verify email screen
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (mounted) {
-                  Navigator.pushReplacement(
+                  Navigator.pushReplacementNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (_) => VerifyCubit(),
-                        child: VerifyEmailScreen(
-                          email: _emailController.text.trim(),
-                        ),
-                      ),
-                    ),
+                    Routes.verifyEmailScreen,
+                    arguments: {'email': _emailController.text.trim()},
                   );
                 }
               });

@@ -203,8 +203,11 @@ class RouteGenerator {
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
             settings: settings,
-            builder: (_) => BlocProvider(
-              create: (_) => VerifyCubit(),
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => AuthCubit()),
+                BlocProvider(create: (_) => VerifyCubit()),
+              ],
               child: VerifyEmailScreen(email: args['email'] as String),
             ),
           );

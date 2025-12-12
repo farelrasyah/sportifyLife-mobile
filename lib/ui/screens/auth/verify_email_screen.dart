@@ -25,10 +25,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _scaleController;
-  late AnimationController _pulseController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
@@ -55,15 +53,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     );
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
-    );
-
-    // Pulse animation for timer
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    )..repeat(reverse: true);
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
     _fadeController.forward();
@@ -130,7 +119,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
   void dispose() {
     _fadeController.dispose();
     _scaleController.dispose();
-    _pulseController.dispose();
     super.dispose();
   }
 
@@ -157,20 +145,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
           return Stack(
             children: [
               // Gradient Background
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      TColor.primary.withOpacity(0.05),
-                      TColor.secondary.withOpacity(0.05),
-                      TColor.white,
-                    ],
-                    stops: const [0.0, 0.3, 0.7],
-                  ),
-                ),
-              ),
+              Container(decoration: BoxDecoration(color: TColor.white)),
 
               // Main Content
               SingleChildScrollView(
@@ -209,18 +184,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                                   vertical: 10,
                                 ),
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      TColor.primary.withOpacity(0.1),
-                                      TColor.secondary.withOpacity(0.1),
-                                    ],
-                                  ),
+                                  color: TColor.lightGray,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
                                   widget.email,
                                   style: TextStyle(
-                                    color: TColor.primary,
+                                    color: TColor.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -241,19 +211,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                             width: media.width * 0.6,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                colors: [
-                                  TColor.primary.withOpacity(0.1),
-                                  TColor.secondary.withOpacity(0.1),
-                                ],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: TColor.primary.withOpacity(0.2),
-                                  blurRadius: 30,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
+                              color: TColor.lightGray,
                             ),
                             child: Lottie.asset(
                               'assets/images/verification.json',
@@ -308,17 +266,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
         decoration: BoxDecoration(
           color: TColor.white,
           borderRadius: BorderRadius.circular(20),
-          gradient:
-              (state is VerifyExpired ||
-                  (state is VerifyPending &&
-                      state.remainingTime <= Duration.zero))
-              ? null
-              : LinearGradient(
-                  colors: [
-                    TColor.primary.withOpacity(0.1),
-                    TColor.secondary.withOpacity(0.05),
-                  ],
-                ),
           boxShadow: [
             BoxShadow(
               color: TColor.black.withOpacity(0.08),
@@ -336,34 +283,22 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     if (state is VerifyPending && state.remainingTime > Duration.zero) {
       return Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.access_time, color: TColor.primary, size: 24),
-              SizedBox(width: 12),
-              Text(
-                tr("verify_expires_in_label"),
-                style: TextStyle(
-                  color: TColor.gray,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+          Text(
+            tr("verify_expires_in_label"),
+            style: TextStyle(
+              color: TColor.gray,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 16),
-          ScaleTransition(
-            scale: _pulseAnimation,
-            child: Text(
-              _formatDuration(state.remainingTime),
-              style: TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.w800,
-                foreground: Paint()
-                  ..shader = LinearGradient(
-                    colors: [TColor.primary, TColor.secondary],
-                  ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
-              ),
+          Text(
+            _formatDuration(state.remainingTime),
+            style: TextStyle(
+              fontSize: 36,
+              fontWeight: FontWeight.w700,
+              color: TColor.black,
             ),
           ),
           if (state.isChecking) ...[
