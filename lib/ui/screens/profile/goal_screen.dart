@@ -5,7 +5,6 @@ import 'package:lottie/lottie.dart';
 import '../../../app/routes.dart';
 import '../../../cubits/goal_cubit.dart';
 
-
 class GoalScreen extends StatefulWidget {
   const GoalScreen({super.key});
 
@@ -238,7 +237,9 @@ class _GoalScreenState extends State<GoalScreen> {
 
                                   // Submit goal via cubit
                                   context.read<GoalCubit>().submitGoal(
-                                    goalType,
+                                    _getGoalType(
+                                      selectedGoal["title"].toString(),
+                                    ),
                                   );
                                 },
                         );
@@ -252,6 +253,19 @@ class _GoalScreenState extends State<GoalScreen> {
         ),
       ),
     );
+  }
+
+  String _getGoalType(String title) {
+    switch (title) {
+      case "Improve Shape":
+        return "improve_shape";
+      case "Lean & Tone":
+        return "lean_tone";
+      case "Lose a Fat":
+        return "lose_fat";
+      default:
+        return "lean_tone"; // Default
+    }
   }
 
   Widget _buildRoundButton({

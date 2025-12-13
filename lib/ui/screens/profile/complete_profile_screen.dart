@@ -27,7 +27,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
   // Form Data
   Gender? _selectedGender;
   DateTime? _selectedDate;
-  GoalType? _selectedGoal;
 
   // UI Constants
   final String _weightUnit = 'KG';
@@ -110,10 +109,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       validationErrors.add('Please select your date of birth');
     }
 
-    if (_selectedGoal == null) {
-      validationErrors.add('Please select your goal');
-    }
-
     if (validationErrors.isNotEmpty) {
       _showError(validationErrors.join('\n'));
       return;
@@ -144,7 +139,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       dateOfBirth: _selectedDate!,
       weight: weight,
       height: height,
-      goalType: _selectedGoal!.value,
     );
   }
 
@@ -221,7 +215,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
           );
 
           // Navigate to next screen
-          Navigator.of(context).pushReplacementNamed(Routes.welcomeScreen);
+          Navigator.of(context).pushReplacementNamed(Routes.goalScreen);
         } else if (state is CompleteProfileFailure) {
           _showError(state.error);
         }
@@ -276,8 +270,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                             _buildWeightField(isLoading),
                             SizedBox(height: media.width * 0.04),
                             _buildHeightField(isLoading),
-                            SizedBox(height: media.width * 0.04),
-                            _buildGoalDropdown(isLoading),
                             SizedBox(height: media.width * 0.07),
                             _buildGradientButton(
                               title: "Next",
@@ -488,7 +480,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                   height: 50,
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Image.asset(
-                    "assets/images/height.png", // Assuming you have a height icon; adjust if needed
+                    "assets/images/hight.png",
                     width: 20,
                     height: 20,
                     fit: BoxFit.contain,
@@ -535,64 +527,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildGoalDropdown(bool isLoading) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _lightGray,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        children: [
-          Container(
-            alignment: Alignment.center,
-            width: 50,
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Image.asset(
-              "assets/images/exercise.json", // You can change this to a goal icon
-              width: 20,
-              height: 20,
-              fit: BoxFit.contain,
-              color: _gray,
-            ),
-          ),
-          Expanded(
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<GoalType>(
-                value: _selectedGoal,
-                items: GoalType.values
-                    .map(
-                      (goal) => DropdownMenuItem<GoalType>(
-                        value: goal,
-                        child: Text(
-                          goal.label,
-                          style: TextStyle(color: _gray, fontSize: 14),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: isLoading
-                    ? null
-                    : (value) {
-                        setState(() {
-                          _selectedGoal = value;
-                        });
-                      },
-                isExpanded: true,
-                hint: Text(
-                  "Choose Your Goal",
-                  style: TextStyle(color: _gray, fontSize: 12),
-                ),
-                underline: Container(),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
     );
   }
 

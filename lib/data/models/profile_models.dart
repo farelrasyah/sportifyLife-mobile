@@ -4,14 +4,12 @@ class CompleteProfileRequest {
   final String dateOfBirth;
   final double weight;
   final double height;
-  final String goalType;
 
   CompleteProfileRequest({
     required this.gender,
     required this.dateOfBirth,
     required this.weight,
     required this.height,
-    required this.goalType,
   });
 
   Map<String, dynamic> toJson() {
@@ -20,7 +18,6 @@ class CompleteProfileRequest {
       'dateOfBirth': dateOfBirth,
       'weight': weight,
       'height': height,
-      'goalType': goalType,
     };
   }
 }

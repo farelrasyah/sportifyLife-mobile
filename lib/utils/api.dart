@@ -24,8 +24,8 @@ class Api {
   static String currentUser = "${AppConstants.apiUrl}/auth/me";
   static String completeProfile =
       "${AppConstants.apiUrl}/auth/complete-profile";
-  static String postGoal = "${AppConstants.apiUrl}/auth/goals";
-    static String getUserDetails = "${AppConstants.apiUrl}/user/details";
+  static String postGoal = "${AppConstants.apiUrl}/users/goals";
+  static String getUserDetails = "${AppConstants.apiUrl}/user/details";
   static String updateUserDetails = "${AppConstants.apiUrl}/user/details";
   static String updateProfile = "${AppConstants.apiUrl}/user/profile";
   static String uploadProfilePhoto =
@@ -35,7 +35,4 @@ class Api {
   static String forgotPassword = "${AppConstants.apiUrl}/auth/forgot-password";
   static String resetPassword = "${AppConstants.apiUrl}/auth/reset-password";
   static String changePassword = "${AppConstants.apiUrl}/auth/change-password";
-
-
-
 }

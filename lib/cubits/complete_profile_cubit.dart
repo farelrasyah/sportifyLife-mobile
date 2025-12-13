@@ -18,7 +18,6 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
     required DateTime dateOfBirth,
     required double weight,
     required double height,
-    required String goalType,
   }) async {
     emit(CompleteProfileLoading());
 
@@ -28,7 +27,6 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
         dateOfBirth: dateOfBirth.toIso8601String(),
         weight: weight,
         height: height,
-        goalType: goalType,
       );
 
       await _userRepository.completeProfile(request);
