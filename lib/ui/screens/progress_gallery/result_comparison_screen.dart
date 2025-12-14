@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/icon_title_next_row.dart';
 import '../../widgets/round_button.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'report_screen.dart';
 
 class ResultComparisonScreen extends StatefulWidget {
@@ -13,15 +13,36 @@ class ResultComparisonScreen extends StatefulWidget {
   State<ResultComparisonScreen> createState() => _ResultComparisonScreenState();
 }
 
-class _ResultComparisonScreenState extends State<ResultComparisonScreen> {
+class _ResultComparisonScreenState extends State<ResultComparisonScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fabAnimationController;
   String _firstMonthSelection = "May";
   String _secondMonthSelection = "select Month";
 
   @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
       backgroundColor: TColor.white,
+      appBar: CustomModernAppBar(
+        title: "Comparison",
+        icon: Icons.compare,
+        fabAnimationController: _fabAnimationController,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         child: Column(
@@ -43,64 +64,6 @@ class _ResultComparisonScreenState extends State<ResultComparisonScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          height: 40,
-          width: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: TColor.lightGray,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            "assets/images/black_btn.png",
-            width: 15,
-            height: 15,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      title: Text(
-        "Comparison",
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

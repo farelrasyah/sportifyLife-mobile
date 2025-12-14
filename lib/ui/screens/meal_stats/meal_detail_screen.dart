@@ -4,6 +4,7 @@ import '../../../common/colo_extension.dart';
 import '../../widgets/meal_category_cell.dart';
 import '../../widgets/meal_recommed_cell.dart';
 import '../../widgets/popular_meal_row.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'food_detail_screen.dart';
 
 class MealDetailScreen extends StatefulWidget {
@@ -15,8 +16,10 @@ class MealDetailScreen extends StatefulWidget {
   State<MealDetailScreen> createState() => _MealDetailScreenState();
 }
 
-class _MealDetailScreenState extends State<MealDetailScreen> {
+class _MealDetailScreenState extends State<MealDetailScreen>
+    with TickerProviderStateMixin {
   final TextEditingController searchController = TextEditingController();
+  late AnimationController _fabAnimationController;
 
   final List<Map<String, String>> foodCategories = [
     {"name": tr("category_salad"), "image": "assets/images/salad.json"},
@@ -66,11 +69,33 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CustomModernAppBar(
+        title: widget.mealCategory["name"].toString(),
+        icon: Icons.restaurant_menu,
+        fabAnimationController: _fabAnimationController,
+        primaryColor: TColor.primaryColor1,
+        lightColor: TColor.primaryColor2,
+        onBackPressed: () => Navigator.pop(context),
+      ),
       backgroundColor: TColor.white,
       body: SingleChildScrollView(
         child: Column(
@@ -85,49 +110,6 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
             _buildPopularSection(),
             SizedBox(height: screenSize.width * 0.05),
           ],
-        ),
-      ),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: _buildAppBarButton(
-        "assets/images/black_btn.png",
-        () => Navigator.pop(context),
-      ),
-      title: Text(
-        widget.mealCategory["name"].toString(),
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [_buildAppBarButton("assets/images/more_btn.png", () {})],
-    );
-  }
-
-  Widget _buildAppBarButton(String iconPath, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.all(8),
-        height: 40,
-        width: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: TColor.lightGray,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Image.asset(
-          iconPath,
-          width: 15,
-          height: 15,
-          fit: BoxFit.contain,
         ),
       ),
     );

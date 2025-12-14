@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'result_comparison_screen.dart';
 
 class ProgressGalleryScreen extends StatefulWidget {
@@ -11,7 +11,9 @@ class ProgressGalleryScreen extends StatefulWidget {
   State<ProgressGalleryScreen> createState() => _ProgressGalleryScreenState();
 }
 
-class _ProgressGalleryScreenState extends State<ProgressGalleryScreen> {
+class _ProgressGalleryScreenState extends State<ProgressGalleryScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fabAnimationController;
   final List<Map<String, dynamic>> _progressPhotos = [
     {
       "date": "2 June",
@@ -34,11 +36,30 @@ class _ProgressGalleryScreenState extends State<ProgressGalleryScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: _buildAppBar(),
       backgroundColor: TColor.white,
+      appBar: CustomModernAppBar(
+        title: "Progress Photo",
+        icon: Icons.photo_library,
+        fabAnimationController: _fabAnimationController,
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,45 +75,6 @@ class _ProgressGalleryScreenState extends State<ProgressGalleryScreen> {
         ),
       ),
       floatingActionButton: _buildCameraFAB(),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leadingWidth: 0,
-      leading: const SizedBox(),
-      title: Text(
-        "Progress Photo",
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

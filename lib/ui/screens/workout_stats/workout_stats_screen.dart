@@ -1,11 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/upcoming_workout_row.dart';
 import '../../widgets/what_train_row.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'workout_detail_screen.dart';
 
 class WorkoutStatsScreen extends StatefulWidget {
@@ -15,7 +15,25 @@ class WorkoutStatsScreen extends StatefulWidget {
   State<WorkoutStatsScreen> createState() => _WorkoutStatsScreenState();
 }
 
-class _WorkoutStatsScreenState extends State<WorkoutStatsScreen> {
+class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fabAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
   final List<Map<String, String>> _recentWorkouts = [
     {
       "image": "assets/images/jumping_jack.json",
@@ -54,125 +72,55 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: TColor.primaryG),
+    return Scaffold(
+      backgroundColor: TColor.white,
+      appBar: CustomModernAppBar(
+        title: "Workout Stats",
+        icon: Icons.bar_chart,
+        fabAnimationController: _fabAnimationController,
       ),
-      child: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [_buildMainAppBar(), _buildChartAppBar(screenSize)];
-        },
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          decoration: BoxDecoration(
-            color: TColor.white,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-            ),
-          ),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  _buildDragHandle(),
-                  SizedBox(height: screenSize.width * 0.05),
-                  _buildDailyScheduleCard(),
-                  SizedBox(height: screenSize.width * 0.05),
-                  _buildUpcomingWorkoutsSection(),
-                  SizedBox(height: screenSize.width * 0.05),
-                  _buildWorkoutCategoriesSection(),
-                  SizedBox(height: screenSize.width * 0.1),
-                ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: TColor.primaryG),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Chart section
+              Container(
+                width: screenSize.width,
+                height: screenSize.width * 0.8,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                child: _buildChart(),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMainAppBar() {
-    return SliverAppBar(
-      backgroundColor: Colors.transparent,
-      centerTitle: true,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          height: 40,
-          width: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: TColor.lightGray,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            "assets/images/black_btn.png",
-            width: 15,
-            height: 15,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      title: Text(
-        "Workout Tracker",
-        style: TextStyle(
-          color: TColor.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildChartAppBar(Size screenSize) {
-    return SliverAppBar(
-      backgroundColor: Colors.transparent,
-      centerTitle: true,
-      elevation: 0,
-      leadingWidth: 0,
-      leading: const SizedBox(),
-      expandedHeight: screenSize.width * 0.5,
-      flexibleSpace: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        height: screenSize.width * 0.5,
-        width: double.maxFinite,
-        child: LineChart(
-          LineChartData(
-            lineTouchData: _buildLineTouchData(),
-            lineBarsData: _buildLineChartData(),
-            minY: -0.5,
-            maxY: 110,
-            titlesData: _buildTitlesData(),
-            gridData: _buildGridData(),
-            borderData: _buildBorderData(),
+              // Content section
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: TColor.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    _buildDragHandle(),
+                    SizedBox(height: screenSize.width * 0.05),
+                    _buildDailyScheduleCard(),
+                    SizedBox(height: screenSize.width * 0.05),
+                    _buildUpcomingWorkoutsSection(),
+                    SizedBox(height: screenSize.width * 0.05),
+                    _buildWorkoutCategoriesSection(),
+                    SizedBox(height: screenSize.width * 0.1),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -384,6 +332,22 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen> {
     return FlBorderData(
       show: true,
       border: Border.all(color: Colors.transparent),
+    );
+  }
+
+  Widget _buildChart() {
+    return LineChart(
+      LineChartData(
+        lineTouchData: _buildLineTouchData(),
+        gridData: _buildGridData(),
+        titlesData: _buildTitlesData(),
+        borderData: _buildBorderData(),
+        lineBarsData: _buildLineChartData(),
+        minX: 0,
+        maxX: 8,
+        minY: 0,
+        maxY: 105,
+      ),
     );
   }
 

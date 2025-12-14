@@ -6,6 +6,7 @@ import '../../../common/colo_extension.dart';
 import '../../widgets/icon_title_next_row.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/exercises_set_section.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'exercise_detail_screen.dart';
 import 'workout_plan_screen.dart';
 
@@ -17,7 +18,25 @@ class WorkoutDetailScreen extends StatefulWidget {
   State<WorkoutDetailScreen> createState() => _WorkoutDetailScreenState();
 }
 
-class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
+class _WorkoutDetailScreenState extends State<WorkoutDetailScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fabAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
   final List<Map<String, String>> _recentWorkouts = [
     {
       "image": "assets/images/jumping_jack.json",
@@ -136,126 +155,65 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: TColor.primaryG),
+    return Scaffold(
+      backgroundColor: TColor.white,
+      appBar: CustomModernAppBar(
+        title: "Workout Details",
+        icon: Icons.details,
+        fabAnimationController: _fabAnimationController,
       ),
-      child: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [_buildMainAppBar(), _buildImageAppBar(screenSize)];
-        },
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color: TColor.white,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-            ),
-          ),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Stack(
-              children: [
-                _buildScrollableContent(screenSize),
-                _buildStartWorkoutButton(),
-              ],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: TColor.primaryG),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Workout image section
+              Container(
+                width: screenSize.width,
+                height: screenSize.width * 0.5,
+                alignment: Alignment.center,
+                child: _buildImage(
+                  "assets/images/jump.json",
+                  width: screenSize.width * 0.75,
+                  height: screenSize.width * 0.8,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              // Content section
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                decoration: BoxDecoration(
+                  color: TColor.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    _buildDragHandle(),
+                    SizedBox(height: screenSize.width * 0.05),
+                    _buildWorkoutHeader(),
+                    SizedBox(height: screenSize.width * 0.05),
+                    _buildScheduleSection(),
+                    SizedBox(height: screenSize.width * 0.02),
+                    _buildDifficultySection(),
+                    SizedBox(height: screenSize.width * 0.05),
+                    _buildEquipmentSection(screenSize),
+                    SizedBox(height: screenSize.width * 0.05),
+                    _buildExercisesSection(),
+                    SizedBox(height: screenSize.width * 0.1),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildMainAppBar() {
-    return SliverAppBar(
-      backgroundColor: Colors.transparent,
-      centerTitle: true,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          height: 40,
-          width: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: TColor.lightGray,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            "assets/images/black_btn.png",
-            width: 15,
-            height: 15,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImageAppBar(Size screenSize) {
-    return SliverAppBar(
-      backgroundColor: Colors.transparent,
-      centerTitle: true,
-      elevation: 0,
-      leadingWidth: 0,
-      leading: Container(),
-      expandedHeight: screenSize.width * 0.5,
-      flexibleSpace: Align(
-        alignment: Alignment.center,
-        child: _buildImage(
-          "assets/images/jump.json",
-          width: screenSize.width * 0.75,
-          height: screenSize.width * 0.8,
-          fit: BoxFit.contain,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildScrollableContent(Size screenSize) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          const SizedBox(height: 10),
-          _buildDragHandle(),
-          SizedBox(height: screenSize.width * 0.05),
-          _buildWorkoutHeader(),
-          SizedBox(height: screenSize.width * 0.05),
-          _buildScheduleSection(),
-          SizedBox(height: screenSize.width * 0.02),
-          _buildDifficultySection(),
-          SizedBox(height: screenSize.width * 0.05),
-          _buildEquipmentSection(screenSize),
-          SizedBox(height: screenSize.width * 0.05),
-          _buildExercisesSection(),
-          SizedBox(height: screenSize.width * 0.1),
-        ],
-      ),
+      bottomNavigationBar: _buildStartWorkoutButton(),
     );
   }
 

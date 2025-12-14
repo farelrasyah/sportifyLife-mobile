@@ -7,6 +7,7 @@ import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/today_sleep_schedule_row.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'add_alarm_screen.dart';
 
 class SleepPlanScreen extends StatefulWidget {
@@ -16,10 +17,12 @@ class SleepPlanScreen extends StatefulWidget {
   State<SleepPlanScreen> createState() => _SleepPlanScreenState();
 }
 
-class _SleepPlanScreenState extends State<SleepPlanScreen> {
+class _SleepPlanScreenState extends State<SleepPlanScreen>
+    with TickerProviderStateMixin {
   late DateTime _currentSelectedDate;
   late DateTime _focusedDay;
   CalendarFormat _calendarFormat = CalendarFormat.week;
+  late AnimationController _fabAnimationController;
 
   final List<Map<String, dynamic>> _dailySleepSchedule = [
     {
@@ -41,6 +44,16 @@ class _SleepPlanScreenState extends State<SleepPlanScreen> {
     super.initState();
     _currentSelectedDate = DateTime.now();
     _focusedDay = DateTime.now();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,7 +61,14 @@ class _SleepPlanScreenState extends State<SleepPlanScreen> {
     var screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CustomModernAppBar(
+        title: "Sleep Schedule",
+        icon: Icons.bedtime,
+        fabAnimationController: _fabAnimationController,
+        primaryColor: TColor.primaryColor1,
+        lightColor: TColor.primaryColor2,
+        onBackPressed: () => Navigator.pop(context),
+      ),
       backgroundColor: TColor.white,
       body: SingleChildScrollView(
         child: Column(
@@ -71,64 +91,6 @@ class _SleepPlanScreenState extends State<SleepPlanScreen> {
         ),
       ),
       floatingActionButton: _buildAddAlarmFAB(),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          height: 40,
-          width: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: TColor.lightGray,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            "assets/images/black_btn.png",
-            width: 15,
-            height: 15,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      title: Text(
-        "Sleep Schedule",
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

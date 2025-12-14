@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/today_sleep_schedule_row.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'sleep_plan_screen.dart';
 
 class SleepActivityScreen extends StatefulWidget {
@@ -14,7 +15,8 @@ class SleepActivityScreen extends StatefulWidget {
   State<SleepActivityScreen> createState() => _SleepActivityScreenState();
 }
 
-class _SleepActivityScreenState extends State<SleepActivityScreen> {
+class _SleepActivityScreenState extends State<SleepActivityScreen>
+    with TickerProviderStateMixin {
   final List<Map<String, dynamic>> _sleepScheduleData = [
     {
       "name": "Bedtime",
@@ -31,6 +33,22 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
   ];
 
   List<int> _activeTooltipSpots = [4];
+  late AnimationController _fabAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +56,14 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
     final chartBarData = _getChartData()[0];
 
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CustomModernAppBar(
+        title: "Sleep Activity",
+        icon: Icons.show_chart,
+        fabAnimationController: _fabAnimationController,
+        primaryColor: TColor.primaryColor1,
+        lightColor: TColor.primaryColor2,
+        onBackPressed: () => Navigator.pop(context),
+      ),
       backgroundColor: TColor.white,
       body: SingleChildScrollView(
         child: Column(
@@ -63,64 +88,6 @@ class _SleepActivityScreenState extends State<SleepActivityScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          height: 40,
-          width: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: TColor.lightGray,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            "assets/images/black_btn.png",
-            width: 15,
-            height: 15,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      title: Text(
-        "Sleep Tracker",
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

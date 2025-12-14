@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/step_detail_row.dart';
+import '../../widgets/custom_modern_appbar.dart';
 
 class ExerciseDetailScreen extends StatefulWidget {
   final Map exerciseData;
@@ -16,7 +17,8 @@ class ExerciseDetailScreen extends StatefulWidget {
   State<ExerciseDetailScreen> createState() => _ExerciseDetailScreenState();
 }
 
-class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
+class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
+    with TickerProviderStateMixin {
   final List<Map<String, String>> _exerciseSteps = [
     {
       "no": "01",
@@ -43,13 +45,36 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           "This cannot be taken lightly. You see, without realizing it, the clapping of your hands helps you to keep your rhythm while doing the Jumping Jack",
     },
   ];
+  late AnimationController _fabAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CustomModernAppBar(
+        title: widget.exerciseData["name"] ?? "Exercise Detail",
+        icon: Icons.fitness_center,
+        fabAnimationController: _fabAnimationController,
+        primaryColor: TColor.primaryColor1,
+        lightColor: TColor.primaryColor2,
+        onBackPressed: () => Navigator.pop(context),
+      ),
       backgroundColor: TColor.white,
       body: SingleChildScrollView(
         child: Container(
@@ -71,56 +96,6 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          height: 40,
-          width: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: TColor.lightGray,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            "assets/images/closed_btn.png",
-            width: 15,
-            height: 15,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

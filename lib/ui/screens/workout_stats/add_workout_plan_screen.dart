@@ -6,6 +6,7 @@ import '../../../common/colo_extension.dart';
 import '../../../common/common.dart';
 import '../../widgets/icon_title_next_row.dart';
 import '../../widgets/round_button.dart';
+import '../../widgets/custom_modern_appbar.dart';
 
 class AddWorkoutPlanScreen extends StatefulWidget {
   final DateTime selectedDate;
@@ -15,13 +16,38 @@ class AddWorkoutPlanScreen extends StatefulWidget {
   State<AddWorkoutPlanScreen> createState() => _AddWorkoutPlanScreenState();
 }
 
-class _AddWorkoutPlanScreenState extends State<AddWorkoutPlanScreen> {
+class _AddWorkoutPlanScreenState extends State<AddWorkoutPlanScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fabAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CustomModernAppBar(
+        title: "Add Schedule",
+        icon: Icons.add_task,
+        fabAnimationController: _fabAnimationController,
+        primaryColor: TColor.primaryColor1,
+        lightColor: TColor.primaryColor2,
+        onBackPressed: () => Navigator.pop(context),
+      ),
       backgroundColor: TColor.white,
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
@@ -39,64 +65,6 @@ class _AddWorkoutPlanScreenState extends State<AddWorkoutPlanScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          height: 40,
-          width: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: TColor.lightGray,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            "assets/images/closed_btn.png",
-            width: 15,
-            height: 15,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      title: Text(
-        "Add Schedule",
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

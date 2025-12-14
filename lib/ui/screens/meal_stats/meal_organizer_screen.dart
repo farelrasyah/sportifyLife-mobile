@@ -6,6 +6,7 @@ import '../../../common/colo_extension.dart';
 import '../../widgets/find_eat_cell.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/today_meal_row.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'meal_detail_screen.dart';
 import 'meal_schedule_screen.dart';
 
@@ -16,7 +17,9 @@ class MealOrganizerScreen extends StatefulWidget {
   State<MealOrganizerScreen> createState() => _MealOrganizerScreenState();
 }
 
-class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
+class _MealOrganizerScreenState extends State<MealOrganizerScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fabAnimationController;
   final List<Map<String, String>> dailyMeals = [
     {
       "name": tr("salmon_nigiri"),
@@ -43,26 +46,19 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
     },
   ];
 
-  Widget _buildImage(
-    String path, {
-    required double width,
-    required double height,
-    BoxFit? fit,
-  }) {
-    if (path.endsWith('.json')) {
-      return Lottie.asset(
-        path,
-        width: width,
-        height: height,
-        fit: fit ?? BoxFit.contain,
-      );
-    }
-    return Image.asset(
-      path,
-      width: width,
-      height: height,
-      fit: fit ?? BoxFit.contain,
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
     );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -98,46 +94,13 @@ class _MealOrganizerScreenState extends State<MealOrganizerScreen> {
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: _buildAppBarButton(
-        "assets/images/black_btn.png",
-        () => Navigator.pop(context),
-      ),
-      title: Text(
-        "Meal Planner",
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [_buildAppBarButton("assets/images/more_btn.png", () {})],
-    );
-  }
-
-  Widget _buildAppBarButton(String iconPath, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.all(8),
-        height: 40,
-        width: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: TColor.lightGray,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: _buildImage(
-          iconPath,
-          width: 15,
-          height: 15,
-          fit: BoxFit.contain,
-        ),
-      ),
+  PreferredSizeWidget _buildAppBar() {
+    return CustomModernAppBar(
+      title: "Meal Planner",
+      icon: Icons.restaurant_menu,
+      fabAnimationController: _fabAnimationController,
+      onBackPressed: () => Navigator.pop(context),
+      
     );
   }
 

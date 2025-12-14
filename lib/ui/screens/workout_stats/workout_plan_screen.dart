@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../../common/common.dart';
 import '../../widgets/round_button.dart';
+import '../../widgets/custom_modern_appbar.dart';
 import 'add_workout_plan_screen.dart';
 
 class WorkoutPlanScreen extends StatefulWidget {
@@ -15,10 +16,12 @@ class WorkoutPlanScreen extends StatefulWidget {
   State<WorkoutPlanScreen> createState() => _WorkoutPlanScreenState();
 }
 
-class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
+class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
+    with TickerProviderStateMixin {
   late DateTime _selectedDate;
   late DateTime _focusedDay;
   CalendarFormat _calendarFormat = CalendarFormat.week;
+  late AnimationController _fabAnimationController;
 
   final List<Map<String, String>> _workoutEvents = [
     {"name": "Ab Workout", "start_time": "25/05/2023 07:30 AM"},
@@ -39,6 +42,10 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
     super.initState();
     _selectedDate = DateTime.now();
     _focusedDay = DateTime.now();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
     _updateSelectedDayEvents();
   }
 
@@ -67,6 +74,12 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
   }
 
   @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
 
@@ -82,60 +95,10 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen> {
   }
 
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: TColor.white,
-      centerTitle: true,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          height: 40,
-          width: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: TColor.lightGray,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Image.asset(
-            "assets/images/black_btn.png",
-            width: 15,
-            height: 15,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      title: Text(
-        "Workout Schedule",
-        style: TextStyle(
-          color: TColor.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        InkWell(
-          onTap: () {},
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: TColor.lightGray,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Image.asset(
-              "assets/images/more_btn.png",
-              width: 15,
-              height: 15,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
+    return CustomModernAppBar(
+      title: "Workout Schedule",
+      icon: Icons.calendar_today,
+      fabAnimationController: _fabAnimationController,
     );
   }
 
