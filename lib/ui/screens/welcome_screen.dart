@@ -4,6 +4,8 @@ import 'package:lottie/lottie.dart';
 import '../../../app/routes.dart';
 import '../../common/colo_extension.dart';
 import '../widgets/round_button.dart';
+import '../../../utils/storage_helper.dart';
+import '../../../services/auth_service.dart';
 
 /// Welcome screen displayed after user completes goal selection
 /// Shows a congratulatory message with Lottie animation and navigation to home
@@ -21,11 +23,52 @@ class _WelcomeViewState extends State<WelcomeView> {
   static const double _lottieWidthMultiplier = 2.0;
   static const double _bottomSpacingMultiplier = 0.05;
 
-  static const String _welcomeTitle = "Welcome, Farasyah";
+  String _welcomeTitle = "Welcome";
   static const String _welcomeSubtitle =
       "You are all set now, let's reach your\ngoals together with us";
   static const String _buttonTitle = "Go To Home";
   static const String _lottieAssetPath = "assets/images/people.json";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final authService = AuthService();
+    final storage = StorageHelper();
+
+    try {
+      // Try to get current user from API
+      final result = await authService.getCurrentUser();
+      result.when(
+        success: (user) async {
+          // Update storage with latest data
+          await storage.saveUserFirstName(user.firstName);
+          await storage.saveUserLastName(user.lastName);
+          await storage.saveUserEmail(user.email);
+          final fullName = "${user.firstName} ${user.lastName}";
+          setState(() {
+            _welcomeTitle = "Welcome, $fullName";
+          });
+        },
+        failure: (error) async {
+          // Fallback to storage if API fails
+          final fullName = await storage.getUserFullName();
+          setState(() {
+            _welcomeTitle = "Welcome, $fullName";
+          });
+        },
+      );
+    } catch (e) {
+      // Fallback to storage if any error
+      final fullName = await storage.getUserFullName();
+      setState(() {
+        _welcomeTitle = "Welcome, $fullName";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

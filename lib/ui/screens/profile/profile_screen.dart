@@ -6,6 +6,8 @@ import '../../../common/colo_extension.dart';
 import '../../widgets/setting_row.dart';
 import '../../widgets/title_subtitle_cell.dart';
 import '../../widgets/home_container_appbar.dart';
+import '../../../utils/storage_helper.dart';
+import '../../../services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -15,7 +17,111 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String _userName = "User";
   bool _notificationEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final authService = AuthService();
+    final storage = StorageHelper();
+
+    try {
+      // Try to get current user from API
+      final result = await authService.getCurrentUser();
+      result.when(
+        success: (user) async {
+          // Update storage with latest data
+          await storage.saveUserFirstName(user.firstName);
+          await storage.saveUserLastName(user.lastName);
+          await storage.saveUserEmail(user.email);
+          setState(() {
+            _userName = user.firstName;
+          });
+        },
+        failure: (error) async {
+          // Fallback to storage if API fails
+          final firstName = await storage.getUserFirstName();
+          setState(() {
+            _userName = firstName ?? "User";
+          });
+        },
+      );
+    } catch (e) {
+      // Fallback to storage if any error
+      final firstName = await storage.getUserFirstName();
+      setState(() {
+        _userName = firstName ?? "User";
+      });
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      final authService = AuthService();
+      final result = await authService.logout();
+
+      result.when(
+        success: (_) {
+          // Navigate to login screen
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil('/login', (route) => false);
+        },
+        failure: (error) {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Logout failed: ${error.userMessage}')),
+          );
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Logout failed: $e')));
+    }
+  }
+
+  void _handleOptionPressed(String id) {
+    switch (id) {
+      case "8": // Logout
+        _showLogoutConfirmation();
+        break;
+      // Add other cases as needed
+      default:
+        // Handle other options
+        break;
+    }
+  }
+
+  void _showLogoutConfirmation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(tr("logout_confirmation_title")),
+          content: Text(tr("logout_confirmation_message")),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(tr("cancel")),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _handleLogout();
+              },
+              child: Text(tr("logout")),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   final List<Map<String, String>> _userAccountOptions = [
     {
@@ -48,6 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       "id": "6",
     },
     {"icon": "assets/images/p_setting.png", "title": tr("settings"), "id": "7"},
+    {"icon": "assets/images/lock.png", "title": "Logout", "id": "8"},
   ];
 
   @override
@@ -58,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           HomeContainerAppbar(
             profileImage: "assets/images/u2.png",
-            title: "Farasyah",
+            title: _userName,
             welcomeText: "Your Profile",
             primaryColor: const Color(0xFF7B8FE8),
             lightColor: const Color(0xFF8FA3F5),
@@ -290,7 +397,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return SettingRow(
                 icon: option["icon"]!,
                 title: option["title"]!,
-                onPressed: () {},
+                onPressed: () => _handleOptionPressed(option["id"]!),
               );
             },
           ),

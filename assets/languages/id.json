@@ -297,6 +297,8 @@
   "privacy_policy": "Kebijakan Privasi",
   "settings": "Pengaturan",
   "logout": "Keluar",
+  "logout_confirmation_title": "Keluar",
+  "logout_confirmation_message": "Apakah Anda yakin ingin keluar?",
   "account_settings": "Pengaturan Akun",
   "notification_settings": "Pengaturan Notifikasi",
   "other_settings": "Pengaturan Lainnya",

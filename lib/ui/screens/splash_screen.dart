@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import '../../app/routes.dart';
+import '../../utils/storage_helper.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -56,13 +57,20 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
+    // Check if user is logged in
+    final storage = StorageHelper();
+    final isLoggedIn = await storage.isLoggedIn();
+
     // Quick fade out and immediate navigation
     await _fadeController.reverse();
 
     if (!mounted) return;
 
-    // Navigate immediately after fade out
-    Navigator.of(context).pushReplacementNamed(Routes.onboardingScreen);
+    // Navigate based on auth status
+    final route = isLoggedIn
+        ? Routes.mainBottomNavigationScreen
+        : Routes.onboardingScreen;
+    Navigator.of(context).pushReplacementNamed(route);
   }
 
   @override

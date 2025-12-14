@@ -297,6 +297,8 @@
   "privacy_policy": "Privacy Policy",
   "settings": "Settings",
   "logout": "Logout",
+  "logout_confirmation_title": "Logout",
+  "logout_confirmation_message": "Are you sure you want to logout?",
   "account_settings": "Account Settings",
   "notification_settings": "Notification Settings",
   "other_settings": "Other Settings",

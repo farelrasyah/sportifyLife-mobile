@@ -100,6 +100,9 @@ class AuthCubit extends Cubit<AuthState> {
               needsVerification: !authResponse.user.isVerified,
             ),
           );
+
+          // Save user data to storage
+          await _saveUserData(authResponse.user);
         },
         failure: (error) {
           emit(AuthError(error.userMessage));
@@ -132,6 +135,9 @@ class AuthCubit extends Cubit<AuthState> {
             emit(
               AuthSuccess(user: authResponse.user, needsVerification: false),
             );
+
+            // Save user data to storage
+            await _saveUserData(authResponse.user);
           }
         },
         failure: (error) {
@@ -258,5 +264,13 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(AuthError('Failed to send reset email: ${e.toString()}'));
     }
+  }
+
+  /// Save user data to storage
+  Future<void> _saveUserData(UserModel user) async {
+    await _storage.saveUserId(user.id);
+    await _storage.saveUserEmail(user.email);
+    await _storage.saveUserFirstName(user.firstName);
+    await _storage.saveUserLastName(user.lastName);
   }
 }

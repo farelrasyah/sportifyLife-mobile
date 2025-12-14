@@ -10,6 +10,7 @@ import '../../../cubits/verify_cubit.dart';
 import 'register_screen.dart';
 import 'verify_email_screen.dart';
 import '../../../app/routes.dart';
+import '../../../utils/storage_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +21,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isCheck = false;
+  bool _rememberMe = false;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -29,10 +31,30 @@ class _LoginScreenState extends State<LoginScreen> {
   static const Color _black = Color(0xFF1D1617);
 
   @override
+  void initState() {
+    super.initState();
+    _loadRememberMeCredentials();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadRememberMeCredentials() async {
+    final storage = StorageHelper();
+    final email = await storage.getRememberMeEmail();
+    final password = await storage.getRememberMePassword();
+
+    if (email != null && password != null) {
+      setState(() {
+        _emailController.text = email;
+        _passwordController.text = password;
+        _rememberMe = true;
+      });
+    }
   }
 
   void _handleLogin() {
@@ -42,6 +64,17 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+
+      // Save credentials if remember me is checked
+      if (_rememberMe) {
+        final storage = StorageHelper();
+        storage.saveRememberMeEmail(_emailController.text.trim());
+        storage.saveRememberMePassword(_passwordController.text);
+      } else {
+        // Clear remember me credentials if unchecked
+        final storage = StorageHelper();
+        storage.clearRememberMeCredentials();
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -138,6 +171,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   backgroundColor: Colors.green,
                 ),
               );
+              // Navigate to home screen after successful login
+              Future.delayed(const Duration(milliseconds: 500), () {
+                if (mounted) {
+                  Navigator.pushReplacementNamed(
+                    context,
+                    Routes.mainBottomNavigationScreen,
+                  );
+                }
+              });
             }
           }
         },
@@ -209,6 +251,27 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
+                              },
+                              activeColor: TColor.primaryColor1,
+                            ),
+                            Text(
+                              "Remember Me",
+                              style: TextStyle(
+                                color: TColor.gray,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 10),
                         Row(

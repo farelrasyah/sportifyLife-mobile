@@ -12,6 +12,8 @@ import '../../widgets/home_container_appbar.dart';
 import 'fitness_tracker_screen.dart';
 import 'notification_screen.dart';
 import 'workout_complete_screen.dart';
+import '../../../utils/storage_helper.dart';
+import '../../../services/auth_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -21,6 +23,48 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  String _userName = "User";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final authService = AuthService();
+    final storage = StorageHelper();
+
+    try {
+      // Try to get current user from API
+      final result = await authService.getCurrentUser();
+      result.when(
+        success: (user) async {
+          // Update storage with latest data
+          await storage.saveUserFirstName(user.firstName);
+          await storage.saveUserLastName(user.lastName);
+          await storage.saveUserEmail(user.email);
+          setState(() {
+            _userName = user.firstName;
+          });
+        },
+        failure: (error) async {
+          // Fallback to storage if API fails
+          final firstName = await storage.getUserFirstName();
+          setState(() {
+            _userName = firstName ?? "User";
+          });
+        },
+      );
+    } catch (e) {
+      // Fallback to storage if any error
+      final firstName = await storage.getUserFirstName();
+      setState(() {
+        _userName = firstName ?? "User";
+      });
+    }
+  }
+
   final List<Map<String, dynamic>> _workoutData = [
     {
       "name": "Full Body Workout",
@@ -99,7 +143,7 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           HomeContainerAppbar(
             profileImage: "assets/images/u2.png",
-            title: "Farasyah",
+            title: _userName,
             welcomeText: "Welcome Back",
             primaryColor: const Color(0xFF7B8FE8),
             lightColor: const Color(0xFF8FA3F5),

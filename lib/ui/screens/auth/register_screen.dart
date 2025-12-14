@@ -9,7 +9,8 @@ import '../../../cubits/auth_cubit.dart';
 import '../../../cubits/verify_cubit.dart';
 import 'login_screen.dart';
 import 'verify_email_screen.dart';
-import '../../../app/routes.dart'; // TEMPORARY: For testing without auth
+import '../../../app/routes.dart';
+import '../../../utils/storage_helper.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,6 +21,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool isCheck = false;
+  bool _rememberMe = false;
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -31,12 +33,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
   static const Color _black = Color(0xFF1D1617);
 
   @override
+  void initState() {
+    super.initState();
+    _loadRememberMeCredentials();
+  }
+
+  @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadRememberMeCredentials() async {
+    final storage = StorageHelper();
+    final email = await storage.getRememberMeEmail();
+    final password = await storage.getRememberMePassword();
+
+    if (email != null && password != null) {
+      setState(() {
+        _emailController.text = email;
+        _passwordController.text = password;
+        _rememberMe = true;
+      });
+    }
   }
 
   void _handleRegister() {
@@ -52,6 +74,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
       );
+
+      // Save credentials if remember me is checked
+      if (_rememberMe) {
+        final storage = StorageHelper();
+        storage.saveRememberMeEmail(_emailController.text.trim());
+        storage.saveRememberMePassword(_passwordController.text);
+      } else {
+        // Clear remember me credentials if unchecked
+        final storage = StorageHelper();
+        storage.clearRememberMeCredentials();
+      }
     } else {
       String message = '';
       if (!isCheck) {
@@ -271,6 +304,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   color: TColor.gray,
                                   fontSize: 10,
                                 ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+
+                        // Remember Me Checkbox
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
+                              },
+                              activeColor: TColor.primaryColor1,
+                            ),
+                            Text(
+                              "Remember Me",
+                              style: TextStyle(
+                                color: TColor.gray,
+                                fontSize: 12,
                               ),
                             ),
                           ],

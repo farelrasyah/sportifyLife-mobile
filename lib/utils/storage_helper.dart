@@ -44,8 +44,32 @@ class StorageHelper {
     await _storage.write(key: AppConstants.userIdKey, value: userId);
   }
 
-  Future<String?> getUserId() async {
-    return await _storage.read(key: AppConstants.userIdKey);
+  // User First Name
+  Future<void> saveUserFirstName(String firstName) async {
+    await _storage.write(key: 'user_first_name', value: firstName);
+  }
+
+  Future<String?> getUserFirstName() async {
+    return await _storage.read(key: 'user_first_name');
+  }
+
+  // User Last Name
+  Future<void> saveUserLastName(String lastName) async {
+    await _storage.write(key: 'user_last_name', value: lastName);
+  }
+
+  Future<String?> getUserLastName() async {
+    return await _storage.read(key: 'user_last_name');
+  }
+
+  // Get Full Name
+  Future<String> getUserFullName() async {
+    final firstName = await getUserFirstName();
+    final lastName = await getUserLastName();
+    if (firstName != null && lastName != null) {
+      return '$firstName $lastName';
+    }
+    return 'User'; // Default
   }
 
   // Verification Expiry
@@ -80,5 +104,27 @@ class StorageHelper {
   Future<bool> isLoggedIn() async {
     final token = await getAccessToken();
     return token != null && token.isNotEmpty;
+  }
+
+  // Remember Me Credentials
+  Future<void> saveRememberMeEmail(String email) async {
+    await _storage.write(key: 'remember_me_email', value: email);
+  }
+
+  Future<String?> getRememberMeEmail() async {
+    return await _storage.read(key: 'remember_me_email');
+  }
+
+  Future<void> saveRememberMePassword(String password) async {
+    await _storage.write(key: 'remember_me_password', value: password);
+  }
+
+  Future<String?> getRememberMePassword() async {
+    return await _storage.read(key: 'remember_me_password');
+  }
+
+  Future<void> clearRememberMeCredentials() async {
+    await _storage.delete(key: 'remember_me_email');
+    await _storage.delete(key: 'remember_me_password');
   }
 }
