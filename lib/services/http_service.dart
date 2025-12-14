@@ -275,6 +275,6 @@ class HttpService {
 
   /// Clear authentication (for logout)
   Future<void> clearAuth() async {
-    await _storage.clearAll();
+    await _storage.clearAuthData();
   }
 }

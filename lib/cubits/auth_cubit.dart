@@ -212,7 +212,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthUnauthenticated());
     } catch (e) {
       // Even if server logout fails, clear local data
-      await _storage.clearAll();
+      await _storage.clearAuthData();
       emit(AuthUnauthenticated());
     }
   }

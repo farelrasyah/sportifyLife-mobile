@@ -95,6 +95,17 @@ class StorageHelper {
     await _storage.deleteAll();
   }
 
+  // Clear Auth Data (but preserve Remember Me)
+  Future<void> clearAuthData() async {
+    await _storage.delete(key: AppConstants.accessTokenKey);
+    await _storage.delete(key: AppConstants.refreshTokenKey);
+    await _storage.delete(key: AppConstants.userEmailKey);
+    await _storage.delete(key: AppConstants.userIdKey);
+    await _storage.delete(key: 'user_first_name');
+    await _storage.delete(key: 'user_last_name');
+    await _storage.delete(key: AppConstants.verificationExpiryKey);
+  }
+
   // Clear Verification Data
   Future<void> clearVerificationData() async {
     await _storage.delete(key: AppConstants.verificationExpiryKey);

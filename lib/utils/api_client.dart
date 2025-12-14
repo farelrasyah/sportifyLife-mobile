@@ -80,7 +80,7 @@ class ApiClient {
 
   /// Reset client (useful for logout)
   Future<void> reset() async {
-    await _storage.clearAll();
+    await _storage.clearAuthData();
   }
 
   /// POST request wrapper

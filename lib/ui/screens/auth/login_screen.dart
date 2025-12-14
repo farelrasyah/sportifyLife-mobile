@@ -174,12 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 }
               });
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(tr('message_login_successful')),
-                  backgroundColor: Colors.green,
-                ),
-              );
+             
               // Navigate based on profile completion status
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (mounted) {
@@ -264,20 +259,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 10),
                         Row(
                           children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
+                            IconButton(
+                              onPressed: () {
                                 setState(() {
-                                  _rememberMe = value ?? false;
+                                  _rememberMe = !_rememberMe;
                                 });
                               },
-                              activeColor: TColor.primaryColor1,
-                            ),
-                            Text(
-                              "Remember Me",
-                              style: TextStyle(
+                              icon: Icon(
+                                _rememberMe
+                                    ? Icons.check_box_outlined
+                                    : Icons.check_box_outline_blank_outlined,
                                 color: TColor.gray,
-                                fontSize: 12,
+                                size: 20,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                "Remember Me",
+                                style: TextStyle(
+                                  color: TColor.gray,
+                                  fontSize: 10,
+                                ),
                               ),
                             ),
                           ],
@@ -348,13 +350,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               SocialLoginButton(
                                 provider: 'google',
                                 onPressed: () => _handleOAuthLogin('google'),
-                                isLoading: state is AuthLoading,
                               ),
                               SizedBox(width: 20),
                               SocialLoginButton(
                                 provider: 'facebook',
                                 onPressed: () => _handleOAuthLogin('facebook'),
-                                isLoading: state is AuthLoading,
                               ),
                             ],
                           ),

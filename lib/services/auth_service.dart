@@ -123,7 +123,7 @@ class AuthService {
     }
 
     // Clear local storage
-    await _storage.clearAll();
+    await _storage.clearAuthData();
     await _httpService.clearAuth();
 
     return const Success(null);

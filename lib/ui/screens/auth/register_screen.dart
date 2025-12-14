@@ -289,6 +289,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         SizedBox(height: 15),
 
+                        // Remember Me Checkbox
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _rememberMe = !_rememberMe;
+                                });
+                              },
+                              icon: Icon(
+                                _rememberMe
+                                    ? Icons.check_box_outlined
+                                    : Icons.check_box_outline_blank_outlined,
+                                color: TColor.gray,
+                                size: 20,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                "Remember Me",
+                                style: TextStyle(
+                                  color: TColor.gray,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+
                         // Terms & Conditions
                         Row(
                           children: [
@@ -313,29 +343,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   color: TColor.gray,
                                   fontSize: 10,
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 15),
-
-                        // Remember Me Checkbox
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  _rememberMe = value ?? false;
-                                });
-                              },
-                              activeColor: TColor.primaryColor1,
-                            ),
-                            Text(
-                              "Remember Me",
-                              style: TextStyle(
-                                color: TColor.gray,
-                                fontSize: 12,
                               ),
                             ),
                           ],
@@ -383,7 +390,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         SizedBox(height: 20),
                         // Social Login
-                         Container(
+                        Container(
                           width: double.infinity,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -392,13 +399,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               SocialLoginButton(
                                 provider: 'google',
                                 onPressed: () => _handleOAuthLogin('google'),
-                                isLoading: state is AuthLoading,
                               ),
                               SizedBox(width: 20),
                               SocialLoginButton(
                                 provider: 'facebook',
                                 onPressed: () => _handleOAuthLogin('facebook'),
-                                isLoading: state is AuthLoading,
                               ),
                             ],
                           ),
