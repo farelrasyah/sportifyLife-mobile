@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../common/colo_extension.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/round_textfield.dart';
+import '../../widgets/social_login_button.dart';
 import '../../../cubits/auth_cubit.dart';
 import '../../../cubits/verify_cubit.dart';
 import 'register_screen.dart';
@@ -82,6 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+
+  void _handleOAuthLogin(String provider) {
+    if (provider == 'google') {
+      context.read<AuthCubit>().loginWithGoogle();
+    } else if (provider == 'facebook') {
+      context.read<AuthCubit>().loginWithFacebook();
     }
   }
 
@@ -329,54 +338,26 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         SizedBox(height: 20),
-                        // Social Login
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {},
-                              child: Container(
-                                width: 50,
-                                height: 50,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: TColor.white,
-                                  border: Border.all(
-                                    width: 1,
-                                    color: TColor.gray.withOpacity(0.4),
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Image.asset(
-                                  "assets/images/google.png",
-                                  width: 20,
-                                  height: 20,
-                                ),
+                        // Social Login - Horizontal layout with explicit width
+                        Container(
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              SocialLoginButton(
+                                provider: 'google',
+                                onPressed: () => _handleOAuthLogin('google'),
+                                isLoading: state is AuthLoading,
                               ),
-                            ),
-                            SizedBox(width: 30),
-                            GestureDetector(
-                              onTap: () {},
-                              child: Container(
-                                width: 50,
-                                height: 50,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: TColor.white,
-                                  border: Border.all(
-                                    width: 1,
-                                    color: TColor.gray.withOpacity(0.4),
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Image.asset(
-                                  "assets/images/facebook.png",
-                                  width: 20,
-                                  height: 20,
-                                ),
+                              SizedBox(width: 20),
+                              SocialLoginButton(
+                                provider: 'facebook',
+                                onPressed: () => _handleOAuthLogin('facebook'),
+                                isLoading: state is AuthLoading,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         SizedBox(height: 20),
                         // Footer

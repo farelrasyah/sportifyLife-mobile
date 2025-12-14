@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../data/models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/verification_service.dart';
+import '../services/oauth_service.dart';
 import '../utils/storage_helper.dart';
 
 extension UserModelProfileCompletion on UserModel {
@@ -57,16 +58,22 @@ class AuthUnauthenticated extends AuthState {}
 class AuthCubit extends Cubit<AuthState> {
   final AuthService _authService;
   final VerificationService _verificationService;
+  final OAuthService _oauthService;
   final StorageHelper _storage;
 
   AuthCubit({
     AuthService? authService,
     VerificationService? verificationService,
+    OAuthService? oauthService,
     StorageHelper? storage,
   }) : _authService = authService ?? AuthService(),
        _verificationService = verificationService ?? VerificationService(),
+       _oauthService = oauthService ?? OAuthService(),
        _storage = storage ?? StorageHelper(),
-       super(AuthInitial());
+       super(AuthInitial()) {
+    // Initialize OAuth service
+    _oauthService.initialize();
+  }
 
   /// Register new user
   /// After successful registration, saves auth data and navigates to verification
@@ -276,5 +283,104 @@ class AuthCubit extends Cubit<AuthState> {
     await _storage.saveUserEmail(user.email);
     await _storage.saveUserFirstName(user.firstName);
     await _storage.saveUserLastName(user.lastName);
+  }
+
+  /// Login with Google OAuth
+  Future<void> loginWithGoogle() async {
+    try {
+      emit(AuthLoading());
+
+      final result = await _oauthService.loginWithGoogle();
+
+      result.when(
+        success: (authResponse) async {
+          // Fetch complete user profile from backend
+          final userResult = await _authService.getCurrentUser();
+
+          userResult.when(
+            success: (user) {
+              emit(
+                AuthSuccess(
+                  user: user,
+                  needsVerification: false, // OAuth users are auto-verified
+                  needsProfileCompletion: !user.isProfileCompleted,
+                ),
+              );
+            },
+            failure: (_) {
+              // Use OAuth user data as fallback
+              emit(
+                AuthSuccess(
+                  user: authResponse.user,
+                  needsVerification: false,
+                  needsProfileCompletion: !authResponse.user.isProfileCompleted,
+                ),
+              );
+            },
+          );
+
+          // Save user data to storage
+          await _saveUserData(authResponse.user);
+        },
+        failure: (error) {
+          emit(AuthError(error.userMessage));
+        },
+      );
+    } catch (e) {
+      emit(AuthError('Google login failed: ${e.toString()}'));
+    }
+  }
+
+  /// Login with Facebook OAuth
+  Future<void> loginWithFacebook() async {
+    try {
+      emit(AuthLoading());
+
+      final result = await _oauthService.loginWithFacebook();
+
+      result.when(
+        success: (authResponse) async {
+          // Fetch complete user profile from backend
+          final userResult = await _authService.getCurrentUser();
+
+          userResult.when(
+            success: (user) {
+              emit(
+                AuthSuccess(
+                  user: user,
+                  needsVerification: false, // OAuth users are auto-verified
+                  needsProfileCompletion: !user.isProfileCompleted,
+                ),
+              );
+            },
+            failure: (_) {
+              // Use OAuth user data as fallback
+              emit(
+                AuthSuccess(
+                  user: authResponse.user,
+                  needsVerification: false,
+                  needsProfileCompletion: !authResponse.user.isProfileCompleted,
+                ),
+              );
+            },
+          );
+
+          // Save user data to storage
+          await _saveUserData(authResponse.user);
+        },
+        failure: (error) {
+          emit(AuthError(error.userMessage));
+        },
+      );
+    } catch (e) {
+      emit(AuthError('Facebook login failed: ${e.toString()}'));
+    }
+  }
+
+  /// Dispose OAuth service when cubit is closed
+  @override
+  Future<void> close() {
+    _oauthService.dispose();
+    return super.close();
   }
 }
