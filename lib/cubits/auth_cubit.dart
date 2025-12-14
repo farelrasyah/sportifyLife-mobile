@@ -5,9 +5,9 @@ import '../services/auth_service.dart';
 import '../services/verification_service.dart';
 import '../utils/storage_helper.dart';
 
-// ============================================================================
-// STATES
-// ============================================================================
+extension UserModelProfileCompletion on UserModel {
+  bool get isProfileCompleted => firstName.isNotEmpty && lastName.isNotEmpty;
+}
 
 abstract class AuthState extends Equatable {
   @override
@@ -133,7 +133,11 @@ class AuthCubit extends Cubit<AuthState> {
           } else {
             // User is verified, proceed normally
             emit(
-              AuthSuccess(user: authResponse.user, needsVerification: false),
+              AuthSuccess(
+                user: authResponse.user,
+                needsVerification: false,
+                needsProfileCompletion: !authResponse.user.isProfileCompleted,
+              ),
             );
 
             // Save user data to storage

@@ -171,13 +171,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   backgroundColor: Colors.green,
                 ),
               );
-              // Navigate to home screen after successful login
+              // Navigate based on profile completion status
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (mounted) {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    Routes.mainBottomNavigationScreen,
-                  );
+                  final route = state.needsProfileCompletion
+                      ? Routes.goalScreen
+                      : Routes.mainBottomNavigationScreen;
+                  Navigator.pushReplacementNamed(context, route);
                 }
               });
             }
