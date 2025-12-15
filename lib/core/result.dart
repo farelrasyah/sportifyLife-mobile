@@ -108,6 +108,24 @@ class ServiceError {
       return 'Server error. Please try again later.';
     }
 
+    // Map common backend messages to user-friendly messages
+    final lowercase = message.toLowerCase();
+
+    if (lowercase.contains('otp') && lowercase.contains('expired')) {
+      return 'OTP has expired. Please request a new code.';
+    }
+
+    if (lowercase.contains('otp') &&
+        (lowercase.contains('invalid') ||
+            lowercase.contains('not valid') ||
+            lowercase.contains('incorrect'))) {
+      return 'Invalid code. Please check the code and try again.';
+    }
+
+    if (lowercase.contains('email') && lowercase.contains('not found')) {
+      return 'Email not found. Please check the email and try again.';
+    }
+
     // Default to the message from backend
     return message;
   }

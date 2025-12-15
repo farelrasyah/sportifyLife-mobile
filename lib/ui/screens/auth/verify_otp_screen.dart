@@ -94,6 +94,14 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   void _onOtpChanged(String value, int index) {
     if (value.isNotEmpty) {
+      // Ensure only one digit per field
+      if (value.length > 1) {
+        _otpControllers[index].text = value.substring(value.length - 1);
+        _otpControllers[index].selection = TextSelection.fromPosition(
+          TextPosition(offset: _otpControllers[index].text.length),
+        );
+      }
+
       // Move to next field
       if (index < 5) {
         _focusNodes[index + 1].requestFocus();
@@ -101,12 +109,8 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
         // All fields filled, submit automatically
         _handleOtpSubmit();
       }
-    } else {
-      // Move to previous field if current is empty
-      if (index > 0) {
-        _focusNodes[index - 1].requestFocus();
-      }
     }
+    // Note: Removed backward navigation on empty to avoid confusion
   }
 
   void _clearOtpFields() {
@@ -261,30 +265,41 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                                       )
                                     : null,
                               ),
-                              child: TextFormField(
-                                controller: _otpControllers[index],
-                                focusNode: _focusNodes[index],
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
-                                maxLength: 1,
-                                style: TextStyle(
-                                  color: _black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  counterText: '',
-                                ),
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                                onChanged: (value) =>
-                                    _onOtpChanged(value, index),
-                                onTap: () {
-                                  // Clear field when tapped for better UX
-                                  _otpControllers[index].clear();
+                              child: RawKeyboardListener(
+                                focusNode: FocusNode(),
+                                onKey: (event) {
+                                  if (event is RawKeyDownEvent) {
+                                    if (event.logicalKey ==
+                                        LogicalKeyboardKey.backspace) {
+                                      if (_otpControllers[index].text.isEmpty &&
+                                          index > 0) {
+                                        _focusNodes[index - 1].requestFocus();
+                                        _otpControllers[index - 1].clear();
+                                      }
+                                    }
+                                  }
                                 },
+                                child: TextFormField(
+                                  controller: _otpControllers[index],
+                                  focusNode: _focusNodes[index],
+                                  textAlign: TextAlign.center,
+                                  keyboardType: TextInputType.number,
+                                  maxLength: 1,
+                                  style: TextStyle(
+                                    color: _black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    counterText: '',
+                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  onChanged: (value) =>
+                                      _onOtpChanged(value, index),
+                                ),
                               ),
                             );
                           }),
@@ -357,13 +372,6 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                   ),
                 ),
               ),
-
-              // Loading Overlay
-              if (isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.3),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
             ],
           );
         },

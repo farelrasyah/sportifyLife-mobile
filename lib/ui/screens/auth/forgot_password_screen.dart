@@ -50,6 +50,54 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return null;
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required String iconPath,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _lightGray,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 50,
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Image.asset(
+              iconPath,
+              width: 20,
+              height: 20,
+              fit: BoxFit.contain,
+              color: _gray,
+            ),
+          ),
+          Expanded(
+            child: TextFormField(
+              controller: controller,
+              keyboardType: keyboardType,
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: TextStyle(color: _gray, fontSize: 12),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+              ),
+              style: TextStyle(color: _black, fontSize: 14),
+              validator: validator,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -161,37 +209,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           const SizedBox(height: 30),
 
                           // Email Input
-                          Container(
-                            decoration: BoxDecoration(
-                              color: _lightGray,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: TextFormField(
-                              controller: _emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 15,
-                                  horizontal: 15,
-                                ),
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                hintText: "Email Address",
-                                prefixIcon: Container(
-                                  alignment: Alignment.center,
-                                  width: 20,
-                                  height: 20,
-                                  child: Image.asset(
-                                    "assets/icon/email.png",
-                                    width: 20,
-                                    height: 20,
-                                    fit: BoxFit.contain,
-                                    color: _gray,
-                                  ),
-                                ),
-                              ),
-                              validator: _validateEmail,
-                            ),
+                          _buildTextField(
+                            controller: _emailController,
+                            hintText: "Email Address",
+                            iconPath: "assets/images/email.png",
+                            keyboardType: TextInputType.emailAddress,
+                            validator: _validateEmail,
                           ),
                           const SizedBox(height: 40),
 
@@ -237,12 +260,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
 
-              // Loading Overlay
-              if (isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.3),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
+
             ],
           );
         },
