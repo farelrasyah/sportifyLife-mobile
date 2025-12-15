@@ -22,6 +22,12 @@ class Api {
   static String resendVerification =
       "${AppConstants.apiUrl}/auth/resend-verification";
   static String currentUser = "${AppConstants.apiUrl}/auth/me";
+
+  // Password Reset Endpoints
+  static String forgotPassword = "${AppConstants.apiUrl}/auth/forgot-password";
+  static String verifyOtp = "${AppConstants.apiUrl}/auth/verify-otp";
+  static String resetPassword = "${AppConstants.apiUrl}/auth/reset-password";
+    static String changePassword = "${AppConstants.apiUrl}/auth/change-password";
   static String completeProfile =
       "${AppConstants.apiUrl}/auth/complete-profile";
   static String postGoal = "${AppConstants.apiUrl}/users/goals";
@@ -31,8 +37,6 @@ class Api {
   static String uploadProfilePhoto =
       "${AppConstants.apiUrl}/user/profile-photo";
 
-  // Password Endpoints
-  static String forgotPassword = "${AppConstants.apiUrl}/auth/forgot-password";
-  static String resetPassword = "${AppConstants.apiUrl}/auth/reset-password";
-  static String changePassword = "${AppConstants.apiUrl}/auth/change-password";
+
+
 }

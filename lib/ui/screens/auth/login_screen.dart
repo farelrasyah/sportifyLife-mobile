@@ -174,7 +174,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 }
               });
             } else {
-             
               // Navigate based on profile completion status
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (mounted) {
@@ -288,12 +287,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              tr("forgot_password_text"),
-                              style: TextStyle(
-                                color: TColor.gray,
-                                fontSize: 10,
-                                decoration: TextDecoration.underline,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.forgotPasswordScreen,
+                                );
+                              },
+                              child: Text(
+                                tr("forgot_password_text"),
+                                style: TextStyle(
+                                  color: TColor.gray,
+                                  fontSize: 10,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
                             ),
                           ],

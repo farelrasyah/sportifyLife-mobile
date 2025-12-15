@@ -30,7 +30,6 @@ import '../ui/screens/profile/complete_profile_screen.dart';
 import '../ui/screens/profile/goal_screen.dart';
 import '../ui/screens/welcome_screen.dart';
 
-
 // Onboarding Screens
 import '../ui/screens/onboarding/view/onboarding_screen.dart';
 
@@ -38,6 +37,9 @@ import '../ui/screens/onboarding/view/onboarding_screen.dart';
 import '../ui/screens/auth/login_screen.dart';
 import '../ui/screens/auth/register_screen.dart';
 import '../ui/screens/auth/verify_email_screen.dart';
+import '../ui/screens/auth/forgot_password_screen.dart';
+import '../ui/screens/auth/verify_otp_screen.dart';
+import '../ui/screens/auth/new_password_screen.dart';
 
 // Home Screens
 import '../ui/screens/home/main_screen.dart';
@@ -80,6 +82,7 @@ import '../cubits/verify_cubit.dart';
 import '../cubits/user_details_cubit.dart';
 import '../cubits/complete_profile_cubit.dart';
 import '../cubits/goal_cubit.dart';
+import '../cubits/password_reset_cubit.dart';
 
 // Repositories
 import '../data/repositories/user_details_repository.dart';
@@ -104,6 +107,9 @@ class Routes {
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
   static const String verifyEmailScreen = '/verifyEmail';
+  static const String forgotPasswordScreen = '/forgotPassword';
+  static const String verifyOtpScreen = '/verifyOtp';
+  static const String newPasswordScreen = '/newPassword';
 
   // Home Routes
   static const String mainScreen = '/main';
@@ -181,7 +187,6 @@ class RouteGenerator {
           builder: (_) => const WelcomeView(),
         );
 
-
       // Onboarding Routes
       case Routes.onboardingScreen:
         return MaterialPageRoute(
@@ -218,6 +223,42 @@ class RouteGenerator {
                 BlocProvider(create: (_) => VerifyCubit()),
               ],
               child: VerifyEmailScreen(email: args['email'] as String),
+            ),
+          );
+        }
+        return _errorRoute();
+
+      case Routes.forgotPasswordScreen:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => BlocProvider(
+            create: (_) => PasswordResetCubit(),
+            child: const ForgotPasswordScreen(),
+          ),
+        );
+
+      case Routes.verifyOtpScreen:
+        if (args is Map<String, dynamic>) {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => BlocProvider(
+              create: (_) => PasswordResetCubit(),
+              child: VerifyOtpScreen(email: args['email'] as String),
+            ),
+          );
+        }
+        return _errorRoute();
+
+      case Routes.newPasswordScreen:
+        if (args is Map<String, dynamic>) {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => BlocProvider(
+              create: (_) => PasswordResetCubit(),
+              child: NewPasswordScreen(
+                email: args['email'] as String,
+                otp: args['otp'] as String,
+              ),
             ),
           );
         }

@@ -1,6 +1,7 @@
 import '../core/result.dart';
 import '../data/models/auth_response_model.dart';
 import '../data/models/user_model.dart';
+import '../data/models/password_reset_model.dart';
 import '../services/http_service.dart';
 import '../utils/storage_helper.dart';
 
@@ -198,5 +199,122 @@ class AuthService {
     return result.map(
       (data) => data['message'] as String? ?? 'Password changed successfully',
     );
+  }
+
+  /// Request password reset OTP
+  /// Sends OTP to user's email for password reset
+  Future<Result<PasswordResetResponseModel>> requestPasswordResetOtp({
+    required String email,
+  }) async {
+    // Client-side validation
+    if (email.isEmpty || !_isValidEmail(email)) {
+      return Failure(
+        ServiceError.validation('Please enter a valid email address'),
+      );
+    }
+
+    // Make API request
+    final result = await _httpService.post<PasswordResetResponseModel>(
+      '/auth/forgot-password',
+      data: {'email': email},
+      fromJson: (json) =>
+          PasswordResetResponseModel.fromJson(json as Map<String, dynamic>),
+    );
+
+    return result;
+  }
+
+  /// Verify OTP for password reset
+  /// Validates the OTP sent to user's email
+  Future<Result<OtpVerificationResponseModel>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    // Client-side validation
+    if (email.isEmpty || !_isValidEmail(email)) {
+      return Failure(
+        ServiceError.validation('Please enter a valid email address'),
+      );
+    }
+
+    if (otp.isEmpty || otp.length != 6) {
+      return Failure(
+        ServiceError.validation('Please enter a valid 6-digit OTP code'),
+      );
+    }
+
+    // Make API request
+    final result = await _httpService.post<OtpVerificationResponseModel>(
+      '/auth/verify-otp',
+      data: {'email': email, 'otp': otp},
+      fromJson: (json) =>
+          OtpVerificationResponseModel.fromJson(json as Map<String, dynamic>),
+    );
+
+    return result;
+  }
+
+  /// Reset password with OTP
+  /// Changes user's password using verified OTP
+  Future<Result<PasswordResetResponseModel>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    // Client-side validation
+    if (email.isEmpty || !_isValidEmail(email)) {
+      return Failure(
+        ServiceError.validation('Please enter a valid email address'),
+      );
+    }
+
+    if (otp.isEmpty || otp.length != 6) {
+      return Failure(
+        ServiceError.validation('Please enter a valid 6-digit OTP code'),
+      );
+    }
+
+    if (newPassword.length < 8) {
+      return Failure(
+        ServiceError.validation('Password must be at least 8 characters'),
+      );
+    }
+
+    // Password strength validation (according to backend requirements)
+    final passwordRegex = RegExp(
+      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,128}$',
+    );
+    if (!passwordRegex.hasMatch(newPassword)) {
+      return Failure(
+        ServiceError.validation(
+          'Password must contain at least:\n'
+          '• 8 characters\n'
+          '• 1 lowercase letter (a-z)\n'
+          '• 1 uppercase letter (A-Z)\n'
+          '• 1 number (0-9)\n'
+          '• 1 special character (@\$!%*?&)',
+        ),
+      );
+    }
+
+    if (newPassword != confirmNewPassword) {
+      return Failure(ServiceError.validation('Passwords do not match'));
+    }
+
+    // Make API request
+    final result = await _httpService.post<PasswordResetResponseModel>(
+      '/auth/reset-password',
+      data: {
+        'email': email,
+        'otp': otp,
+        'newPassword': newPassword,
+        'confirmNewPassword': confirmNewPassword,
+      },
+      fromJson: (json) =>
+          PasswordResetResponseModel.fromJson(json as Map<String, dynamic>),
+    );
+
+    return result;
   }
 }

@@ -254,10 +254,10 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
 
-      final result = await _authService.forgotPassword(email);
+      final result = await _authService.requestPasswordResetOtp(email: email);
 
       result.when(
-        success: (message) {
+        success: (response) {
           // Return to unauthenticated state with success message
           // UI will show snackbar and navigate
           emit(AuthUnauthenticated());
