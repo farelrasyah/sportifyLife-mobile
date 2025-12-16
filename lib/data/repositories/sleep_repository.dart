@@ -43,8 +43,25 @@ class SleepRepository {
         queryParameters: queryParams,
       );
 
-      final List<dynamic> data = response.data;
-      return data.map((json) => SleepScheduleModel.fromJson(json)).toList();
+      // Handle nested API response structure
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data,
+        (data) => data as Map<String, dynamic>,
+      );
+
+      if (!apiResponse.success || apiResponse.data == null) {
+        throw ApiException('Failed to load sleep schedules');
+      }
+
+      // Extract the actual data from nested response
+      final nestedData = apiResponse.data!;
+      final List<dynamic> schedulesData = nestedData['data'] as List<dynamic>;
+
+      return schedulesData
+          .map(
+            (json) => SleepScheduleModel.fromJson(json as Map<String, dynamic>),
+          )
+          .toList();
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
     }
@@ -99,7 +116,19 @@ class SleepRepository {
         queryParameters: {'date': formattedDate},
       );
 
-      return SleepCalendarDataModel.fromJson(response.data);
+      // Handle nested API response structure
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data,
+        (data) => data as Map<String, dynamic>,
+      );
+
+      if (!apiResponse.success || apiResponse.data == null) {
+        throw ApiException('Failed to load calendar data');
+      }
+
+      // Extract the actual data from nested response
+      final calendarData = apiResponse.data!;
+      return SleepCalendarDataModel.fromJson(calendarData);
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
     }
@@ -115,7 +144,19 @@ class SleepRepository {
         queryParameters: {'date': formattedDate},
       );
 
-      return SleepDailySummaryModel.fromJson(response.data);
+      // Handle nested API response structure
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data,
+        (data) => data as Map<String, dynamic>,
+      );
+
+      if (!apiResponse.success || apiResponse.data == null) {
+        throw ApiException('Failed to load daily summary');
+      }
+
+      // Extract the actual data from nested response
+      final summaryData = apiResponse.data!;
+      return SleepDailySummaryModel.fromJson(summaryData);
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
     }

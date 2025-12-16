@@ -48,10 +48,38 @@ class SleepCalendarCubit extends Cubit<SleepCalendarState> {
     }
   }
 
-  /// Load initial calendar data for today
+  /// Load initial calendar data for today with fallback
   Future<void> loadInitialCalendarData() async {
-    final today = DateTime.now();
-    await loadCalendarData(today);
+    try {
+      final today = DateTime.now();
+      await loadCalendarData(today);
+    } catch (e) {
+      // Provide fallback data when API fails
+      final today = DateTime.now();
+      final fallbackData = _createFallbackCalendarData(today);
+
+      emit(
+        SleepCalendarLoaded(
+          selectedDateData: fallbackData,
+          weeklyData: [],
+          selectedDate: today,
+        ),
+      );
+      debugPrint('Using fallback calendar data due to API error: $e');
+    }
+  }
+
+  /// Create fallback calendar data when API is unavailable
+  SleepCalendarDataModel _createFallbackCalendarData(DateTime date) {
+    return SleepCalendarDataModel(
+      date: date.toIso8601String().split('T')[0],
+      totalSleepDuration: 0,
+      averageQuality: 0.0,
+      sleepRecords: [],
+      activeSchedules: [],
+      hasAlarm: false,
+      nextAlarmTime: null,
+    );
   }
 
   /// Change selected date

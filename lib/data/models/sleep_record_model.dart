@@ -23,13 +23,19 @@ class SleepRecordSummaryModel extends Equatable {
 
   factory SleepRecordSummaryModel.fromJson(Map<String, dynamic> json) {
     return SleepRecordSummaryModel(
-      id: json['id'] as String,
-      sleepTime: DateTime.parse(json['sleepTime'] as String),
-      wakeTime: DateTime.parse(json['wakeTime'] as String),
-      durationMinutes: json['durationMinutes'] as int,
-      qualityRating: json['qualityRating'] as int,
+      id: json['id'] as String? ?? '',
+      sleepTime: DateTime.parse(
+        json['sleepTime'] as String? ?? DateTime.now().toIso8601String(),
+      ),
+      wakeTime: DateTime.parse(
+        json['wakeTime'] as String? ?? DateTime.now().toIso8601String(),
+      ),
+      durationMinutes: json['durationMinutes'] as int? ?? 0,
+      qualityRating: json['qualityRating'] as int? ?? 1,
       notes: json['notes'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: DateTime.parse(
+        json['createdAt'] as String? ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 
@@ -37,7 +43,7 @@ class SleepRecordSummaryModel extends Equatable {
   String get formattedDuration {
     final hours = durationMinutes ~/ 60;
     final minutes = durationMinutes % 60;
-    
+
     if (minutes == 0) {
       return '${hours}h';
     }
@@ -64,14 +70,14 @@ class SleepRecordSummaryModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        sleepTime,
-        wakeTime,
-        durationMinutes,
-        qualityRating,
-        notes,
-        createdAt,
-      ];
+    id,
+    sleepTime,
+    wakeTime,
+    durationMinutes,
+    qualityRating,
+    notes,
+    createdAt,
+  ];
 }
 
 /// Sleep Calendar Data Model for API responses
@@ -96,16 +102,28 @@ class SleepCalendarDataModel extends Equatable {
 
   factory SleepCalendarDataModel.fromJson(Map<String, dynamic> json) {
     return SleepCalendarDataModel(
-      date: json['date'] as String,
-      totalSleepDuration: json['totalSleepDuration'] as int,
-      averageQuality: (json['averageQuality'] as num).toDouble(),
-      sleepRecords: (json['sleepRecords'] as List<dynamic>)
-          .map((record) => SleepRecordSummaryModel.fromJson(record as Map<String, dynamic>))
-          .toList(),
-      activeSchedules: (json['activeSchedules'] as List<dynamic>)
-          .map((schedule) => SleepScheduleModel.fromJson(schedule as Map<String, dynamic>))
-          .toList(),
-      hasAlarm: json['hasAlarm'] as bool,
+      date: json['date'] as String? ?? '',
+      totalSleepDuration: json['totalSleepDuration'] as int? ?? 0,
+      averageQuality: (json['averageQuality'] as num?)?.toDouble() ?? 0.0,
+      sleepRecords:
+          (json['sleepRecords'] as List<dynamic>?)
+              ?.map(
+                (record) => SleepRecordSummaryModel.fromJson(
+                  record as Map<String, dynamic>,
+                ),
+              )
+              ?.toList() ??
+          [],
+      activeSchedules:
+          (json['activeSchedules'] as List<dynamic>?)
+              ?.map(
+                (schedule) => SleepScheduleModel.fromJson(
+                  schedule as Map<String, dynamic>,
+                ),
+              )
+              ?.toList() ??
+          [],
+      hasAlarm: json['hasAlarm'] as bool? ?? false,
       nextAlarmTime: json['nextAlarmTime'] as String?,
     );
   }
@@ -114,7 +132,7 @@ class SleepCalendarDataModel extends Equatable {
   String get formattedTotalDuration {
     final hours = totalSleepDuration ~/ 60;
     final minutes = totalSleepDuration % 60;
-    
+
     if (minutes == 0) {
       return '${hours}h';
     }
@@ -124,15 +142,15 @@ class SleepCalendarDataModel extends Equatable {
   /// Get formatted next alarm time as "09:00 PM"
   String? get formattedNextAlarmTime {
     if (nextAlarmTime == null) return null;
-    
+
     try {
       final timeParts = nextAlarmTime!.split(':');
       final hour = int.parse(timeParts[0]);
       final minute = int.parse(timeParts[1]);
-      
+
       final period = hour >= 12 ? 'PM' : 'AM';
       final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-      
+
       return '${displayHour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $period';
     } catch (e) {
       return nextAlarmTime;
@@ -141,14 +159,14 @@ class SleepCalendarDataModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        date,
-        totalSleepDuration,
-        averageQuality,
-        sleepRecords,
-        activeSchedules,
-        hasAlarm,
-        nextAlarmTime,
-      ];
+    date,
+    totalSleepDuration,
+    averageQuality,
+    sleepRecords,
+    activeSchedules,
+    hasAlarm,
+    nextAlarmTime,
+  ];
 }
 
 /// Sleep Daily Summary Model for API responses
@@ -177,9 +195,9 @@ class SleepDailySummaryModel extends Equatable {
 
   factory SleepDailySummaryModel.fromJson(Map<String, dynamic> json) {
     return SleepDailySummaryModel(
-      date: json['date'] as String,
-      totalSleepTime: json['totalSleepTime'] as int,
-      bedtimeActual: json['bedtimeActual'] != null 
+      date: json['date'] as String? ?? '',
+      totalSleepTime: json['totalSleepTime'] as int? ?? 0,
+      bedtimeActual: json['bedtimeActual'] != null
           ? DateTime.parse(json['bedtimeActual'] as String)
           : null,
       wakeTimeActual: json['wakeTimeActual'] != null
@@ -188,12 +206,18 @@ class SleepDailySummaryModel extends Equatable {
       averageQuality: json['averageQuality'] != null
           ? (json['averageQuality'] as num).toDouble()
           : null,
-      records: (json['records'] as List<dynamic>)
-          .map((record) => SleepRecordSummaryModel.fromJson(record as Map<String, dynamic>))
-          .toList(),
+      records:
+          (json['records'] as List<dynamic>?)
+              ?.map(
+                (record) => SleepRecordSummaryModel.fromJson(
+                  record as Map<String, dynamic>,
+                ),
+              )
+              ?.toList() ??
+          [],
       scheduledBedtime: json['scheduledBedtime'] as String?,
       scheduledWakeTime: json['scheduledWakeTime'] as String?,
-      adherenceToSchedule: json['adherenceToSchedule'] as bool,
+      adherenceToSchedule: json['adherenceToSchedule'] as bool? ?? false,
     );
   }
 
@@ -201,7 +225,7 @@ class SleepDailySummaryModel extends Equatable {
   String get formattedTotalSleepTime {
     final hours = totalSleepTime ~/ 60;
     final minutes = totalSleepTime % 60;
-    
+
     if (minutes == 0) {
       return '${hours}h';
     }
@@ -220,15 +244,14 @@ class SleepDailySummaryModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        date,
-        totalSleepTime,
-        bedtimeActual,
-        wakeTimeActual,
-        averageQuality,
-        records,
-        scheduledBedtime,
-        scheduledWakeTime,
-        adherenceToSchedule,
-      ];
+    date,
+    totalSleepTime,
+    bedtimeActual,
+    wakeTimeActual,
+    averageQuality,
+    records,
+    scheduledBedtime,
+    scheduledWakeTime,
+    adherenceToSchedule,
+  ];
 }
-

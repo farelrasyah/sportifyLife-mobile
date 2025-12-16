@@ -544,11 +544,11 @@ class RouteHelper {
   }
 
   /// Navigate to add alarm screen
-  static Future<void> navigateToAddAlarm(
+  static Future<T?> navigateToAddAlarm<T>(
     BuildContext context,
     DateTime selectedDate,
   ) {
-    return navigateToWithArgs(context, Routes.addAlarmScreen, {
+    return navigateToWithArgs<T>(context, Routes.addAlarmScreen, {
       'selectedDate': selectedDate,
     });
   }

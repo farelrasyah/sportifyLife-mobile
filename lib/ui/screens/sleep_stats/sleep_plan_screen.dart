@@ -10,11 +10,10 @@ import '../../../cubits/sleep_calendar_cubit.dart';
 import '../../../cubits/sleep_calendar_state.dart';
 import '../../../cubits/sleep_schedule_cubit.dart';
 import '../../../cubits/sleep_schedule_state.dart';
-import '../../../data/repositories/sleep_repository.dart';
+import '../../../app/routes.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/today_sleep_schedule_row.dart';
 import '../../widgets/custom_modern_appbar.dart';
-import 'add_alarm_screen.dart';
 
 class SleepPlanScreen extends StatefulWidget {
   const SleepPlanScreen({super.key});
@@ -404,7 +403,7 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
               final today = DateFormat('EEEE').format(now);
 
               // Check if today is in repeat days
-              final isToday = schedule.repeatDays.contains(today);
+              // final isToday = schedule.repeatDays.contains(today);
 
               return TodaySleepScheduleRow(
                 sObj: {
@@ -541,12 +540,10 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
   Widget _buildAddAlarmFAB() {
     return InkWell(
       onTap: () async {
-        final result = await Navigator.push(
+        final result = await Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) =>
-                AddAlarmScreen(selectedDate: _currentSelectedDate),
-          ),
+          Routes.addAlarmScreen,
+          arguments: {'selectedDate': _currentSelectedDate},
         );
 
         // Refresh data if alarm was added

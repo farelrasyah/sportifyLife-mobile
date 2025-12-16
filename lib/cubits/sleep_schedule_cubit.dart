@@ -12,7 +12,7 @@ class SleepScheduleCubit extends Cubit<SleepScheduleState> {
     : _sleepRepository = sleepRepository,
       super(const SleepScheduleInitial());
 
-  /// Load all sleep schedules with optional filtering
+  /// Load all sleep schedules with optional filtering and fallback
   Future<void> loadSleepSchedules({
     int? month,
     int? year,
@@ -29,8 +29,9 @@ class SleepScheduleCubit extends Cubit<SleepScheduleState> {
 
       emit(SleepScheduleLoaded(schedules: schedules));
     } catch (e) {
-      emit(SleepScheduleError(message: e.toString()));
-      debugPrint('Error loading sleep schedules: $e');
+      // Provide fallback empty data instead of error state
+      emit(const SleepScheduleLoaded(schedules: []));
+      debugPrint('Error loading sleep schedules, using empty fallback: $e');
     }
   }
 
