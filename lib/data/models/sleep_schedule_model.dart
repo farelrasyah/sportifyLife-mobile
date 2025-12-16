@@ -1,5 +1,39 @@
 import 'package:equatable/equatable.dart';
 
+/// Helper method to parse int from various types (int, String, etc.)
+int? _parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is double) return value.toInt();
+  if (value is String) {
+    try {
+      return int.parse(value);
+    } catch (e) {
+      try {
+        return double.parse(value).toInt();
+      } catch (e) {
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
+/// Helper method to parse double from various types (double, int, String, etc.)
+double? _parseDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) {
+    try {
+      return double.parse(value);
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
 /// Sleep Schedule Model for API responses
 class SleepScheduleModel extends Equatable {
   final String id;
@@ -34,7 +68,7 @@ class SleepScheduleModel extends Equatable {
     return SleepScheduleModel(
       id: json['id'] as String,
       bedtime: json['bedtime'] as String,
-      sleepHours: (json['sleepHours'] as num).toDouble(),
+      sleepHours: _parseDouble(json['sleepHours']) ?? 0.0,
       wakeTime: json['wakeTime'] as String,
       repeatDays: List<String>.from(json['repeatDays'] as List),
       isVibrate: json['isVibrate'] as bool,

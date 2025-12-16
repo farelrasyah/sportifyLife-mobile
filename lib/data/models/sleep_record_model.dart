@@ -1,6 +1,40 @@
 import 'package:equatable/equatable.dart';
 import 'sleep_schedule_model.dart';
 
+/// Helper method to parse int from various types (int, String, etc.)
+int? _parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is double) return value.toInt();
+  if (value is String) {
+    try {
+      return int.parse(value);
+    } catch (e) {
+      try {
+        return double.parse(value).toInt();
+      } catch (e) {
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
+/// Helper method to parse double from various types (double, int, String, etc.)
+double? _parseDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) {
+    try {
+      return double.parse(value);
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
 /// Sleep Record Summary Model for API responses
 class SleepRecordSummaryModel extends Equatable {
   final String id;
@@ -30,8 +64,8 @@ class SleepRecordSummaryModel extends Equatable {
       wakeTime: DateTime.parse(
         json['wakeTime'] as String? ?? DateTime.now().toIso8601String(),
       ),
-      durationMinutes: json['durationMinutes'] as int? ?? 0,
-      qualityRating: json['qualityRating'] as int? ?? 1,
+      durationMinutes: _parseInt(json['durationMinutes']) ?? 0,
+      qualityRating: _parseInt(json['qualityRating']) ?? 1,
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(
         json['createdAt'] as String? ?? DateTime.now().toIso8601String(),
@@ -103,8 +137,8 @@ class SleepCalendarDataModel extends Equatable {
   factory SleepCalendarDataModel.fromJson(Map<String, dynamic> json) {
     return SleepCalendarDataModel(
       date: json['date'] as String? ?? '',
-      totalSleepDuration: json['totalSleepDuration'] as int? ?? 0,
-      averageQuality: (json['averageQuality'] as num?)?.toDouble() ?? 0.0,
+      totalSleepDuration: _parseInt(json['totalSleepDuration']) ?? 0,
+      averageQuality: _parseDouble(json['averageQuality']) ?? 0.0,
       sleepRecords:
           (json['sleepRecords'] as List<dynamic>?)
               ?.map(
@@ -196,16 +230,14 @@ class SleepDailySummaryModel extends Equatable {
   factory SleepDailySummaryModel.fromJson(Map<String, dynamic> json) {
     return SleepDailySummaryModel(
       date: json['date'] as String? ?? '',
-      totalSleepTime: json['totalSleepTime'] as int? ?? 0,
+      totalSleepTime: _parseInt(json['totalSleepTime']) ?? 0,
       bedtimeActual: json['bedtimeActual'] != null
           ? DateTime.parse(json['bedtimeActual'] as String)
           : null,
       wakeTimeActual: json['wakeTimeActual'] != null
           ? DateTime.parse(json['wakeTimeActual'] as String)
           : null,
-      averageQuality: json['averageQuality'] != null
-          ? (json['averageQuality'] as num).toDouble()
-          : null,
+      averageQuality: _parseDouble(json['averageQuality']),
       records:
           (json['records'] as List<dynamic>?)
               ?.map(
