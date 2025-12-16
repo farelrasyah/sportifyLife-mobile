@@ -68,6 +68,7 @@ import '../ui/screens/progress_gallery/result_comparison_screen.dart';
 import '../ui/screens/sleep_stats/add_alarm_screen.dart';
 import '../ui/screens/sleep_stats/sleep_activity_screen.dart';
 import '../ui/screens/sleep_stats/sleep_plan_screen.dart';
+import '../services/sleep_feature_provider.dart';
 
 // Workout Stats Screens
 import '../ui/screens/workout_stats/add_workout_plan_screen.dart';
@@ -374,8 +375,11 @@ class RouteGenerator {
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
             settings: settings,
-            builder: (_) =>
-                AddAlarmScreen(selectedDate: args['selectedDate'] as DateTime),
+            builder: (_) => SleepFeatureProvider(
+              child: AddAlarmScreen(
+                selectedDate: args['selectedDate'] as DateTime,
+              ),
+            ),
           );
         }
         return _errorRoute();
@@ -383,13 +387,14 @@ class RouteGenerator {
       case Routes.sleepActivityScreen:
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const SleepActivityScreen(),
+          builder: (_) =>
+              SleepFeatureProvider(child: const SleepActivityScreen()),
         );
 
       case Routes.sleepPlanScreen:
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const SleepPlanScreen(),
+          builder: (_) => SleepFeatureProvider(child: const SleepPlanScreen()),
         );
 
       // Workout Stats Routes

@@ -1,8 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../common/colo_extension.dart';
+import '../../../cubits/sleep_activity_cubit.dart';
+import '../../../cubits/sleep_activity_state.dart';
+import '../../../cubits/sleep_schedule_cubit.dart';
+import '../../../cubits/sleep_schedule_state.dart';
+import '../../../services/sleep_feature_provider.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/today_sleep_schedule_row.dart';
 import '../../widgets/custom_modern_appbar.dart';
@@ -17,21 +23,6 @@ class SleepActivityScreen extends StatefulWidget {
 
 class _SleepActivityScreenState extends State<SleepActivityScreen>
     with TickerProviderStateMixin {
-  final List<Map<String, dynamic>> _sleepScheduleData = [
-    {
-      "name": "Bedtime",
-      "image": "assets/images/bedroom.json",
-      "time": "01/06/2023 09:00 PM",
-      "duration": "in 6hours 22minutes",
-    },
-    {
-      "name": "Alarm",
-      "image": "assets/images/alarm.json",
-      "time": "02/06/2023 05:10 AM",
-      "duration": "in 14hours 30minutes",
-    },
-  ];
-
   List<int> _activeTooltipSpots = [4];
   late AnimationController _fabAnimationController;
 
@@ -42,6 +33,12 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
+
+    // Load sleep activity data on init
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SleepActivityCubit>().loadSleepActivityData();
+      context.read<SleepScheduleCubit>().loadActivSchedulesForToday();
+    });
   }
 
   @override
@@ -53,7 +50,6 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    final chartBarData = _getChartData()[0];
 
     return Scaffold(
       appBar: CustomModernAppBar(
@@ -65,7 +61,33 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
         onBackPressed: () => Navigator.pop(context),
       ),
       backgroundColor: TColor.white,
-      body: SingleChildScrollView(
+      body: BlocBuilder<SleepActivityCubit, SleepActivityState>(
+        builder: (context, activityState) {
+          if (activityState is SleepActivityLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (activityState is SleepActivityError) {
+            return _buildErrorState(activityState.message);
+          }
+
+          if (activityState is SleepActivityLoaded) {
+            return _buildLoadedState(screenSize, activityState);
+          }
+
+          return _buildEmptyState();
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoadedState(Size screenSize, SleepActivityLoaded activityState) {
+    return RefreshIndicator(
+      onRefresh: () =>
+          context.read<SleepActivityCubit>().refreshSleepActivityData(),
+      color: TColor.primaryColor1,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -74,9 +96,12 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSleepChart(screenSize, chartBarData),
+                  _buildSleepChart(screenSize, activityState.chartData),
                   SizedBox(height: screenSize.width * 0.05),
-                  _buildLastNightSleepCard(screenSize),
+                  _buildLastNightSleepCard(
+                    screenSize,
+                    activityState.todaysSummary,
+                  ),
                   SizedBox(height: screenSize.width * 0.05),
                   _buildDailySleepScheduleCard(),
                   SizedBox(height: screenSize.width * 0.05),
@@ -91,7 +116,81 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
     );
   }
 
-  Widget _buildSleepChart(Size screenSize, LineChartBarData chartBarData) {
+  Widget _buildErrorState(String errorMessage) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: TColor.gray),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading sleep data',
+              style: TextStyle(
+                color: TColor.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              errorMessage,
+              style: TextStyle(color: TColor.gray, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            RoundButton(
+              title: "Try Again",
+              onPressed: () {
+                context.read<SleepActivityCubit>().loadSleepActivityData();
+                context.read<SleepScheduleCubit>().loadActivSchedulesForToday();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.bedtime_outlined, size: 64, color: TColor.gray),
+            const SizedBox(height: 16),
+            Text(
+              'No Sleep Data',
+              style: TextStyle(
+                color: TColor.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Start tracking your sleep to see activity data here',
+              style: TextStyle(color: TColor.gray, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            RoundButton(
+              title: "Refresh",
+              onPressed: () =>
+                  context.read<SleepActivityCubit>().loadSleepActivityData(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSleepChart(Size screenSize, List<double> chartData) {
+    final chartBarData = _getChartDataFromValues(chartData);
+
     return Container(
       padding: const EdgeInsets.only(left: 15),
       height: screenSize.width * 0.5,
@@ -102,13 +201,15 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
             return ShowingTooltipIndicators([
               LineBarSpot(
                 chartBarData,
-                _getChartData().indexOf(chartBarData),
-                chartBarData.spots[index],
+                0,
+                chartBarData.spots[index < chartBarData.spots.length
+                    ? index
+                    : 0],
               ),
             ]);
           }).toList(),
           lineTouchData: _buildLineTouchData(),
-          lineBarsData: _getChartData(),
+          lineBarsData: [chartBarData],
           minY: -0.01,
           maxY: 10.01,
           titlesData: FlTitlesData(
@@ -203,7 +304,9 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
     );
   }
 
-  Widget _buildLastNightSleepCard(Size screenSize) {
+  Widget _buildLastNightSleepCard(Size screenSize, sleepSummary) {
+    final lastNightSleep = sleepSummary?.formattedTotalSleepTime ?? "0h 0m";
+
     return Container(
       width: double.maxFinite,
       height: screenSize.width * 0.4,
@@ -225,7 +328,7 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Text(
-              "8h 20m",
+              lastNightSleep,
               style: TextStyle(
                 color: TColor.white,
                 fontSize: 16,
@@ -267,12 +370,7 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
               fontSize: 12,
               fontWeight: FontWeight.w400,
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SleepPlanScreen(),
-                  ),
-                );
+                SleepNavigation.pushSleepPlan(context);
               },
             ),
           ),
@@ -282,29 +380,157 @@ class _SleepActivityScreenState extends State<SleepActivityScreen>
   }
 
   Widget _buildTodayScheduleSection(Size screenSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Today Schedule",
-          style: TextStyle(
-            color: TColor.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+    return BlocBuilder<SleepScheduleCubit, SleepScheduleState>(
+      builder: (context, scheduleState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Today Schedule",
+              style: TextStyle(
+                color: TColor.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            SizedBox(height: screenSize.width * 0.03),
+            _buildScheduleList(scheduleState),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildScheduleList(SleepScheduleState scheduleState) {
+    if (scheduleState is SleepScheduleLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (scheduleState is SleepScheduleLoaded) {
+      final activeSchedules = scheduleState.schedules
+          .where((s) => s.isActive)
+          .toList();
+
+      if (activeSchedules.isEmpty) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: TColor.lightGray,
+            borderRadius: BorderRadius.circular(15),
           ),
+          child: Column(
+            children: [
+              Icon(Icons.schedule, size: 48, color: TColor.gray),
+              const SizedBox(height: 8),
+              Text(
+                "No active schedules",
+                style: TextStyle(color: TColor.gray, fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "Add a sleep schedule to see it here",
+                style: TextStyle(color: TColor.gray, fontSize: 12),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return ListView.builder(
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: activeSchedules.length,
+        itemBuilder: (context, index) {
+          final schedule = activeSchedules[index];
+          final now = DateTime.now();
+          final today = DateFormat('EEEE').format(now);
+
+          // Check if today is in repeat days
+          final isToday = schedule.repeatDays.contains(today);
+
+          return TodaySleepScheduleRow(
+            sObj: {
+              "name": isToday ? "Bedtime (Today)" : "Bedtime",
+              "image": "assets/images/bedroom.json",
+              "time":
+                  "${DateFormat('dd/MM/yyyy').format(now)} ${schedule.formattedBedtime}",
+              "duration": schedule.formattedSleepDuration,
+            },
+          );
+        },
+      );
+    }
+
+    if (scheduleState is SleepScheduleError) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(15),
         ),
-        SizedBox(height: screenSize.width * 0.03),
-        ListView.builder(
-          padding: EdgeInsets.zero,
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: _sleepScheduleData.length,
-          itemBuilder: (context, index) {
-            var scheduleItem = _sleepScheduleData[index];
-            return TodaySleepScheduleRow(sObj: scheduleItem);
-          },
+        child: Column(
+          children: [
+            Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 8),
+            Text(
+              "Error loading schedules",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              scheduleState.message,
+              style: TextStyle(
+                color: Colors.red.withOpacity(0.8),
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-      ],
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  // Chart data methods
+  LineChartBarData _getChartDataFromValues(List<double> values) {
+    final spots = values.asMap().entries.map((entry) {
+      return FlSpot(entry.key.toDouble() + 1, entry.value);
+    }).toList();
+
+    // Ensure we have at least 7 data points
+    while (spots.length < 7) {
+      spots.add(FlSpot(spots.length.toDouble() + 1, 0));
+    }
+
+    return LineChartBarData(
+      isCurved: true,
+      gradient: LinearGradient(
+        colors: [TColor.primaryColor2, TColor.primaryColor1],
+      ),
+      barWidth: 2,
+      isStrokeCapRound: true,
+      dotData: FlDotData(show: false),
+      belowBarData: BarAreaData(
+        show: true,
+        gradient: LinearGradient(
+          colors: [TColor.primaryColor2, TColor.white],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      spots: spots,
     );
   }
 

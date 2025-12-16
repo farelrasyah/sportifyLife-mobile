@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../common/colo_extension.dart';
+import '../../../cubits/sleep_calendar_cubit.dart';
+import '../../../cubits/sleep_calendar_state.dart';
+import '../../../cubits/sleep_schedule_cubit.dart';
+import '../../../cubits/sleep_schedule_state.dart';
+import '../../../data/repositories/sleep_repository.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/today_sleep_schedule_row.dart';
 import '../../widgets/custom_modern_appbar.dart';
@@ -24,21 +30,6 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
   CalendarFormat _calendarFormat = CalendarFormat.week;
   late AnimationController _fabAnimationController;
 
-  final List<Map<String, dynamic>> _dailySleepSchedule = [
-    {
-      "name": "Bedtime",
-      "image": "assets/images/bedroom.json",
-      "time": "01/06/2023 09:00 PM",
-      "duration": "in 6hours 22minutes",
-    },
-    {
-      "name": "Alarm",
-      "image": "assets/images/alarm.json",
-      "time": "02/06/2023 05:10 AM",
-      "duration": "in 14hours 30minutes",
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -48,6 +39,12 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
+
+    // Load initial data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SleepCalendarCubit>().loadInitialCalendarData();
+      context.read<SleepScheduleCubit>().loadSleepSchedules();
+    });
   }
 
   @override
@@ -70,31 +67,116 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
         onBackPressed: () => Navigator.pop(context),
       ),
       backgroundColor: TColor.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildIdealHoursCard(screenSize),
-                SizedBox(height: screenSize.width * 0.05),
-                _buildScheduleTitle(),
-                _buildCalendarWidget(),
-                SizedBox(height: screenSize.width * 0.03),
-                _buildScheduleList(),
-                _buildSleepProgressCard(screenSize),
-              ],
-            ),
-            SizedBox(height: screenSize.width * 0.05),
-          ],
-        ),
+      body: BlocBuilder<SleepCalendarCubit, SleepCalendarState>(
+        builder: (context, calendarState) {
+          if (calendarState is SleepCalendarLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (calendarState is SleepCalendarError) {
+            return _buildErrorState(calendarState.message);
+          }
+
+          if (calendarState is SleepCalendarLoaded) {
+            return _buildLoadedState(screenSize, calendarState);
+          }
+
+          return _buildEmptyState();
+        },
       ),
       floatingActionButton: _buildAddAlarmFAB(),
     );
   }
 
-  Widget _buildIdealHoursCard(Size screenSize) {
+  Widget _buildLoadedState(Size screenSize, SleepCalendarLoaded calendarState) {
+    return RefreshIndicator(
+      onRefresh: () => context.read<SleepCalendarCubit>().refreshCalendarData(),
+      color: TColor.primaryColor1,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildIdealHoursCard(screenSize, calendarState.selectedDateData),
+            SizedBox(height: screenSize.width * 0.05),
+            _buildScheduleTitle(),
+            _buildCalendarWidget(calendarState),
+            SizedBox(height: screenSize.width * 0.03),
+            _buildScheduleList(),
+            _buildSleepProgressCard(screenSize, calendarState.selectedDateData),
+            SizedBox(height: screenSize.width * 0.05),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String errorMessage) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: TColor.gray),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading calendar data',
+              style: TextStyle(
+                color: TColor.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              errorMessage,
+              style: TextStyle(color: TColor.gray, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            RoundButton(
+              title: "Try Again",
+              onPressed: () =>
+                  context.read<SleepCalendarCubit>().loadInitialCalendarData(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.calendar_today_outlined, size: 64, color: TColor.gray),
+            const SizedBox(height: 16),
+            Text(
+              'No Calendar Data',
+              style: TextStyle(
+                color: TColor.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Loading calendar data...',
+              style: TextStyle(color: TColor.gray, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIdealHoursCard(Size screenSize, calendarData) {
+    final totalSleepDuration = calendarData?.formattedTotalDuration ?? "0h";
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: Container(
@@ -113,7 +195,7 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildIdealHoursContent(),
+            _buildIdealHoursContent(totalSleepDuration),
             _buildIdealHoursImage(screenSize),
           ],
         ),
@@ -121,17 +203,17 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
     );
   }
 
-  Widget _buildIdealHoursContent() {
+  Widget _buildIdealHoursContent(String totalSleepDuration) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 15),
         Text(
-          "Ideal Hours for Sleep",
+          "Today's Sleep",
           style: TextStyle(color: TColor.black, fontSize: 14),
         ),
         Text(
-          "8hours 30minutes",
+          totalSleepDuration,
           style: TextStyle(
             color: TColor.primaryColor2,
             fontSize: 16,
@@ -177,7 +259,7 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
     );
   }
 
-  Widget _buildCalendarWidget() {
+  Widget _buildCalendarWidget(SleepCalendarLoaded calendarState) {
     return Container(
       decoration: BoxDecoration(
         color: TColor.white,
@@ -202,6 +284,8 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
             _currentSelectedDate = selectedDay;
             _focusedDay = focused;
           });
+          // Load data for selected date
+          context.read<SleepCalendarCubit>().changeSelectedDate(selectedDay);
         },
         onFormatChanged: (format) {
           if (_calendarFormat != format) {
@@ -263,19 +347,126 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
   }
 
   Widget _buildScheduleList() {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: _dailySleepSchedule.length,
-      itemBuilder: (context, index) {
-        var scheduleItem = _dailySleepSchedule[index];
-        return TodaySleepScheduleRow(sObj: scheduleItem);
+    return BlocBuilder<SleepScheduleCubit, SleepScheduleState>(
+      builder: (context, scheduleState) {
+        if (scheduleState is SleepScheduleLoading) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (scheduleState is SleepScheduleLoaded) {
+          final activeSchedules = scheduleState.schedules
+              .where((s) => s.isActive)
+              .toList();
+
+          if (activeSchedules.isEmpty) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: TColor.lightGray,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.schedule, size: 48, color: TColor.gray),
+                  const SizedBox(height: 8),
+                  Text(
+                    "No active schedules",
+                    style: TextStyle(
+                      color: TColor.gray,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Add a sleep schedule to see it here",
+                    style: TextStyle(color: TColor.gray, fontSize: 12),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: activeSchedules.length,
+            itemBuilder: (context, index) {
+              final schedule = activeSchedules[index];
+              final now = DateTime.now();
+              final today = DateFormat('EEEE').format(now);
+
+              // Check if today is in repeat days
+              final isToday = schedule.repeatDays.contains(today);
+
+              return TodaySleepScheduleRow(
+                sObj: {
+                  "name": "Bedtime",
+                  "image": "assets/images/bedroom.json",
+                  "time":
+                      "${DateFormat('dd/MM/yyyy').format(now)} ${schedule.formattedBedtime}",
+                  "duration": schedule.formattedSleepDuration,
+                },
+              );
+            },
+          );
+        }
+
+        if (scheduleState is SleepScheduleError) {
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.red.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 8),
+                Text(
+                  "Error loading schedules",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  scheduleState.message,
+                  style: TextStyle(
+                    color: Colors.red.withOpacity(0.8),
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+
+        return const SizedBox.shrink();
       },
     );
   }
 
-  Widget _buildSleepProgressCard(Size screenSize) {
+  Widget _buildSleepProgressCard(Size screenSize, calendarData) {
+    final hasData =
+        calendarData?.totalSleepDuration != null &&
+        calendarData.totalSleepDuration > 0;
+    final progressRatio = hasData
+        ? (calendarData.totalSleepDuration / 480).clamp(0.0, 1.0)
+        : 0.0; // 480 minutes = 8 hours
+    final progressPercentage = (progressRatio * 100).round();
+
     return Container(
       width: double.maxFinite,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -292,22 +483,34 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProgressText(),
+          _buildProgressText(hasData, calendarData),
           const SizedBox(height: 15),
-          _buildProgressBar(screenSize),
+          _buildProgressBar(screenSize, progressRatio, progressPercentage),
         ],
       ),
     );
   }
 
-  Widget _buildProgressText() {
+  Widget _buildProgressText(bool hasData, calendarData) {
+    if (!hasData) {
+      return Text(
+        "No sleep data for today\nAdd a sleep record to track progress",
+        style: TextStyle(color: TColor.black, fontSize: 12),
+      );
+    }
+
+    final duration = calendarData?.formattedTotalDuration ?? "0h";
     return Text(
-      "You will get 8hours 10minutes\nfor tonight",
+      "You got $duration of sleep\nfor today",
       style: TextStyle(color: TColor.black, fontSize: 12),
     );
   }
 
-  Widget _buildProgressBar(Size screenSize) {
+  Widget _buildProgressBar(
+    Size screenSize,
+    double progressRatio,
+    int progressPercentage,
+  ) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -316,10 +519,10 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
           width: screenSize.width - 80,
           backgroundColor: Colors.grey.shade100,
           foregroundColor: Colors.purple,
-          ratio: 0.96,
+          ratio: progressRatio,
           direction: Axis.horizontal,
           curve: Curves.fastLinearToSlowEaseIn,
-          duration: const Duration(seconds: 3),
+          duration: const Duration(seconds: 2),
           borderRadius: BorderRadius.circular(7.5),
           gradientColor: LinearGradient(
             colors: TColor.secondaryG,
@@ -327,21 +530,30 @@ class _SleepPlanScreenState extends State<SleepPlanScreen>
             end: Alignment.centerRight,
           ),
         ),
-        Text("96%", style: TextStyle(color: TColor.black, fontSize: 12)),
+        Text(
+          "$progressPercentage%",
+          style: TextStyle(color: TColor.black, fontSize: 12),
+        ),
       ],
     );
   }
 
   Widget _buildAddAlarmFAB() {
     return InkWell(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) =>
                 AddAlarmScreen(selectedDate: _currentSelectedDate),
           ),
         );
+
+        // Refresh data if alarm was added
+        if (result != null) {
+          context.read<SleepCalendarCubit>().refreshCalendarData();
+          context.read<SleepScheduleCubit>().loadSleepSchedules();
+        }
       },
       child: Container(
         width: 55,
