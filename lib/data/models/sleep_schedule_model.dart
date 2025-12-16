@@ -222,15 +222,69 @@ class CreateSleepScheduleRequest {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'bedtime': bedtime,
-      'sleepHours': sleepHours,
-      'repeatDays': repeatDays,
+    // Strict validation and formatting for bedtime
+    String validatedBedtime = bedtime.trim();
+
+    // Ensure it's a proper string format
+    if (validatedBedtime.isEmpty ||
+        !RegExp(r'^\d{1,2}:\d{2}$').hasMatch(validatedBedtime)) {
+      try {
+        final parts = validatedBedtime.split(':');
+        if (parts.length == 2) {
+          final hour = int.parse(
+            parts[0],
+          ).clamp(0, 23).toString().padLeft(2, '0');
+          final minute = int.parse(
+            parts[1],
+          ).clamp(0, 59).toString().padLeft(2, '0');
+          validatedBedtime = '$hour:$minute';
+        } else {
+          validatedBedtime = '21:00';
+        }
+      } catch (e) {
+        validatedBedtime = '21:00';
+      }
+    } else {
+      // Ensure proper zero-padding for single digits
+      try {
+        final parts = validatedBedtime.split(':');
+        if (parts.length == 2) {
+          final hour = int.parse(
+            parts[0],
+          ).clamp(0, 23).toString().padLeft(2, '0');
+          final minute = int.parse(
+            parts[1],
+          ).clamp(0, 59).toString().padLeft(2, '0');
+          validatedBedtime = '$hour:$minute';
+        }
+      } catch (e) {
+        validatedBedtime = '21:00';
+      }
+    }
+
+    // Ensure repeatDays are properly formatted (Title case)
+    final formattedRepeatDays = repeatDays.map((day) {
+      final dayTrimmed = day.trim();
+      if (dayTrimmed.isEmpty) return 'Monday';
+      return dayTrimmed[0].toUpperCase() +
+          dayTrimmed.substring(1).toLowerCase();
+    }).toList();
+
+    final payload = <String, dynamic>{
+      'bedtime': validatedBedtime, // Always a string with HH:mm format
+      'sleepHours': sleepHours.toDouble(),
+      'repeatDays': formattedRepeatDays,
       'isVibrate': isVibrate,
-      'alarmSound': alarmSound,
+      'alarmSound': alarmSound.trim(),
       'alarmEnabled': alarmEnabled,
-      'notes': notes,
     };
+
+    // Only add notes if not null or empty
+    if (notes != null && notes!.trim().isNotEmpty) {
+      payload['notes'] = notes!.trim();
+    }
+
+    return payload;
   }
 }
 

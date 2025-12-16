@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import '../data/repositories/sleep_repository.dart';
 import '../data/models/sleep_schedule_model.dart';
+import '../utils/api.dart';
 import 'sleep_schedule_state.dart';
 
 /// Sleep Schedule Cubit for managing sleep schedules
@@ -67,15 +68,65 @@ class SleepScheduleCubit extends Cubit<SleepScheduleState> {
     try {
       emit(const SleepScheduleCreating());
 
+      // Pre-validate input
+      if (bedtime.trim().isEmpty) {
+        throw ApiException('Bedtime cannot be empty');
+      }
+
+      if (repeatDays.isEmpty) {
+        throw ApiException('Please select at least one repeat day');
+      }
+
+      // Ensure bedtime is in correct HH:mm format
+      final formattedBedtime = _formatBedtime(bedtime);
+      debugPrint(
+        'Original bedtime: "$bedtime" -> Formatted: "$formattedBedtime"',
+      );
+
+      // Ensure repeatDays are in correct format for API: "Monday", "Tuesday", etc.
+      final formattedRepeatDays = repeatDays.map((day) {
+        final dayLower = day.toLowerCase().trim();
+        // Convert to proper case format: Monday, Tuesday, etc.
+        return dayLower[0].toUpperCase() + dayLower.substring(1);
+      }).toList();
+      debugPrint('Formatted repeat days: $formattedRepeatDays');
+
+      // Ensure alarmSound is valid
+      final validAlarmSound = _validateAlarmSound(alarmSound);
+      debugPrint('Validated alarm sound: "$alarmSound" -> "$validAlarmSound"');
+
       final request = CreateSleepScheduleRequest(
-        bedtime: bedtime,
+        bedtime: formattedBedtime,
         sleepHours: sleepHours,
-        repeatDays: repeatDays,
+        repeatDays: formattedRepeatDays,
         isVibrate: isVibrate,
-        alarmSound: alarmSound,
+        alarmSound: validAlarmSound,
         alarmEnabled: alarmEnabled,
         notes: notes,
       );
+
+      // Final validation and logging
+      final payload = request.toJson();
+      debugPrint('=== FINAL REQUEST PAYLOAD ===');
+      debugPrint('Bedtime type: ${payload['bedtime'].runtimeType}');
+      debugPrint('Bedtime value: "${payload['bedtime']}"');
+      debugPrint('Full payload: $payload');
+      debugPrint('========================');
+
+      // Ensure bedtime is definitely a string
+      if (payload['bedtime'] is! String) {
+        throw ApiException(
+          'Bedtime must be a string, got ${payload['bedtime'].runtimeType}',
+        );
+      }
+
+      // Validate format one more time
+      final bedtimeStr = payload['bedtime'] as String;
+      if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(bedtimeStr)) {
+        throw ApiException(
+          'Bedtime format invalid: "$bedtimeStr", expected HH:mm',
+        );
+      }
 
       final newSchedule = await _sleepRepository.createSleepSchedule(request);
 
@@ -84,8 +135,9 @@ class SleepScheduleCubit extends Cubit<SleepScheduleState> {
       // Reload schedules to get updated list
       await loadSleepSchedules();
     } catch (e) {
-      emit(SleepScheduleError(message: e.toString()));
+      final errorMessage = _extractErrorMessage(e);
       debugPrint('Error creating sleep schedule: $e');
+      emit(SleepScheduleError(message: errorMessage));
     }
   }
 
@@ -265,5 +317,129 @@ class SleepScheduleCubit extends Cubit<SleepScheduleState> {
     if (end2 < start2) end2 += 24 * 60; // Add 24 hours
 
     return start1 < end2 && start2 < end1;
+  }
+
+  /// Format bedtime to ensure HH:mm format with strict validation
+  String _formatBedtime(String bedtime) {
+    try {
+      // Remove any whitespace
+      final cleanBedtime = bedtime.trim();
+
+      // If already in correct format, validate and return
+      if (RegExp(r'^\d{2}:\d{2}$').hasMatch(cleanBedtime)) {
+        final parts = cleanBedtime.split(':');
+        final hour = int.parse(parts[0]);
+        final minute = int.parse(parts[1]);
+
+        // Validate hour and minute ranges
+        if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+          return cleanBedtime;
+        }
+      }
+
+      // Try to parse various formats
+      final parts = cleanBedtime.split(':');
+      if (parts.length == 2) {
+        final hour = int.parse(parts[0]);
+        final minute = int.parse(parts[1]);
+
+        // Validate ranges
+        if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+          final formattedHour = hour.toString().padLeft(2, '0');
+          final formattedMinute = minute.toString().padLeft(2, '0');
+          final formatted = '$formattedHour:$formattedMinute';
+
+          debugPrint('Formatted bedtime: $cleanBedtime -> $formatted');
+          return formatted;
+        }
+      }
+
+      // Fallback to default
+      debugPrint('Using fallback bedtime for invalid input: $cleanBedtime');
+      return '21:00';
+    } catch (e) {
+      debugPrint('Error formatting bedtime "$bedtime": $e');
+      return '21:00';
+    }
+  }
+
+  /// Validate and format alarm sound
+  String _validateAlarmSound(String alarmSound) {
+    // Valid alarm sounds based on API
+    const validSounds = [
+      'default',
+      'gentle',
+      'nature',
+      'classical',
+      'vibration_only',
+    ];
+
+    // Remove underscores and convert to lowercase for comparison
+    final normalized = alarmSound.toLowerCase().replaceAll('_', '');
+
+    // Check if valid
+    if (validSounds.contains(normalized)) {
+      return normalized;
+    }
+
+    // Try to match partial names
+    for (final valid in validSounds) {
+      if (normalized.contains(valid) || valid.contains(normalized)) {
+        return valid;
+      }
+    }
+
+    // Default fallback
+    return 'default';
+  }
+
+  /// Extract error message from various error types
+  String _extractErrorMessage(dynamic error) {
+    try {
+      if (error is ApiException) {
+        return error.errorMessage;
+      }
+
+      final errorString = error.toString();
+
+      // Try to extract meaningful message from common error patterns
+      if (errorString.contains('Bedtime must be in HH:mm format')) {
+        return 'Invalid bedtime format. Please use HH:mm format.';
+      }
+
+      if (errorString.contains('Invalid day of week')) {
+        return 'Invalid day selection. Please check your repeat days.';
+      }
+
+      if (errorString.contains('type') &&
+          errorString.contains('is not a subtype')) {
+        return 'Server response error. Please try again.';
+      }
+
+      // If it's a long error message, try to extract the useful part
+      if (errorString.length > 100) {
+        // Look for common patterns in API error responses
+        final lines = errorString.split('\n');
+        for (final line in lines) {
+          if (line.contains('message') && line.contains(':')) {
+            final parts = line.split(':');
+            if (parts.length > 1) {
+              final message = parts.sublist(1).join(':').trim();
+              if (message.isNotEmpty && message.length < 200) {
+                return message;
+              }
+            }
+          }
+        }
+      }
+
+      // Return the original error if we can't parse it nicely
+      return errorString.length > 200
+          ? 'An error occurred. Please try again.'
+          : errorString;
+    } catch (e) {
+      // If error parsing fails, return a generic message
+      return 'An unexpected error occurred. Please try again.';
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
 import '../models/sleep_schedule_model.dart';
 import '../models/sleep_record_model.dart';
 import '../models/api_response_model.dart';
@@ -15,12 +16,52 @@ class SleepRepository {
     CreateSleepScheduleRequest request,
   ) async {
     try {
-      final response = await _apiClient.dio.post(
-        Api.createSleepSchedule,
-        data: request.toJson(),
+      // Get and validate the request payload
+      final requestData = request.toJson();
+
+      // Final validation before sending to API
+      if (requestData['bedtime'] is! String) {
+        throw ApiException(
+          'Invalid bedtime type: ${requestData['bedtime'].runtimeType}',
+        );
+      }
+
+      final bedtime = requestData['bedtime'] as String;
+      if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(bedtime)) {
+        throw ApiException(
+          'Invalid bedtime format: "$bedtime", expected HH:mm',
+        );
+      }
+
+      debugPrint(
+        'Repository sending request with bedtime: "$bedtime" (${bedtime.runtimeType})',
       );
 
-      return SleepScheduleModel.fromJson(response.data);
+      final response = await _apiClient.dio.post(
+        Api.createSleepSchedule,
+        data: requestData,
+      );
+
+      // Handle nested API response structure for create operations
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data,
+        (data) => data as Map<String, dynamic>,
+      );
+
+      if (!apiResponse.success || apiResponse.data == null) {
+        throw ApiException('Failed to create sleep schedule');
+      }
+
+      // Extract the actual data from double-nested response
+      final innerResponse = apiResponse.data!;
+      if (innerResponse['success'] == false || innerResponse['data'] == null) {
+        throw ApiException(
+          innerResponse['message'] ?? 'Failed to create sleep schedule',
+        );
+      }
+
+      final scheduleData = innerResponse['data'] as Map<String, dynamic>;
+      return SleepScheduleModel.fromJson(scheduleData);
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
     }
@@ -74,7 +115,26 @@ class SleepRepository {
         Api.getSleepScheduleByIdUrl(id),
       );
 
-      return SleepScheduleModel.fromJson(response.data);
+      // Handle nested API response structure
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data,
+        (data) => data as Map<String, dynamic>,
+      );
+
+      if (!apiResponse.success || apiResponse.data == null) {
+        throw ApiException('Failed to load sleep schedule');
+      }
+
+      // Extract the actual data from double-nested response
+      final innerResponse = apiResponse.data!;
+      if (innerResponse['success'] == false || innerResponse['data'] == null) {
+        throw ApiException(
+          innerResponse['message'] ?? 'Failed to load sleep schedule',
+        );
+      }
+
+      final scheduleData = innerResponse['data'] as Map<String, dynamic>;
+      return SleepScheduleModel.fromJson(scheduleData);
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
     }
@@ -91,7 +151,26 @@ class SleepRepository {
         data: request.toJson(),
       );
 
-      return SleepScheduleModel.fromJson(response.data);
+      // Handle nested API response structure
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data,
+        (data) => data as Map<String, dynamic>,
+      );
+
+      if (!apiResponse.success || apiResponse.data == null) {
+        throw ApiException('Failed to update sleep schedule');
+      }
+
+      // Extract the actual data from double-nested response
+      final innerResponse = apiResponse.data!;
+      if (innerResponse['success'] == false || innerResponse['data'] == null) {
+        throw ApiException(
+          innerResponse['message'] ?? 'Failed to update sleep schedule',
+        );
+      }
+
+      final scheduleData = innerResponse['data'] as Map<String, dynamic>;
+      return SleepScheduleModel.fromJson(scheduleData);
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
     }
@@ -126,8 +205,15 @@ class SleepRepository {
         throw ApiException('Failed to load calendar data');
       }
 
-      // Extract the actual data from nested response
-      final calendarData = apiResponse.data!;
+      // Extract the actual data from double-nested response
+      final innerResponse = apiResponse.data!;
+      if (innerResponse['success'] == false || innerResponse['data'] == null) {
+        throw ApiException(
+          innerResponse['message'] ?? 'Failed to load calendar data',
+        );
+      }
+
+      final calendarData = innerResponse['data'] as Map<String, dynamic>;
       return SleepCalendarDataModel.fromJson(calendarData);
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
@@ -154,8 +240,15 @@ class SleepRepository {
         throw ApiException('Failed to load daily summary');
       }
 
-      // Extract the actual data from nested response
-      final summaryData = apiResponse.data!;
+      // Extract the actual data from double-nested response
+      final innerResponse = apiResponse.data!;
+      if (innerResponse['success'] == false || innerResponse['data'] == null) {
+        throw ApiException(
+          innerResponse['message'] ?? 'Failed to load daily summary',
+        );
+      }
+
+      final summaryData = innerResponse['data'] as Map<String, dynamic>;
       return SleepDailySummaryModel.fromJson(summaryData);
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
@@ -256,7 +349,7 @@ class SleepRepository {
       case DioExceptionType.connectionError:
         return 'Connection error. Please check your internet connection.';
       default:
-        return 'An unexpected error occurred: ${e.message}';
+        return 'An unexpected error occurred: ${e.message ?? 'Unknown error'}';
     }
   }
 
@@ -268,7 +361,19 @@ class SleepRepository {
     switch (statusCode) {
       case 400:
         if (data != null && data['message'] != null) {
-          return data['message'];
+          // Handle case where message is a List or String
+          final message = data['message'];
+          if (message is List) {
+            // Join list items with comma and space
+            return message
+                .map((item) => item?.toString() ?? 'Unknown')
+                .join(', ');
+          } else if (message is String) {
+            return message;
+          } else if (message != null) {
+            // Handle other non-null types
+            return message.toString();
+          }
         }
         return 'Bad Request: Invalid data provided';
       case 401:
@@ -279,12 +384,30 @@ class SleepRepository {
         return 'Not Found: Resource does not exist';
       case 409:
         if (data != null && data['message'] != null) {
-          return data['message'];
+          final message = data['message'];
+          if (message is List) {
+            return message
+                .map((item) => item?.toString() ?? 'Unknown')
+                .join(', ');
+          } else if (message is String) {
+            return message;
+          } else if (message != null) {
+            return message.toString();
+          }
         }
         return 'Conflict: Schedule conflict detected';
       case 422:
         if (data != null && data['message'] != null) {
-          return data['message'];
+          final message = data['message'];
+          if (message is List) {
+            return message
+                .map((item) => item?.toString() ?? 'Unknown')
+                .join(', ');
+          } else if (message is String) {
+            return message;
+          } else if (message != null) {
+            return message.toString();
+          }
         }
         return 'Validation Error: Please check your input';
       case 429:
@@ -297,7 +420,16 @@ class SleepRepository {
         return 'Service Unavailable: Please try again later';
       default:
         if (data != null && data['message'] != null) {
-          return data['message'];
+          final message = data['message'];
+          if (message is List) {
+            return message
+                .map((item) => item?.toString() ?? 'Unknown')
+                .join(', ');
+          } else if (message is String) {
+            return message;
+          } else if (message != null) {
+            return message.toString();
+          }
         }
         return 'Server Error: Please try again later (${statusCode ?? 'Unknown'})';
     }

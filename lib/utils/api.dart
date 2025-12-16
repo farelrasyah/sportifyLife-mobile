@@ -6,6 +6,8 @@ class ApiException implements Exception {
 
   ApiException(this.errorMessage);
 
+  String get message => errorMessage;
+
   @override
   String toString() {
     return errorMessage;

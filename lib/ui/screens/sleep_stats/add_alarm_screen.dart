@@ -1,6 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -276,7 +277,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen>
       formattedDays = "Weekends";
     } else {
       formattedDays = _selectedRepeatDays
-          .map((day) => _getShortDay(day))
+          .map((day) => _getAbbreviatedDay(day))
           .join(", ");
     }
 
@@ -522,15 +523,40 @@ class _AddAlarmScreenState extends State<AddAlarmScreen>
       return;
     }
 
+    // Use full day names for API with proper capitalization
+    final apiRepeatDays = _selectedRepeatDays.map((day) {
+      // Convert abbreviated days back to full names if needed
+      switch (day.toLowerCase()) {
+        case 'mon':
+          return 'Monday';
+        case 'tue':
+          return 'Tuesday';
+        case 'wed':
+          return 'Wednesday';
+        case 'thu':
+          return 'Thursday';
+        case 'fri':
+          return 'Friday';
+        case 'sat':
+          return 'Saturday';
+        case 'sun':
+          return 'Sunday';
+        default:
+          // Already full name, ensure proper capitalization
+          final dayLower = day.toLowerCase();
+          return dayLower[0].toUpperCase() + dayLower.substring(1);
+      }
+    }).toList();
+
     // Create the schedule
     sleepScheduleCubit.createSleepSchedule(
       bedtime: _selectedBedtime,
-      sleepHours: _selectedSleepHours,
-      repeatDays: _selectedRepeatDays,
+      sleepHours: _selectedSleepHours, // Keep as double
+      repeatDays: apiRepeatDays,
       isVibrate: _isVibrateEnabled,
       alarmSound: _selectedAlarmSound,
       alarmEnabled: _alarmEnabled,
-      notes: _notes,
+      notes: _notes?.isNotEmpty == true ? _notes : null,
     );
   }
 
@@ -562,8 +588,8 @@ class _AddAlarmScreenState extends State<AddAlarmScreen>
     }
   }
 
-  String _getShortDay(String day) {
-    switch (day.toLowerCase()) {
+  String _getAbbreviatedDay(String fullDay) {
+    switch (fullDay.toLowerCase()) {
       case 'sunday':
         return 'Sun';
       case 'monday':
@@ -579,7 +605,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen>
       case 'saturday':
         return 'Sat';
       default:
-        return day;
+        return fullDay;
     }
   }
 
