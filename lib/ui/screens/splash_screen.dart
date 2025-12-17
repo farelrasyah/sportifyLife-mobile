@@ -94,19 +94,17 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               const SizedBox(height: 32),
 
-              // App Name with elegant typography
+              // App Logo Image with gradient
               ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
                   colors: [Color(0xFF92A3FD), Color(0xFF9DCEFF)],
                 ).createShader(bounds),
-                child: const Text(
-                  'SportifyLife',
-                  style: TextStyle(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: -0.3,
-                  ),
+                blendMode: BlendMode.srcIn,
+                child: Image.asset(
+                  'assets/icon/SportifyLife.png',
+                  width: 200,
+                  height: 50,
+                  fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 12),

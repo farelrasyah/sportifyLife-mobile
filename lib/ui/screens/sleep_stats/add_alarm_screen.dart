@@ -310,7 +310,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen>
     }
 
     return _buildAlarmSettingRow(
-      icon: "assets/images/Sound.png",
+      icon: "assets/images/HoursTime.png",
       title: "Alarm Sound",
       value: soundName,
       onTap: _showAlarmSoundPicker,

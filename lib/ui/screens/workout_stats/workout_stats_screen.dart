@@ -41,7 +41,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
       "time": "Today, 03:00pm",
     },
     {
-      "image": "assets/images/Workout2.png",
+      "image": "assets/images/exercise.json",
       "title": "Upperbody Workout",
       "time": "June 05, 02:00pm",
     },
@@ -49,19 +49,19 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
 
   final List<Map<String, String>> _workoutCategories = [
     {
-      "image": "assets/images/what_1.png",
+      "image": "assets/images/jumping_jack.json",
       "title": "Fullbody Workout",
       "exercises": "11 Exercises",
       "time": "32mins",
     },
     {
-      "image": "assets/images/what_2.png",
+      "image": "assets/images/split_jump.json",
       "title": "Lowebody Workout",
       "exercises": "12 Exercises",
       "time": "40mins",
     },
     {
-      "image": "assets/images/what_3.png",
+      "image": "assets/images/meditating.json",
       "title": "AB Workout",
       "exercises": "14 Exercises",
       "time": "20mins",
@@ -78,6 +78,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
         title: "Workout Stats",
         icon: Icons.bar_chart,
         fabAnimationController: _fabAnimationController,
+        onBackPressed: () => Navigator.pop(context),
       ),
       body: Container(
         decoration: BoxDecoration(

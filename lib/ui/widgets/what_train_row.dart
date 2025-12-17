@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../common/colo_extension.dart';
 import 'round_button.dart';
+import 'package:rive/rive.dart' as rive;
 
 class WhatTrainRow extends StatelessWidget {
   final Map wObj;
@@ -74,11 +75,13 @@ class WhatTrainRow extends StatelessWidget {
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(30),
-                  child: Image.asset(
-                    wObj["image"].toString(),
-                    width: 90,
-                    height: 90,
-                    fit: BoxFit.contain,
+                  child: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: rive.RiveAnimation.asset(
+                      wObj["image"].toString(),
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ],

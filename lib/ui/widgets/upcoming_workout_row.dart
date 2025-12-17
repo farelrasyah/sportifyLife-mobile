@@ -1,5 +1,6 @@
 import '../../common/colo_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart' as rive;
 
 class UpcomingWorkoutRow extends StatefulWidget {
   final Map wObj;
@@ -26,11 +27,13 @@ class _UpcomingWorkoutRowState extends State<UpcomingWorkoutRow> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(30),
-            child: Image.asset(
-              widget.wObj["image"].toString(),
+            child: SizedBox(
               width: 50,
               height: 50,
-              fit: BoxFit.cover,
+              child: rive.RiveAnimation.asset(
+                widget.wObj["image"].toString(),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(width: 15),

@@ -44,24 +44,30 @@ class _MainScreenState extends State<MainScreen> {
           await storage.saveUserFirstName(user.firstName);
           await storage.saveUserLastName(user.lastName);
           await storage.saveUserEmail(user.email);
-          setState(() {
-            _userName = user.firstName;
-          });
+          if (mounted) {
+            setState(() {
+              _userName = user.firstName;
+            });
+          }
         },
         failure: (error) async {
           // Fallback to storage if API fails
           final firstName = await storage.getUserFirstName();
-          setState(() {
-            _userName = firstName ?? "User";
-          });
+          if (mounted) {
+            setState(() {
+              _userName = firstName ?? "User";
+            });
+          }
         },
       );
     } catch (e) {
       // Fallback to storage if any error
       final firstName = await storage.getUserFirstName();
-      setState(() {
-        _userName = firstName ?? "User";
-      });
+      if (mounted) {
+        setState(() {
+          _userName = firstName ?? "User";
+        });
+      }
     }
   }
 
