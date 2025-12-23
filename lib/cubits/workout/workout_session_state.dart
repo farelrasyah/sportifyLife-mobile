@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../data/models/workout_session_model.dart';
+import '../../data/models/workout_session_model.dart';
 
 /// Workout Session States
 abstract class WorkoutSessionState extends Equatable {
@@ -39,7 +39,8 @@ class WorkoutSessionActive extends WorkoutSessionState {
   });
 
   int get totalExercises => session.exerciseProgress.length;
-  int get completedExercises => session.completedExercises;
+  int get completedExercises =>
+      session.exerciseProgress.where((e) => e.isCompleted).length;
   double get progressPercent => session.progressPercent;
   bool get isPaused => session.status == WorkoutSessionStatus.paused;
 

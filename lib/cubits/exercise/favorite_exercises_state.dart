@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../data/models/exercise_model.dart';
+import '../../data/models/exercise_model.dart';
 
 /// Favorite Exercises States
 abstract class FavoriteExercisesState extends Equatable {

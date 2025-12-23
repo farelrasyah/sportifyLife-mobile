@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../data/models/workout_plan_model.dart';
+import '../../data/models/workout_plan_model.dart';
 
 /// Workout Schedule States
 abstract class WorkoutScheduleState extends Equatable {

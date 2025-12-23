@@ -38,13 +38,14 @@ class WorkoutSessionCubit extends Cubit<WorkoutSessionState> {
   Future<void> startWorkoutSession({
     required String workoutPlanId,
     String? scheduleId,
+    required String customWorkoutPlanId,
   }) async {
     try {
       emit(const WorkoutSessionLoading());
 
       final request = StartWorkoutSessionRequest(
-        workoutPlanId: workoutPlanId,
         scheduleId: scheduleId,
+        customWorkoutPlanId: customWorkoutPlanId,
       );
 
       final session = await _workoutRepository.startWorkoutSession(request);
@@ -77,12 +78,11 @@ class WorkoutSessionCubit extends Cubit<WorkoutSessionState> {
 
       final progress = ExerciseProgressModel(
         id: '', // Will be assigned by backend
+        sessionId: currentState.session.id,
         exerciseId: exerciseId,
         completedSets: completedSets ?? 0,
         completedReps: completedReps ?? 0,
-        weight: weight,
         isCompleted: isCompleted ?? false,
-        duration: duration,
         notes: notes,
       );
 
@@ -235,10 +235,11 @@ class WorkoutSessionCubit extends Cubit<WorkoutSessionState> {
       emit(const WorkoutSessionLoading());
 
       final request = CompleteWorkoutSessionRequest(
-        actualDuration: elapsed?.inMinutes ?? 0,
+        duration: elapsed?.inMinutes ?? 0,
         caloriesBurned: caloriesBurned,
         notes: notes,
         rating: rating,
+        exerciseProgress: session.exerciseProgress, // Added required parameter
       );
 
       final completedSession = await _workoutRepository.completeWorkoutSession(

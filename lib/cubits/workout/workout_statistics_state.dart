@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import '../data/models/workout_statistics_model.dart';
-import '../data/models/workout_session_model.dart';
+import '../../data/models/workout_statistics_model.dart';
+import '../../data/models/workout_session_model.dart';
 
 /// Workout Statistics States
 abstract class WorkoutStatisticsState extends Equatable {

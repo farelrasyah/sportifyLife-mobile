@@ -6,7 +6,7 @@ import '../../../cubits/exercise/exercise_cubits.dart';
 import '../../../data/models/exercise_model.dart';
 import '../../widgets/exercise/exercise_widgets.dart';
 import '../../widgets/custom_modern_appbar.dart';
-import 'exercise_detail_screen.dart';
+import 'exercise_detail_screen_new.dart';
 
 /// Exercise List Screen - Browse all exercises with filtering
 class ExerciseListScreen extends StatefulWidget {
@@ -25,16 +25,23 @@ class ExerciseListScreen extends StatefulWidget {
   State<ExerciseListScreen> createState() => _ExerciseListScreenState();
 }
 
-class _ExerciseListScreenState extends State<ExerciseListScreen> {
+class _ExerciseListScreenState extends State<ExerciseListScreen>
+    with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  late AnimationController _fabAnimationController;
   Timer? _debounce;
   bool _isGridView = false;
+  final FocusNode _searchFocusNode = FocusNode();
   List<ExerciseModel> _selectedExercises = [];
 
   @override
   void initState() {
     super.initState();
+    _fabAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
     _loadData();
     _scrollController.addListener(_onScroll);
 
@@ -48,6 +55,8 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
   void dispose() {
     _searchController.dispose();
     _scrollController.dispose();
+    _fabAnimationController.dispose();
+    _searchFocusNode.dispose();
     _debounce?.cancel();
     super.dispose();
   }
@@ -135,6 +144,14 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
   void _completeSelection() {
     widget.onSelectionComplete?.call(_selectedExercises);
     Navigator.pop(context);
+  }
+
+  bool _hasActiveFilters() {
+    final state = context.read<ExerciseFiltersCubit>().state;
+    if (state is ExerciseFiltersLoaded) {
+      return state.activeFilters.hasFilters;
+    }
+    return false;
   }
 
   @override
@@ -251,20 +268,12 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
 
     return CustomModernAppBar(
       title: 'Exercises',
-      showBackButton: true,
-      actions: [
-        IconButton(
-          icon: Icon(
-            _isGridView ? Icons.view_list : Icons.grid_view,
-            color: TColor.gray,
-          ),
-          onPressed: () {
-            setState(() {
-              _isGridView = !_isGridView;
-            });
-          },
-        ),
-      ],
+      icon: Icons.fitness_center,
+      fabAnimationController: _fabAnimationController,
+      onBackPressed: () => Navigator.pop(context),
+      showFilterButton: true,
+      filterActive: _hasActiveFilters(),
+      onFilterPressed: _showFilterBottomSheet,
     );
   }
 

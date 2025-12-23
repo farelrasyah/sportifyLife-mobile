@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../common/colo_extension.dart';
+import '../../../common/colo_extension.dart';
 
 /// Shimmer loading widget for exercise cards
 class ExerciseCardShimmer extends StatelessWidget {
@@ -24,13 +24,8 @@ class ExerciseCardShimmer extends StatelessWidget {
         children: [
           // Image placeholder
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(15),
-            ),
-            child: _ShimmerBox(
-              width: double.infinity,
-              height: 120,
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+            child: _ShimmerBox(width: double.infinity, height: 120),
           ),
           // Content
           Padding(
@@ -80,11 +75,7 @@ class ExerciseListItemShimmer extends StatelessWidget {
       child: Row(
         children: [
           // Image placeholder
-          _ShimmerBox(
-            width: 70,
-            height: 70,
-            borderRadius: 10,
-          ),
+          _ShimmerBox(width: 70, height: 70, borderRadius: 10),
           const SizedBox(width: 12),
           // Content
           Expanded(
@@ -159,9 +150,10 @@ class _ShimmerBoxState extends State<_ShimmerBox>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat();
-    _animation = Tween<double>(begin: -2, end: 2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: -2,
+      end: 2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -201,11 +193,7 @@ class ExerciseErrorWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  const ExerciseErrorWidget({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ExerciseErrorWidget({super.key, required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -240,10 +228,7 @@ class ExerciseErrorWidget extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               message,
-              style: TextStyle(
-                color: TColor.gray,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: TColor.gray, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
@@ -303,11 +288,7 @@ class ExerciseEmptyWidget extends StatelessWidget {
                 ),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.fitness_center,
-                size: 48,
-                color: TColor.white,
-              ),
+              child: Icon(Icons.fitness_center, size: 48, color: TColor.white),
             ),
             const SizedBox(height: 24),
             Text(
@@ -322,10 +303,7 @@ class ExerciseEmptyWidget extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               message ?? 'Try adjusting your filters or search criteria',
-              style: TextStyle(
-                color: TColor.gray,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: TColor.gray, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             if (onAction != null && actionLabel != null) ...[

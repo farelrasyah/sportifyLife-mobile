@@ -44,6 +44,12 @@ class ExerciseInstructionModel extends Equatable {
     };
   }
 
+  /// Title getter for backward compatibility
+  String get title => 'Step $stepNumber';
+
+  /// Description getter for backward compatibility
+  String get description => instruction;
+
   @override
   List<Object?> get props => [
     id,
@@ -80,6 +86,15 @@ class ExerciseTipModel extends Equatable {
     return {'id': id, 'tip': tip, 'isImportant': isImportant};
   }
 
+  /// Type getter for UI display (warning, safety, pro)
+  String get type {
+    if (isImportant) return 'warning';
+    return 'safety';
+  }
+
+  /// Content getter for backward compatibility
+  String get content => tip;
+
   @override
   List<Object?> get props => [id, tip, isImportant];
 }
@@ -115,6 +130,9 @@ class ExerciseVariationModel extends Equatable {
       'difficulty': difficulty,
     };
   }
+
+  /// Exercise ID getter for backward compatibility
+  String get exerciseId => id;
 
   @override
   List<Object?> get props => [id, name, description, difficulty];
@@ -232,6 +250,42 @@ class ExerciseModel extends Equatable {
 
   /// Get first video or empty
   String get primaryVideo => videos.isNotEmpty ? videos.first : '';
+
+  /// Get video URL (alias for primaryVideo for backward compatibility)
+  String? get videoUrl => videos.isNotEmpty ? videos.first : null;
+
+  /// Get duration in seconds (estimated based on instructions/exercises)
+  int? get duration {
+    // Calculate estimated duration from instructions
+    int totalSeconds = 0;
+    for (var instruction in instructions) {
+      if (instruction.duration != null) {
+        totalSeconds += instruction.duration!;
+      }
+    }
+    return totalSeconds > 0 ? totalSeconds : null;
+  }
+
+  /// Get target muscles as list
+  List<String> get targetMuscles => [targetMuscle];
+
+  /// Get default reps (from first instruction or null)
+  int? get defaultReps =>
+      instructions.isNotEmpty && instructions.first.reps != null
+      ? instructions.first.reps
+      : null;
+
+  /// Get default sets (from first instruction or null)
+  int? get defaultSets =>
+      instructions.isNotEmpty && instructions.first.sets != null
+      ? instructions.first.sets
+      : null;
+
+  /// Get calories per rep (estimated, you can adjust the formula)
+  double? get caloriesPerRep {
+    // Simple estimate: ~0.5 calories per rep
+    return 0.5;
+  }
 
   /// Get difficulty color
   String get difficultyLabel {
@@ -395,6 +449,9 @@ class FilterOptionModel extends Equatable {
   Map<String, dynamic> toJson() {
     return {'value': value, 'label': label, 'description': description};
   }
+
+  /// Display name getter for UI (alias for label)
+  String get displayName => label;
 
   @override
   List<Object?> get props => [value, label, description];

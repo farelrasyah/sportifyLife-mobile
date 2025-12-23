@@ -18,7 +18,9 @@ class ExerciseListCubit extends Cubit<ExerciseListState> {
       emit(const ExerciseListLoading());
 
       final queryParams = params ?? const ExerciseQueryParams();
-      final response = await _exerciseRepository.getExercises(queryParams);
+      final response = await _exerciseRepository.getExercises(
+        params: queryParams,
+      );
 
       emit(
         ExerciseListLoaded(
@@ -54,7 +56,9 @@ class ExerciseListCubit extends Cubit<ExerciseListState> {
             page: nextPage,
           );
 
-      final response = await _exerciseRepository.getExercises(queryParams);
+      final response = await _exerciseRepository.getExercises(
+        params: queryParams,
+      );
 
       emit(
         currentState.copyWith(
@@ -118,7 +122,7 @@ class ExerciseListCubit extends Cubit<ExerciseListState> {
         sortOrder: sortOrder,
       );
 
-      final response = await _exerciseRepository.getExercises(queryParams);
+      final response = await _exerciseRepository.getExercises(params: queryParams);
 
       emit(
         ExerciseListLoaded(

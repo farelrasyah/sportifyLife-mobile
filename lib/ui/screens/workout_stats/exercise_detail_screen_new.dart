@@ -120,16 +120,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
         primaryColor: TColor.primaryColor1,
         lightColor: TColor.primaryColor2,
         onBackPressed: () => Navigator.pop(context),
-        actions: [
-          IconButton(
-            icon: Icon(
-              state.isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: state.isFavorite ? Colors.red : TColor.gray,
-            ),
-            onPressed: () =>
-                context.read<ExerciseDetailCubit>().toggleFavorite(),
-          ),
-        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: state.isFavorite ? Colors.red : TColor.primary,
+        onPressed: () => context.read<ExerciseDetailCubit>().toggleFavorite(),
+        child: Icon(
+          state.isFavorite ? Icons.favorite : Icons.favorite_border,
+          color: TColor.white,
+        ),
       ),
       backgroundColor: TColor.white,
       body: SingleChildScrollView(
@@ -205,7 +203,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
 
   Widget _buildExerciseImage(ExerciseModel exercise) {
     final imageUrl = exercise.primaryImage;
-    if (imageUrl != null && imageUrl.isNotEmpty) {
+    if (imageUrl.isNotEmpty) {
       if (imageUrl.endsWith('.gif')) {
         return CachedNetworkImage(
           imageUrl: imageUrl,
@@ -245,7 +243,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
 
   Widget _buildDifficultyBadge(ExerciseModel exercise) {
     Color badgeColor;
-    switch (exercise.difficulty?.toLowerCase()) {
+    switch (exercise.difficulty.toLowerCase()) {
       case 'beginner':
         badgeColor = Colors.green;
         break;
@@ -300,12 +298,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
             ],
           ],
         ),
-        if (exercise.targetMuscles?.isNotEmpty == true) ...[
+        if (exercise.targetMuscles.isNotEmpty) ...[
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 4,
-            children: exercise.targetMuscles!.map((muscle) {
+            children: exercise.targetMuscles.map((muscle) {
               return Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -414,7 +412,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   }
 
   Widget _buildDescriptionSection(ExerciseModel exercise) {
-    if (exercise.description == null || exercise.description!.isEmpty) {
+    if (exercise.description.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -431,7 +429,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
         ),
         const SizedBox(height: 8),
         ReadMoreText(
-          exercise.description!,
+          exercise.description,
           trimLines: 4,
           colorClickableText: TColor.primary,
           trimMode: TrimMode.Line,
@@ -532,26 +530,23 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (instruction.title != null)
-                  Text(
-                    instruction.title!,
-                    style: TextStyle(
-                      color: TColor.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                Text(
+                  instruction.title,
+                  style: TextStyle(
+                    color: TColor.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
-                if (instruction.description != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    instruction.description!,
-                    style: TextStyle(
-                      color: TColor.gray,
-                      fontSize: 13,
-                      height: 1.4,
-                    ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  instruction.description,
+                  style: TextStyle(
+                    color: TColor.gray,
+                    fontSize: 13,
+                    height: 1.4,
                   ),
-                ],
+                ),
               ],
             ),
           ),
@@ -582,7 +577,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
     Color iconColor;
     IconData icon;
 
-    switch (tip.type?.toLowerCase()) {
+    switch (tip.type.toLowerCase()) {
       case 'warning':
         iconColor = Colors.orange;
         icon = Icons.warning_amber_rounded;
@@ -655,15 +650,13 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
   Widget _buildVariationCard(ExerciseVariationModel variation) {
     return GestureDetector(
       onTap: () {
-        if (variation.exerciseId != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  ExerciseDetailScreen(exerciseId: variation.exerciseId!),
-            ),
-          );
-        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ExerciseDetailScreen(exerciseId: variation.exerciseId),
+          ),
+        );
       },
       child: Container(
         width: 140,

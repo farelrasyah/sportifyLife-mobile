@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../data/repositories/exercise_repository.dart';
-import '../data/repositories/workout_repository.dart';
-import '../services/favorite_service.dart';
-import '../cubits/exercise/exercise_cubits.dart';
-import '../cubits/workout/workout_cubits.dart';
+import '../../data/repositories/exercise_repository.dart';
+import '../../data/repositories/workout_repository.dart';
+import '../../services/favorite_service.dart';
+import '../../cubits/exercise/exercise_cubits.dart';
+import '../../cubits/workout/workout_cubits.dart';
 
 /// Service Locator / Dependency Injection Container
 class ServiceLocator {

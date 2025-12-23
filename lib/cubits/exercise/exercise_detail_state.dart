@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../data/models/exercise_model.dart';
+import '../../data/models/exercise_model.dart';
 
 /// Exercise Detail States
 abstract class ExerciseDetailState extends Equatable {

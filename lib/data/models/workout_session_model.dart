@@ -410,45 +410,32 @@ class StartWorkoutSessionRequest extends Equatable {
 }
 
 /// Complete Workout Session Request
-class CompleteWorkoutSessionRequest extends Equatable {
-  final DateTime? endTime;
+class CompleteWorkoutSessionRequest {
+  final int duration; // Add this property
   final int? caloriesBurned;
-  final String? overallNotes;
+  final String? notes;
+  final int? rating;
   final List<ExerciseProgressModel> exerciseProgress;
-  final int? difficultyRating;
-  final int? satisfactionRating;
 
-  const CompleteWorkoutSessionRequest({
-    this.endTime,
+  CompleteWorkoutSessionRequest({
+    required this.duration, // Add this required parameter
     this.caloriesBurned,
-    this.overallNotes,
+    this.notes,
+    this.rating,
     required this.exerciseProgress,
-    this.difficultyRating,
-    this.satisfactionRating,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      if (endTime != null) 'endTime': endTime!.toIso8601String(),
+      'duration': duration,
       if (caloriesBurned != null) 'caloriesBurned': caloriesBurned,
-      if (overallNotes != null) 'overallNotes': overallNotes,
+      if (notes != null) 'notes': notes,
+      if (rating != null) 'rating': rating,
       'exerciseProgress': exerciseProgress
           .map((e) => e.toUpdateJson())
           .toList(),
-      if (difficultyRating != null) 'difficultyRating': difficultyRating,
-      if (satisfactionRating != null) 'satisfactionRating': satisfactionRating,
     };
   }
-
-  @override
-  List<Object?> get props => [
-    endTime,
-    caloriesBurned,
-    overallNotes,
-    exerciseProgress,
-    difficultyRating,
-    satisfactionRating,
-  ];
 }
 
 /// Workout History Response Model

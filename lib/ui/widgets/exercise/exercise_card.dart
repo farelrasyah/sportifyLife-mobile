@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../common/colo_extension.dart';
-import '../../data/models/exercise_model.dart';
+import '../../../common/colo_extension.dart';
+import '../../../data/models/exercise_model.dart';
 
 /// Exercise Card Widget for displaying exercise in list/grid view
 class ExerciseCard extends StatelessWidget {
@@ -297,7 +297,7 @@ class ExerciseListItem extends StatelessWidget {
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            exercise.equipment!.first,
+                            exercise.equipmentLabel,
                             style: TextStyle(
                               color: TColor.secondary,
                               fontSize: 11,

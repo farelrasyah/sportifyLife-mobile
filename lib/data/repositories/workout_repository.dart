@@ -73,8 +73,6 @@ class WorkoutRepository {
 
       if (responseData.containsKey('data') && responseData['data'] is List) {
         plansList = responseData['data'] as List<dynamic>;
-      } else if (responseData is List) {
-        plansList = responseData;
       } else {
         plansList = [];
       }
@@ -251,8 +249,6 @@ class WorkoutRepository {
 
       if (responseData.containsKey('data') && responseData['data'] is List) {
         schedulesList = responseData['data'] as List<dynamic>;
-      } else if (responseData is List) {
-        schedulesList = responseData;
       } else {
         schedulesList = [];
       }

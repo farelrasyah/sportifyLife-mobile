@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../common/colo_extension.dart';
-import '../../data/models/exercise_model.dart';
+import '../../../common/colo_extension.dart';
+import '../../../data/models/exercise_model.dart';
 
 /// Filter chip widget for exercise filters
 class ExerciseFilterChip extends StatelessWidget {
@@ -346,11 +346,11 @@ class _ExerciseFilterBottomSheetState extends State<ExerciseFilterBottomSheet> {
   }
 
   Widget _buildSortSection() {
-    final sortOptions = [
-      FilterOptionModel(value: 'name', displayName: 'Name'),
-      FilterOptionModel(value: 'difficulty', displayName: 'Difficulty'),
-      FilterOptionModel(value: 'type', displayName: 'Type'),
-      FilterOptionModel(value: 'createdAt', displayName: 'Latest'),
+    const sortOptions = [
+      FilterOptionModel(value: 'name', label: 'Name'),
+      FilterOptionModel(value: 'difficulty', label: 'Difficulty'),
+      FilterOptionModel(value: 'type', label: 'Type'),
+      FilterOptionModel(value: 'createdAt', label: 'Latest'),
     ];
 
     return Column(

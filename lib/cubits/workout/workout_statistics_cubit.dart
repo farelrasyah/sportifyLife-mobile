@@ -95,10 +95,10 @@ class WorkoutHistoryCubit extends Cubit<WorkoutHistoryState> {
 
       emit(
         WorkoutHistoryLoaded(
-          sessions: response.sessions,
-          totalCount: response.pagination.total,
-          currentPage: response.pagination.page,
-          totalPages: response.pagination.totalPages,
+          sessions: response.data,
+          totalCount: response.meta.total,
+          currentPage: response.meta.page,
+          totalPages: response.meta.totalPages,
         ),
       );
     } catch (e) {
@@ -129,9 +129,9 @@ class WorkoutHistoryCubit extends Cubit<WorkoutHistoryState> {
 
       emit(
         currentState.copyWith(
-          sessions: [...currentState.sessions, ...response.sessions],
-          currentPage: response.pagination.page,
-          totalPages: response.pagination.totalPages,
+          sessions: [...currentState.sessions, ...response.data],
+          currentPage: response.meta.page,
+          totalPages: response.meta.totalPages,
           isLoadingMore: false,
         ),
       );
