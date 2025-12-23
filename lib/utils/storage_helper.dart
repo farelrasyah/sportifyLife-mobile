@@ -44,6 +44,25 @@ class StorageHelper {
     await _storage.write(key: AppConstants.userIdKey, value: userId);
   }
 
+  Future<String?> getUserId() async {
+    return await _storage.read(key: AppConstants.userIdKey);
+  }
+
+  // User Role
+  Future<void> saveUserRole(String role) async {
+    await _storage.write(key: AppConstants.userRoleKey, value: role);
+  }
+
+  Future<String?> getUserRole() async {
+    return await _storage.read(key: AppConstants.userRoleKey);
+  }
+
+  // Check if user is admin
+  Future<bool> isUserAdmin() async {
+    final role = await getUserRole();
+    return role == 'admin';
+  }
+
   // User First Name
   Future<void> saveUserFirstName(String firstName) async {
     await _storage.write(key: 'user_first_name', value: firstName);
@@ -101,6 +120,7 @@ class StorageHelper {
     await _storage.delete(key: AppConstants.refreshTokenKey);
     await _storage.delete(key: AppConstants.userEmailKey);
     await _storage.delete(key: AppConstants.userIdKey);
+    await _storage.delete(key: AppConstants.userRoleKey);
     await _storage.delete(key: 'user_first_name');
     await _storage.delete(key: 'user_last_name');
     await _storage.delete(key: AppConstants.verificationExpiryKey);

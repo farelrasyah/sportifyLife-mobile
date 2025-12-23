@@ -137,12 +137,23 @@ class AuthService {
     return token != null && token.isNotEmpty;
   }
 
+  /// Get current user role from storage
+  Future<String?> getUserRole() async {
+    return await _storage.getUserRole();
+  }
+
+  /// Check if current user is admin
+  Future<bool> isUserAdmin() async {
+    return await _storage.isUserAdmin();
+  }
+
   /// Save authentication data to secure storage
   Future<void> _saveAuthData(AuthResponseModel authResponse) async {
     await _storage.saveAccessToken(authResponse.accessToken);
     await _storage.saveRefreshToken(authResponse.refreshToken);
     await _storage.saveUserEmail(authResponse.user.email);
     await _storage.saveUserId(authResponse.user.id);
+    await _storage.saveUserRole(authResponse.user.role);
   }
 
   /// Validate email format

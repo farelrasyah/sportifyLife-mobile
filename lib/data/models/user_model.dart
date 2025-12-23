@@ -8,6 +8,7 @@ class UserModel extends Equatable {
   final String lastName;
   final String provider;
   final bool isVerified;
+  final String role;
   final String? profilePhoto;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -19,6 +20,7 @@ class UserModel extends Equatable {
     required this.lastName,
     required this.provider,
     this.isVerified = false,
+    required this.role,
     this.profilePhoto,
     this.createdAt,
     this.updatedAt,
@@ -32,6 +34,7 @@ class UserModel extends Equatable {
       lastName: json['lastName'] as String,
       provider: json['provider'] as String? ?? 'local',
       isVerified: json['isVerified'] as bool? ?? false,
+      role: json['role'] as String? ?? 'user',
       profilePhoto: json['profilePhoto'] as String?,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
@@ -50,6 +53,7 @@ class UserModel extends Equatable {
       'lastName': lastName,
       'provider': provider,
       'isVerified': isVerified,
+      'role': role,
       'profilePhoto': profilePhoto,
       if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
       if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
@@ -63,6 +67,7 @@ class UserModel extends Equatable {
     String? lastName,
     String? provider,
     bool? isVerified,
+    String? role,
     String? profilePhoto,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -74,6 +79,7 @@ class UserModel extends Equatable {
       lastName: lastName ?? this.lastName,
       provider: provider ?? this.provider,
       isVerified: isVerified ?? this.isVerified,
+      role: role ?? this.role,
       profilePhoto: profilePhoto ?? this.profilePhoto,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -90,6 +96,7 @@ class UserModel extends Equatable {
     lastName,
     provider,
     isVerified,
+    role,
     profilePhoto,
     createdAt,
     updatedAt,

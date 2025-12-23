@@ -33,6 +33,7 @@ class AppConstants {
   static const String userEmailKey = 'userEmail';
   static const String verificationExpiryKey = 'verificationExpiry';
   static const String userIdKey = 'userId';
+  static const String userRoleKey = 'userRole';
 
   // Validation
   static const int minPasswordLength = 6;
