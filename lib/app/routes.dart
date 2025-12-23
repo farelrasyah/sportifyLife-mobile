@@ -73,6 +73,9 @@ import '../services/sleep_feature_provider.dart';
 // Workout Stats Screens
 import '../ui/screens/workout_stats/add_workout_plan_screen.dart';
 import '../ui/screens/workout_stats/exercise_detail_screen.dart';
+import '../ui/screens/workout_stats/exercise_list_screen.dart';
+import '../ui/screens/workout_stats/exercise_detail_screen_new.dart'
+    as new_detail;
 import '../ui/screens/workout_stats/workout_detail_screen.dart';
 import '../ui/screens/workout_stats/workout_plan_screen.dart';
 import '../ui/screens/workout_stats/workout_stats_screen.dart';
@@ -145,6 +148,7 @@ class Routes {
   // Workout Stats Routes
   static const String addWorkoutPlanScreen = '/addWorkoutPlan';
   static const String exerciseDetailScreen = '/exerciseDetail';
+  static const String exerciseListScreen = '/exerciseList';
   static const String workoutDetailScreen = '/workoutDetail';
   static const String workoutPlanScreen = '/workoutPlan';
   static const String workoutStatsScreen = '/workoutStats';
@@ -411,6 +415,16 @@ class RouteGenerator {
 
       case Routes.exerciseDetailScreen:
         if (args is Map<String, dynamic>) {
+          // Check if exerciseId is provided (new backend integration)
+          if (args.containsKey('exerciseId')) {
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (_) => new_detail.ExerciseDetailScreen(
+                exerciseId: args['exerciseId'] as String,
+              ),
+            );
+          }
+          // Legacy support for old exerciseData map
           return MaterialPageRoute(
             settings: settings,
             builder: (_) =>
@@ -418,6 +432,15 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+
+      case Routes.exerciseListScreen:
+        final isSelectionMode = args is Map<String, dynamic>
+            ? (args['isSelectionMode'] as bool? ?? false)
+            : false;
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => ExerciseListScreen(isSelectionMode: isSelectionMode),
+        );
 
       case Routes.workoutDetailScreen:
         if (args is Map<String, dynamic>) {

@@ -5,10 +5,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'app/routes.dart';
 import 'ui/theme/app_theme.dart';
 import 'utils/route_logger.dart';
+import 'core/di/service_locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  // Initialize dependency injection
+  await ServiceLocator.instance.init();
 
   // Suppress mouse tracker debug assertions (known Flutter desktop bug)
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -36,40 +40,42 @@ class SportifyLifeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SportifyLife',
-      debugShowCheckedModeBanner: false,
+    return ExerciseWorkoutBlocProvider(
+      child: MaterialApp(
+        title: 'SportifyLife',
+        debugShowCheckedModeBanner: false,
 
-      // Suppress rendering overflow errors in debug mode
-      builder: (context, widget) {
-        ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
-          return Container(
-            color: Colors.white,
-            child: Center(
-              child: Text(
-                kDebugMode ? errorDetails.toString() : 'Error occurred',
-                style: const TextStyle(color: Colors.red),
+        // Suppress rendering overflow errors in debug mode
+        builder: (context, widget) {
+          ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+            return Container(
+              color: Colors.white,
+              child: Center(
+                child: Text(
+                  kDebugMode ? errorDetails.toString() : 'Error occurred',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
-            ),
-          );
-        };
-        return widget!;
-      },
+            );
+          };
+          return widget!;
+        },
 
-      // Theme Configuration
-      theme: AppTheme.lightTheme,
+        // Theme Configuration
+        theme: AppTheme.lightTheme,
 
-      // Localization
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
+        // Localization
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
 
-      // Routing
-      initialRoute: Routes.splashScreen,
-      onGenerateRoute: RouteGenerator.generateRoute,
+        // Routing
+        initialRoute: Routes.splashScreen,
+        onGenerateRoute: RouteGenerator.generateRoute,
 
-      // Navigation Observer untuk logging
-      navigatorObservers: [RouteLogger()],
+        // Navigation Observer untuk logging
+        navigatorObservers: [RouteLogger()],
+      ),
     );
   }
 }
