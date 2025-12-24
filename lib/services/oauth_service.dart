@@ -103,6 +103,7 @@ class OAuthService {
         firstName: '',
         lastName: '',
         provider: provider,
+        role: 'user', // Assuming default role for OAuth users
         isVerified: true, // OAuth users are automatically verified
       );
 

@@ -228,12 +228,13 @@ class WorkoutRepository {
     }
   }
 
-  /// Get upcoming workout schedules
-  Future<List<WorkoutScheduleModel>> getUpcomingSchedules() async {
+  /// Get today's workout schedules
+  Future<List<WorkoutScheduleModel>> getTodaySchedules() async {
     try {
-      debugPrint('Fetching upcoming schedules');
+      debugPrint('Fetching today schedules');
 
-      final response = await _apiClient.dio.get(Api.upcomingWorkoutSchedules);
+      // Fetch all schedules then filter client-side
+      final response = await _apiClient.dio.get(Api.workoutSchedules);
 
       final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
         response.data,
@@ -241,7 +242,7 @@ class WorkoutRepository {
       );
 
       if (!apiResponse.success || apiResponse.data == null) {
-        throw ApiException('Failed to load upcoming schedules');
+        throw ApiException('Failed to load schedules');
       }
 
       final responseData = apiResponse.data!;
@@ -253,13 +254,99 @@ class WorkoutRepository {
         schedulesList = [];
       }
 
-      return schedulesList
+      final allSchedules = schedulesList
           .map((e) => WorkoutScheduleModel.fromJson(e as Map<String, dynamic>))
           .toList();
+
+      // Filter for today only
+      final today = DateTime.now();
+      return allSchedules.where((schedule) {
+        if (schedule.scheduledDateTime == null) return false;
+        final scheduleDate = schedule.scheduledDateTime!;
+        return scheduleDate.year == today.year &&
+            scheduleDate.month == today.month &&
+            scheduleDate.day == today.day;
+      }).toList();
+    } on DioException catch (e) {
+      throw ApiException(_handleError(e));
+    } catch (e) {
+      debugPrint('Error fetching today schedules: $e');
+      rethrow;
+    }
+  }
+
+  /// Get upcoming workout schedules
+  Future<List<WorkoutScheduleModel>> getUpcomingSchedules() async {
+    try {
+      debugPrint('Fetching upcoming schedules');
+
+      // Fetch all schedules then filter client-side
+      final response = await _apiClient.dio.get(Api.workoutSchedules);
+
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data,
+        (data) => data as Map<String, dynamic>,
+      );
+
+      if (!apiResponse.success || apiResponse.data == null) {
+        throw ApiException('Failed to load schedules');
+      }
+
+      final responseData = apiResponse.data!;
+      List<dynamic> schedulesList;
+
+      if (responseData.containsKey('data') && responseData['data'] is List) {
+        schedulesList = responseData['data'] as List<dynamic>;
+      } else {
+        schedulesList = [];
+      }
+
+      final allSchedules = schedulesList
+          .map((e) => WorkoutScheduleModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      // Filter for upcoming only (after today)
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      return allSchedules.where((schedule) {
+        if (schedule.scheduledDateTime == null) return false;
+        final scheduleDate = DateTime(
+          schedule.scheduledDateTime!.year,
+          schedule.scheduledDateTime!.month,
+          schedule.scheduledDateTime!.day,
+        );
+        return scheduleDate.isAfter(today);
+      }).toList();
     } on DioException catch (e) {
       throw ApiException(_handleError(e));
     } catch (e) {
       debugPrint('Error fetching upcoming schedules: $e');
+      rethrow;
+    }
+  }
+
+  /// Toggle schedule reminder
+  Future<void> toggleScheduleReminder(String id, bool isEnabled) async {
+    try {
+      debugPrint('Toggling reminder for schedule: $id');
+
+      final response = await _apiClient.dio.patch(
+        Api.toggleScheduleReminder(id),
+        data: {'isReminderEnabled': isEnabled},
+      );
+
+      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
+        response.data,
+        (data) => data as Map<String, dynamic>,
+      );
+
+      if (!apiResponse.success) {
+        throw ApiException('Failed to toggle reminder');
+      }
+    } on DioException catch (e) {
+      throw ApiException(_handleError(e));
+    } catch (e) {
+      debugPrint('Error toggling reminder: $e');
       rethrow;
     }
   }
@@ -630,7 +717,8 @@ class WorkoutRepository {
     try {
       debugPrint('Fetching weekly statistics');
 
-      final response = await _apiClient.dio.get(Api.weeklyWorkoutStatistics);
+      // Use correct endpoint: /workouts/sessions/weekly-progress
+      final response = await _apiClient.dio.get(Api.weeklyProgress);
 
       final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
         response.data,

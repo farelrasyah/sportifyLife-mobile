@@ -1,12 +1,15 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../common/colo_extension.dart';
+import '../../../cubits/workout/workout_stats_screen_cubit.dart';
+import '../../../cubits/workout/workout_stats_screen_state.dart';
+import '../../../data/models/workout_plan_model.dart';
 import '../../widgets/round_button.dart';
-import '../../widgets/upcoming_workout_row.dart';
-import '../../widgets/what_train_row.dart';
 import '../../widgets/custom_modern_appbar.dart';
-import 'workout_detail_screen.dart';
+import 'exercise_list_by_body_part_screen.dart';
 
 class WorkoutStatsScreen extends StatefulWidget {
   const WorkoutStatsScreen({super.key});
@@ -26,6 +29,9 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
+
+    // Load data from backend
+    context.read<WorkoutStatsScreenCubit>().loadWorkoutStatsData();
   }
 
   @override
@@ -33,40 +39,6 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
     _fabAnimationController.dispose();
     super.dispose();
   }
-
-  final List<Map<String, String>> _recentWorkouts = [
-    {
-      "image": "assets/images/jumping_jack.json",
-      "title": "Fullbody Workout",
-      "time": "Today, 03:00pm",
-    },
-    {
-      "image": "assets/images/exercise.json",
-      "title": "Upperbody Workout",
-      "time": "June 05, 02:00pm",
-    },
-  ];
-
-  final List<Map<String, String>> _workoutCategories = [
-    {
-      "image": "assets/images/jumping_jack.json",
-      "title": "Fullbody Workout",
-      "exercises": "11 Exercises",
-      "time": "32mins",
-    },
-    {
-      "image": "assets/images/split_jump.json",
-      "title": "Lowebody Workout",
-      "exercises": "12 Exercises",
-      "time": "40mins",
-    },
-    {
-      "image": "assets/images/meditating.json",
-      "title": "AB Workout",
-      "exercises": "14 Exercises",
-      "time": "20mins",
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -84,45 +56,76 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
         decoration: BoxDecoration(
           gradient: LinearGradient(colors: TColor.primaryG),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Chart section
-              Container(
-                width: screenSize.width,
-                height: screenSize.width * 0.8,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 20,
+        child: BlocBuilder<WorkoutStatsScreenCubit, WorkoutStatsScreenState>(
+          builder: (context, state) {
+            if (state is WorkoutStatsScreenLoading) {
+              return _buildLoadingState();
+            }
+
+            if (state is WorkoutStatsScreenError) {
+              return _buildErrorState(state.message, screenSize);
+            }
+
+            if (state is WorkoutStatsScreenEmpty) {
+              return _buildEmptyState(screenSize);
+            }
+
+            if (state is WorkoutStatsScreenLoaded) {
+              return _buildLoadedState(state, screenSize);
+            }
+
+            return _buildLoadingState();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadedState(WorkoutStatsScreenLoaded state, Size screenSize) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await context.read<WorkoutStatsScreenCubit>().refreshData();
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            // Chart section
+            Container(
+              width: screenSize.width,
+              height: screenSize.width * 0.8,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: _buildChart(state),
+            ),
+            // Content section
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: TColor.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
                 ),
-                child: _buildChart(),
               ),
-              // Content section
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: TColor.white,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    _buildDragHandle(),
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  _buildDragHandle(),
+                  SizedBox(height: screenSize.width * 0.05),
+                  if (state.todaySchedules.isNotEmpty)
+                    _buildDailyScheduleCard(state),
+                  if (state.todaySchedules.isNotEmpty)
                     SizedBox(height: screenSize.width * 0.05),
-                    _buildDailyScheduleCard(),
+                  if (state.upcomingSchedules.isNotEmpty) ...[
+                    _buildUpcomingWorkoutsSection(state),
                     SizedBox(height: screenSize.width * 0.05),
-                    _buildUpcomingWorkoutsSection(),
-                    SizedBox(height: screenSize.width * 0.05),
-                    _buildWorkoutCategoriesSection(),
-                    SizedBox(height: screenSize.width * 0.1),
                   ],
-                ),
+                  _buildWorkoutCategoriesSection(state),
+                  SizedBox(height: screenSize.width * 0.1),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -167,7 +170,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
         getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
           return lineBarsSpot.map((lineBarSpot) {
             return LineTooltipItem(
-              "${lineBarSpot.x.toInt()} mins ago",
+              "${lineBarSpot.y.toInt()} workouts",
               const TextStyle(
                 color: Colors.white,
                 fontSize: 10,
@@ -180,8 +183,50 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
     );
   }
 
-  List<LineChartBarData> _buildLineChartData() {
-    return [_buildPrimaryLineData(), _buildSecondaryLineData()];
+  List<LineChartBarData> _buildLineChartData(WorkoutStatsScreenLoaded state) {
+    // Use real data from backend if available
+    if (state.weeklyProgress != null &&
+        state.weeklyProgress!.currentWeek.workoutDays.isNotEmpty) {
+      final weeklyData = state.weeklyProgress!.currentWeek;
+      final spots = <FlSpot>[];
+
+      // Map weekly data to chart spots (7 days)
+      for (int i = 0; i < 7; i++) {
+        double value = 0;
+        // Get value for each day if available
+        if (i < weeklyData.workoutDays.length) {
+          value = weeklyData.workoutDays[i].workouts.toDouble();
+        }
+        spots.add(FlSpot(i + 1, value * 10)); // Scale for visibility
+      }
+
+      return [
+        LineChartBarData(
+          isCurved: true,
+          color: TColor.white,
+          barWidth: 4,
+          isStrokeCapRound: true,
+          dotData: FlDotData(show: false),
+          belowBarData: BarAreaData(show: false),
+          spots: spots.isEmpty ? _getDefaultSpots() : spots,
+        ),
+      ];
+    }
+
+    // Fallback to default data
+    return [_buildPrimaryLineData()];
+  }
+
+  List<FlSpot> _getDefaultSpots() {
+    return const [
+      FlSpot(1, 0),
+      FlSpot(2, 0),
+      FlSpot(3, 0),
+      FlSpot(4, 0),
+      FlSpot(5, 0),
+      FlSpot(6, 0),
+      FlSpot(7, 0),
+    ];
   }
 
   LineChartBarData _buildPrimaryLineData() {
@@ -200,26 +245,6 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
         FlSpot(5, 25),
         FlSpot(6, 70),
         FlSpot(7, 35),
-      ],
-    );
-  }
-
-  LineChartBarData _buildSecondaryLineData() {
-    return LineChartBarData(
-      isCurved: true,
-      color: TColor.white.withOpacity(0.5),
-      barWidth: 2,
-      isStrokeCapRound: true,
-      dotData: FlDotData(show: false),
-      belowBarData: BarAreaData(show: false),
-      spots: const [
-        FlSpot(1, 80),
-        FlSpot(2, 50),
-        FlSpot(3, 90),
-        FlSpot(4, 40),
-        FlSpot(5, 80),
-        FlSpot(6, 35),
-        FlSpot(7, 60),
       ],
     );
   }
@@ -336,14 +361,14 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
     );
   }
 
-  Widget _buildChart() {
+  Widget _buildChart(WorkoutStatsScreenLoaded state) {
     return LineChart(
       LineChartData(
         lineTouchData: _buildLineTouchData(),
         gridData: _buildGridData(),
         titlesData: _buildTitlesData(),
         borderData: _buildBorderData(),
-        lineBarsData: _buildLineChartData(),
+        lineBarsData: _buildLineChartData(state),
         minX: 0,
         maxX: 8,
         minY: 0,
@@ -363,7 +388,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
     );
   }
 
-  Widget _buildDailyScheduleCard() {
+  Widget _buildDailyScheduleCard(WorkoutStatsScreenLoaded state) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
       decoration: BoxDecoration(
@@ -373,12 +398,24 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            "Daily Workout Schedule",
-            style: TextStyle(
-              color: TColor.black,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Today's Workout",
+                  style: TextStyle(
+                    color: TColor.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  "${state.todaySchedules.length} workout${state.todaySchedules.length > 1 ? 's' : ''} scheduled",
+                  style: TextStyle(color: TColor.gray, fontSize: 12),
+                ),
+              ],
             ),
           ),
           SizedBox(
@@ -389,7 +426,10 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
               type: RoundButtonType.bgGradient,
               fontSize: 12,
               fontWeight: FontWeight.w400,
-              onPressed: () {},
+              onPressed: () {
+                // Navigate to daily workout schedule screen
+                // TODO: Implement navigation
+              },
             ),
           ),
         ],
@@ -397,7 +437,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
     );
   }
 
-  Widget _buildUpcomingWorkoutsSection() {
+  Widget _buildUpcomingWorkoutsSection(WorkoutStatsScreenLoaded state) {
     return Column(
       children: [
         Row(
@@ -412,7 +452,10 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                // Navigate to all schedules
+                // TODO: Implement navigation
+              },
               child: Text(
                 "See More",
                 style: TextStyle(
@@ -428,17 +471,92 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
           padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: _recentWorkouts.length,
+          itemCount: state.upcomingSchedules.length > 2
+              ? 2
+              : state.upcomingSchedules.length,
           itemBuilder: (context, index) {
-            var workoutData = _recentWorkouts[index];
-            return UpcomingWorkoutRow(wObj: workoutData);
+            var schedule = state.upcomingSchedules[index];
+            return _buildScheduleCard(schedule);
           },
         ),
       ],
     );
   }
 
-  Widget _buildWorkoutCategoriesSection() {
+  Widget _buildScheduleCard(WorkoutScheduleModel schedule) {
+    final scheduledDate = schedule.scheduledDateTime;
+    final timeText = scheduledDate != null
+        ? "${scheduledDate.day}/${scheduledDate.month}, ${scheduledDate.hour.toString().padLeft(2, '0')}:${scheduledDate.minute.toString().padLeft(2, '0')}"
+        : "Not scheduled";
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: TColor.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: TColor.secondaryG),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(Icons.fitness_center, color: TColor.white, size: 24),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  schedule.customWorkoutPlan?.name ?? "Workout",
+                  style: TextStyle(
+                    color: TColor.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  timeText,
+                  style: TextStyle(color: TColor.gray, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: schedule.reminderEnabled,
+            onChanged: (value) {
+              context.read<WorkoutStatsScreenCubit>().toggleReminder(
+                schedule.id,
+                value,
+              );
+            },
+            activeColor: TColor.primaryColor1,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkoutCategoriesSection(WorkoutStatsScreenLoaded state) {
+    if (state.bodyParts.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       children: [
         Row(
@@ -454,28 +572,250 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
             ),
           ],
         ),
+        const SizedBox(height: 10),
         ListView.builder(
           padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: _workoutCategories.length,
+          itemCount: state.bodyParts.length,
           itemBuilder: (context, index) {
-            var workoutData = _workoutCategories[index];
-            return InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        WorkoutDetailScreen(workoutData: workoutData),
-                  ),
-                );
-              },
-              child: WhatTrainRow(wObj: workoutData),
-            );
+            var bodyPart = state.bodyParts[index];
+            return _buildBodyPartCard(bodyPart.value, bodyPart.label);
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildBodyPartCard(String bodyPartValue, String bodyPartLabel) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: TColor.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(15),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ExerciseListByBodyPartScreen(bodyPart: bodyPartValue),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Row(
+              children: [
+                // Lottie animation
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: TColor.primaryG),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      _getBodyPartIcon(bodyPartValue),
+                      color: TColor.white,
+                      size: 30,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        bodyPartLabel,
+                        style: TextStyle(
+                          color: TColor.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        "Browse exercises",
+                        style: TextStyle(color: TColor.gray, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: TColor.gray.withOpacity(0.5)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _getBodyPartIcon(String bodyPart) {
+    switch (bodyPart.toUpperCase()) {
+      case 'BACK':
+        return Icons.airline_seat_recline_normal;
+      case 'CHEST':
+        return Icons.accessibility_new;
+      case 'LEGS':
+      case 'LOWER LEGS':
+      case 'UPPER LEGS':
+        return Icons.directions_walk;
+      case 'ARMS':
+      case 'UPPER ARMS':
+      case 'LOWER ARMS':
+        return Icons.fitness_center;
+      case 'SHOULDERS':
+        return Icons.self_improvement;
+      case 'WAIST':
+      case 'ABS':
+        return Icons.crop_square;
+      case 'CARDIO':
+        return Icons.favorite;
+      default:
+        return Icons.fitness_center;
+    }
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(TColor.white),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Loading workout data...',
+            style: TextStyle(color: TColor.white, fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message, Size screenSize) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: screenSize.height * 0.15),
+          Container(
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: TColor.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 60, color: TColor.gray),
+                const SizedBox(height: 20),
+                Text(
+                  'Oops! Something went wrong',
+                  style: TextStyle(
+                    color: TColor.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  style: TextStyle(color: TColor.gray, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 150,
+                  child: RoundButton(
+                    title: "Retry",
+                    type: RoundButtonType.bgGradient,
+                    onPressed: () {
+                      context
+                          .read<WorkoutStatsScreenCubit>()
+                          .loadWorkoutStatsData();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(Size screenSize) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: screenSize.height * 0.1),
+          Container(
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: TColor.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Lottie.asset(
+                    'assets/images/exercise.json',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'No Workout Data Yet',
+                  style: TextStyle(
+                    color: TColor.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Start your fitness journey by creating your first workout plan!',
+                  style: TextStyle(color: TColor.gray, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 200,
+                  child: RoundButton(
+                    title: "Refresh",
+                    type: RoundButtonType.bgGradient,
+                    onPressed: () {
+                      context
+                          .read<WorkoutStatsScreenCubit>()
+                          .loadWorkoutStatsData();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

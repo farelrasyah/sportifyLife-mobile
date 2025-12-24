@@ -103,11 +103,7 @@ class Api {
   // ============================================================
 
   /// Base workout schedules endpoint
-  static String workoutSchedules =
-      "${AppConstants.apiUrl}/workouts/custom/schedules";
-
-  /// Get upcoming workout schedules
-  static String upcomingWorkoutSchedules = "$workoutSchedules/upcoming";
+  static String workoutSchedules = "${AppConstants.apiUrl}/workouts/schedules";
 
   /// Get workout schedule by ID
   static String getWorkoutScheduleById(String id) => "$workoutSchedules/$id";
@@ -118,13 +114,19 @@ class Api {
   /// Delete workout schedule by ID
   static String deleteWorkoutSchedule(String id) => "$workoutSchedules/$id";
 
+  /// Toggle schedule reminder
+  static String toggleScheduleReminder(String id) =>
+      "$workoutSchedules/$id/toggle-reminder";
+
   // ============================================================
   // WORKOUT SESSIONS ENDPOINTS
   // ============================================================
 
   /// Base workout sessions endpoint
-  static String workoutSessions =
-      "${AppConstants.apiUrl}/workouts/custom/sessions";
+  static String workoutSessions = "${AppConstants.apiUrl}/workouts/sessions";
+
+  /// Get weekly progress (for workout stats)
+  static String weeklyProgress = "$workoutSessions/weekly-progress";
 
   /// Start a new workout session
   static String startWorkoutSession = "$workoutSessions/start";
@@ -153,8 +155,7 @@ class Api {
   // ============================================================
 
   /// Base workout history endpoint
-  static String workoutHistory =
-      "${AppConstants.apiUrl}/workouts/custom/history";
+  static String workoutHistory = "${AppConstants.apiUrl}/workouts/history";
 
   /// Get workout session detail by ID
   static String getWorkoutHistoryById(String sessionId) =>
@@ -162,10 +163,10 @@ class Api {
 
   /// Get workout statistics
   static String workoutStatistics =
-      "${AppConstants.apiUrl}/workouts/custom/statistics";
+      "${AppConstants.apiUrl}/workouts/statistics";
 
-  /// Get weekly workout statistics
-  static String weeklyWorkoutStatistics = "$workoutStatistics/weekly";
+  /// Get weekly workout statistics (DEPRECATED - use weeklyProgress instead)
+  static String weeklyWorkoutStatistics = weeklyProgress;
 
   /// Get monthly workout statistics
   static String monthlyWorkoutStatistics = "$workoutStatistics/monthly";

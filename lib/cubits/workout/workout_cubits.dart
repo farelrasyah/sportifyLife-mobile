@@ -7,3 +7,5 @@ export 'workout_session_cubit.dart';
 export 'workout_session_state.dart';
 export 'workout_statistics_cubit.dart';
 export 'workout_statistics_state.dart';
+export 'workout_stats_screen_cubit.dart';
+export 'workout_stats_screen_state.dart';

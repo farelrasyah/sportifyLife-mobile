@@ -109,6 +109,12 @@ class ExerciseWorkoutBlocProvider extends StatelessWidget {
             workoutRepository: serviceLocator.workoutRepository,
           ),
         ),
+        BlocProvider<WorkoutStatsScreenCubit>(
+          create: (context) => WorkoutStatsScreenCubit(
+            workoutRepository: serviceLocator.workoutRepository,
+            exerciseRepository: serviceLocator.exerciseRepository,
+          ),
+        ),
       ],
       child: child,
     );
@@ -137,4 +143,6 @@ mixin WorkoutCubitsMixin<T extends StatefulWidget> on State<T> {
       context.read<WorkoutStatisticsCubit>();
   WorkoutHistoryCubit get workoutHistoryCubit =>
       context.read<WorkoutHistoryCubit>();
+  WorkoutStatsScreenCubit get workoutStatsScreenCubit =>
+      context.read<WorkoutStatsScreenCubit>();
 }

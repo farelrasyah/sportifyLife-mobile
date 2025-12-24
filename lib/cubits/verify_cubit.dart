@@ -332,6 +332,7 @@ class VerifyCubit extends Cubit<VerifyState> {
                 lastName: '',
                 provider: 'local',
                 isVerified: false,
+                role: 'user',
                 createdAt: null,
                 updatedAt: null,
               ),
