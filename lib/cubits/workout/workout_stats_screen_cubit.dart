@@ -29,19 +29,19 @@ class WorkoutStatsScreenCubit extends Cubit<WorkoutStatsScreenState> {
       final results = await Future.wait([
         _workoutRepository.getWeeklyStatistics().catchError((e) {
           debugPrint('Error loading weekly statistics: $e');
-          return Future<WeeklyStatisticsModel?>.value(null);
+          return null; // Return null directly, not Future.value()
         }),
         _workoutRepository.getTodaySchedules().catchError((e) {
           debugPrint('Error loading today schedules: $e');
-          return Future<List<WorkoutScheduleModel>>.value([]);
+          return <WorkoutScheduleModel>[]; // Return empty list directly
         }),
         _workoutRepository.getUpcomingSchedules().catchError((e) {
           debugPrint('Error loading upcoming schedules: $e');
-          return Future<List<WorkoutScheduleModel>>.value([]);
+          return <WorkoutScheduleModel>[]; // Return empty list directly
         }),
         _exerciseRepository.getBodyParts().catchError((e) {
           debugPrint('Error loading body parts: $e');
-          return Future<List<FilterOptionModel>>.value([]);
+          return <FilterOptionModel>[]; // Return empty list directly
         }),
       ]);
 

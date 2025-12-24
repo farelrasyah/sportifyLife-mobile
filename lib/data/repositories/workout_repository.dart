@@ -268,10 +268,11 @@ class WorkoutRepository {
             scheduleDate.day == today.day;
       }).toList();
     } on DioException catch (e) {
-      throw ApiException(_handleError(e));
+      debugPrint('DioException fetching today schedules: ${e.message}');
+      return []; // Return empty list on error
     } catch (e) {
       debugPrint('Error fetching today schedules: $e');
-      rethrow;
+      return []; // Return empty list on error
     }
   }
 
@@ -318,10 +319,11 @@ class WorkoutRepository {
         return scheduleDate.isAfter(today);
       }).toList();
     } on DioException catch (e) {
-      throw ApiException(_handleError(e));
+      debugPrint('DioException fetching upcoming schedules: ${e.message}');
+      return []; // Return empty list on error
     } catch (e) {
       debugPrint('Error fetching upcoming schedules: $e');
-      rethrow;
+      return []; // Return empty list on error
     }
   }
 
@@ -713,7 +715,7 @@ class WorkoutRepository {
   }
 
   /// Get weekly workout statistics
-  Future<WeeklyStatisticsModel> getWeeklyStatistics() async {
+  Future<WeeklyStatisticsModel?> getWeeklyStatistics() async {
     try {
       debugPrint('Fetching weekly statistics');
 
@@ -726,7 +728,8 @@ class WorkoutRepository {
       );
 
       if (!apiResponse.success || apiResponse.data == null) {
-        throw ApiException('Failed to load weekly statistics');
+        debugPrint('Weekly statistics API returned success=false');
+        return null;
       }
 
       final responseData = apiResponse.data!;
@@ -738,10 +741,11 @@ class WorkoutRepository {
 
       return WeeklyStatisticsModel.fromJson(responseData);
     } on DioException catch (e) {
-      throw ApiException(_handleError(e));
+      debugPrint('DioException fetching weekly statistics: ${e.message}');
+      return null; // Return null on error
     } catch (e) {
       debugPrint('Error fetching weekly statistics: $e');
-      rethrow;
+      return null; // Return null on error
     }
   }
 

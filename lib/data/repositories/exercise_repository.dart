@@ -124,33 +124,61 @@ class ExerciseRepository {
     try {
       final response = await _apiClient.dio.get(Api.exerciseBodyParts);
 
-      final apiResponse = ApiResponseModel<Map<String, dynamic>>.fromJson(
-        response.data,
-        (data) => data as Map<String, dynamic>,
-      );
+      debugPrint('Body parts response: ${response.data}');
 
-      if (!apiResponse.success || apiResponse.data == null) {
-        throw ApiException('Failed to load body parts');
+      // Handle response - data is directly a List
+      if (response.data is Map<String, dynamic>) {
+        final responseMap = response.data as Map<String, dynamic>;
+
+        // Check if success
+        if (responseMap['success'] == false) {
+          throw ApiException('Failed to load body parts');
+        }
+
+        // Get data field - it's a List of strings
+        final data = responseMap['data'];
+
+        if (data == null) {
+          debugPrint('Body parts data is null');
+          return [];
+        }
+
+        // Convert List<String> to List<FilterOptionModel>
+        if (data is List) {
+          return data.map((item) {
+            if (item is String) {
+              return FilterOptionModel(
+                value: item,
+                label: _formatBodyPartLabel(item),
+              );
+            } else if (item is Map<String, dynamic>) {
+              return FilterOptionModel.fromJson(item);
+            }
+            return FilterOptionModel(
+              value: item.toString(),
+              label: item.toString(),
+            );
+          }).toList();
+        }
       }
 
-      final data = apiResponse.data!;
-      final bodyParts = data['bodyParts'] ?? data['data'] ?? [];
-
-      return (bodyParts as List<dynamic>)
-          .map(
-            (e) => FilterOptionModel.fromJson(
-              e is String
-                  ? {'value': e, 'label': e}
-                  : e as Map<String, dynamic>,
-            ),
-          )
-          .toList();
+      return [];
     } on DioException catch (e) {
-      throw ApiException(_handleError(e));
+      debugPrint('DioException fetching body parts: ${e.message}');
+      return []; // Return empty list on error
     } catch (e) {
       debugPrint('Error fetching body parts: $e');
-      rethrow;
+      return []; // Return empty list on error
     }
+  }
+
+  /// Format body part label (capitalize)
+  String _formatBodyPartLabel(String value) {
+    if (value.isEmpty) return value;
+    return value
+        .split('_')
+        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase())
+        .join(' ');
   }
 
   /// Get equipments
