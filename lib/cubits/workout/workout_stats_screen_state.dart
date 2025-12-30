@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../data/models/workout_statistics_model.dart';
-import '../../data/models/workout_plan_model.dart';
-import '../../data/models/exercise_model.dart';
+import '../../data/models/workout_model.dart';
 
 /// Workout Stats Screen State
 /// Combines all data needed for the main workout stats screen
@@ -24,38 +22,93 @@ class WorkoutStatsScreenLoading extends WorkoutStatsScreenState {
 
 /// Loaded state - all data successfully loaded
 class WorkoutStatsScreenLoaded extends WorkoutStatsScreenState {
-  final WeeklyStatisticsModel? weeklyProgress;
-  final List<WorkoutScheduleModel> todaySchedules;
-  final List<WorkoutScheduleModel> upcomingSchedules;
-  final List<FilterOptionModel> bodyParts;
+  /// Weekly progress data from API
+  final WeeklyProgressModel? weeklyProgress;
+
+  /// Today's scheduled workouts
+  final List<NewWorkoutScheduleModel> todaySchedules;
+
+  /// Upcoming scheduled workouts
+  final List<NewWorkoutScheduleModel> upcomingSchedules;
+
+  /// All available workouts (paginated)
+  final List<WorkoutModel> workouts;
+
+  /// Workout categories for filtering
+  final List<WorkoutCategory> categories;
+
+  /// Current selected level filter
+  final WorkoutLevel? selectedLevel;
+
+  /// Current selected category filter
+  final WorkoutCategory? selectedCategory;
+
+  /// Search query
+  final String? searchQuery;
+
+  /// Pagination info
+  final int currentPage;
+  final int totalPages;
+  final bool isLoadingMore;
 
   const WorkoutStatsScreenLoaded({
     this.weeklyProgress,
     required this.todaySchedules,
     required this.upcomingSchedules,
-    required this.bodyParts,
+    required this.workouts,
+    this.categories = const [],
+    this.selectedLevel,
+    this.selectedCategory,
+    this.searchQuery,
+    this.currentPage = 1,
+    this.totalPages = 1,
+    this.isLoadingMore = false,
   });
 
   WorkoutStatsScreenLoaded copyWith({
-    WeeklyStatisticsModel? weeklyProgress,
-    List<WorkoutScheduleModel>? todaySchedules,
-    List<WorkoutScheduleModel>? upcomingSchedules,
-    List<FilterOptionModel>? bodyParts,
+    WeeklyProgressModel? weeklyProgress,
+    List<NewWorkoutScheduleModel>? todaySchedules,
+    List<NewWorkoutScheduleModel>? upcomingSchedules,
+    List<WorkoutModel>? workouts,
+    List<WorkoutCategory>? categories,
+    WorkoutLevel? selectedLevel,
+    WorkoutCategory? selectedCategory,
+    String? searchQuery,
+    int? currentPage,
+    int? totalPages,
+    bool? isLoadingMore,
   }) {
     return WorkoutStatsScreenLoaded(
       weeklyProgress: weeklyProgress ?? this.weeklyProgress,
       todaySchedules: todaySchedules ?? this.todaySchedules,
       upcomingSchedules: upcomingSchedules ?? this.upcomingSchedules,
-      bodyParts: bodyParts ?? this.bodyParts,
+      workouts: workouts ?? this.workouts,
+      categories: categories ?? this.categories,
+      selectedLevel: selectedLevel ?? this.selectedLevel,
+      selectedCategory: selectedCategory ?? this.selectedCategory,
+      searchQuery: searchQuery ?? this.searchQuery,
+      currentPage: currentPage ?? this.currentPage,
+      totalPages: totalPages ?? this.totalPages,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     );
   }
+
+  /// Check if there are more pages to load
+  bool get hasMore => currentPage < totalPages;
 
   @override
   List<Object?> get props => [
     weeklyProgress,
     todaySchedules,
     upcomingSchedules,
-    bodyParts,
+    workouts,
+    categories,
+    selectedLevel,
+    selectedCategory,
+    searchQuery,
+    currentPage,
+    totalPages,
+    isLoadingMore,
   ];
 }
 

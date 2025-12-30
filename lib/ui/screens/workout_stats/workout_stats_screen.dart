@@ -6,10 +6,9 @@ import 'package:lottie/lottie.dart';
 import '../../../common/colo_extension.dart';
 import '../../../cubits/workout/workout_stats_screen_cubit.dart';
 import '../../../cubits/workout/workout_stats_screen_state.dart';
-import '../../../data/models/workout_plan_model.dart';
+import '../../../data/models/workout_model.dart';
 import '../../widgets/round_button.dart';
 import '../../widgets/custom_modern_appbar.dart';
-import 'exercise_list_by_body_part_screen.dart';
 
 class WorkoutStatsScreen extends StatefulWidget {
   const WorkoutStatsScreen({super.key});
@@ -112,6 +111,9 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
                   const SizedBox(height: 10),
                   _buildDragHandle(),
                   SizedBox(height: screenSize.width * 0.05),
+                  // Weekly Stats Summary
+                  _buildWeeklyStatsSummary(state),
+                  SizedBox(height: screenSize.width * 0.05),
                   if (state.todaySchedules.isNotEmpty)
                     _buildDailyScheduleCard(state),
                   if (state.todaySchedules.isNotEmpty)
@@ -120,7 +122,11 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
                     _buildUpcomingWorkoutsSection(state),
                     SizedBox(height: screenSize.width * 0.05),
                   ],
+                  // Workout Categories Section (baru)
                   _buildWorkoutCategoriesSection(state),
+                  SizedBox(height: screenSize.width * 0.05),
+                  // Available Workouts Section (baru dari API)
+                  _buildAvailableWorkoutsSection(state),
                   SizedBox(height: screenSize.width * 0.1),
                 ],
               ),
@@ -186,16 +192,15 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
   List<LineChartBarData> _buildLineChartData(WorkoutStatsScreenLoaded state) {
     // Use real data from backend if available
     if (state.weeklyProgress != null &&
-        state.weeklyProgress!.currentWeek.workoutDays.isNotEmpty) {
-      final weeklyData = state.weeklyProgress!.currentWeek;
+        state.weeklyProgress!.dailyProgress.isNotEmpty) {
       final spots = <FlSpot>[];
 
-      // Map weekly data to chart spots (7 days)
+      // Map daily progress to chart spots (7 days)
       for (int i = 0; i < 7; i++) {
         double value = 0;
         // Get value for each day if available
-        if (i < weeklyData.workoutDays.length) {
-          value = weeklyData.workoutDays[i].workouts.toDouble();
+        if (i < state.weeklyProgress!.dailyProgress.length) {
+          value = state.weeklyProgress!.dailyProgress[i].sessions.toDouble();
         }
         spots.add(FlSpot(i + 1, value * 10)); // Scale for visibility
       }
@@ -483,12 +488,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
     );
   }
 
-  Widget _buildScheduleCard(WorkoutScheduleModel schedule) {
-    final scheduledDate = schedule.scheduledDateTime;
-    final timeText = scheduledDate != null
-        ? "${scheduledDate.day}/${scheduledDate.month}, ${scheduledDate.hour.toString().padLeft(2, '0')}:${scheduledDate.minute.toString().padLeft(2, '0')}"
-        : "Not scheduled";
-
+  Widget _buildScheduleCard(NewWorkoutScheduleModel schedule) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -520,7 +520,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  schedule.customWorkoutPlan?.name ?? "Workout",
+                  schedule.workoutName,
                   style: TextStyle(
                     color: TColor.black,
                     fontSize: 14,
@@ -531,7 +531,7 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  timeText,
+                  schedule.formattedDateTime,
                   style: TextStyle(color: TColor.gray, fontSize: 12),
                 ),
               ],
@@ -552,42 +552,264 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
     );
   }
 
+  /// Build weekly stats summary widget
+  Widget _buildWeeklyStatsSummary(WorkoutStatsScreenLoaded state) {
+    final weeklyProgress = state.weeklyProgress;
+
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: TColor.secondaryG),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildStatItem(
+            'Sessions',
+            weeklyProgress?.totalSessions.toString() ?? '0',
+            Icons.fitness_center,
+          ),
+          _buildStatItem(
+            'Calories',
+            weeklyProgress?.totalCalories.toString() ?? '0',
+            Icons.local_fire_department,
+          ),
+          _buildStatItem(
+            'Duration',
+            weeklyProgress?.formattedTotalDuration ?? '0 min',
+            Icons.timer,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: TColor.white, size: 24),
+        const SizedBox(height: 5),
+        Text(
+          value,
+          style: TextStyle(
+            color: TColor.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(color: TColor.white.withOpacity(0.8), fontSize: 12),
+        ),
+      ],
+    );
+  }
+
   Widget _buildWorkoutCategoriesSection(WorkoutStatsScreenLoaded state) {
-    if (state.bodyParts.isEmpty) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Workout Categories",
+          style: TextStyle(
+            color: TColor.black,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: state.categories.length,
+            itemBuilder: (context, index) {
+              final category = state.categories[index];
+              final isSelected = state.selectedCategory == category;
+              return _buildCategoryChip(category, isSelected);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryChip(WorkoutCategory category, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        context.read<WorkoutStatsScreenCubit>().filterByCategory(
+          isSelected ? null : category,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          gradient: isSelected ? LinearGradient(colors: TColor.primaryG) : null,
+          color: isSelected ? null : TColor.lightGray,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: TColor.primaryColor1.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              _getCategoryIcon(category),
+              color: isSelected ? TColor.white : TColor.gray,
+              size: 28,
+            ),
+            const SizedBox(height: 5),
+            Text(
+              category.displayName,
+              style: TextStyle(
+                color: isSelected ? TColor.white : TColor.gray,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getCategoryIcon(WorkoutCategory category) {
+    switch (category) {
+      case WorkoutCategory.fullBody:
+        return Icons.accessibility_new;
+      case WorkoutCategory.upperBody:
+        return Icons.fitness_center;
+      case WorkoutCategory.lowerBody:
+        return Icons.directions_run;
+      case WorkoutCategory.abs:
+        return Icons.filter_vintage;
+      case WorkoutCategory.cardio:
+        return Icons.favorite;
+      case WorkoutCategory.flexibility:
+        return Icons.self_improvement;
+    }
+  }
+
+  /// Build available workouts section from API
+  Widget _buildAvailableWorkoutsSection(WorkoutStatsScreenLoaded state) {
+    if (state.workouts.isEmpty) {
       return const SizedBox.shrink();
     }
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "What Do You Want to Train",
+              "Available Workouts",
               style: TextStyle(
                 color: TColor.black,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),
             ),
+            // Level filter dropdown
+            _buildLevelFilter(state),
           ],
         ),
         const SizedBox(height: 10),
+        // Search bar
+        _buildSearchBar(state),
+        const SizedBox(height: 10),
+        // Workout list
         ListView.builder(
           padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: state.bodyParts.length,
+          itemCount: state.workouts.length + (state.hasMore ? 1 : 0),
           itemBuilder: (context, index) {
-            var bodyPart = state.bodyParts[index];
-            return _buildBodyPartCard(bodyPart.value, bodyPart.label);
+            if (index == state.workouts.length) {
+              return _buildLoadMoreButton(state);
+            }
+            return _buildWorkoutCard(state.workouts[index]);
           },
         ),
       ],
     );
   }
 
-  Widget _buildBodyPartCard(String bodyPartValue, String bodyPartLabel) {
+  Widget _buildLevelFilter(WorkoutStatsScreenLoaded state) {
+    return PopupMenuButton<WorkoutLevel?>(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: TColor.lightGray,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              state.selectedLevel?.displayName ?? 'All Levels',
+              style: TextStyle(
+                color: TColor.gray,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.arrow_drop_down, color: TColor.gray, size: 20),
+          ],
+        ),
+      ),
+      onSelected: (level) {
+        context.read<WorkoutStatsScreenCubit>().filterByLevel(level);
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem<WorkoutLevel?>(
+          value: null,
+          child: Text('All Levels'),
+        ),
+        ...WorkoutLevel.values.map(
+          (level) => PopupMenuItem<WorkoutLevel?>(
+            value: level,
+            child: Text(level.displayName),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar(WorkoutStatsScreenLoaded state) {
+    return TextField(
+      decoration: InputDecoration(
+        hintText: 'Search workouts...',
+        hintStyle: TextStyle(color: TColor.gray, fontSize: 14),
+        prefixIcon: Icon(Icons.search, color: TColor.gray),
+        filled: true,
+        fillColor: TColor.lightGray,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+      ),
+      onChanged: (value) {
+        context.read<WorkoutStatsScreenCubit>().searchWorkouts(value);
+      },
+    );
+  }
+
+  Widget _buildWorkoutCard(WorkoutModel workout) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -606,29 +828,26 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
         child: InkWell(
           borderRadius: BorderRadius.circular(15),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    ExerciseListByBodyPartScreen(bodyPart: bodyPartValue),
-              ),
-            );
+            // Navigate to workout detail screen
+            _showWorkoutDetailBottomSheet(workout);
           },
           child: Padding(
             padding: const EdgeInsets.all(15),
             child: Row(
               children: [
-                // Lottie animation
+                // Icon container
                 Container(
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: TColor.primaryG),
+                    gradient: LinearGradient(
+                      colors: _getGradientForLevel(workout.level),
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
                     child: Icon(
-                      _getBodyPartIcon(bodyPartValue),
+                      _getCategoryIconFromString(workout.category),
                       color: TColor.white,
                       size: 30,
                     ),
@@ -640,16 +859,29 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        bodyPartLabel,
+                        workout.name,
                         style: TextStyle(
                           color: TColor.black,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          _buildTag(
+                            workout.displayLevel,
+                            _getColorForLevel(workout.level),
+                          ),
+                          const SizedBox(width: 8),
+                          _buildTag(workout.displayCategory, TColor.gray),
+                        ],
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        "Browse exercises",
+                        '${workout.exerciseCount} exercises',
                         style: TextStyle(color: TColor.gray, fontSize: 12),
                       ),
                     ],
@@ -664,30 +896,429 @@ class _WorkoutStatsScreenState extends State<WorkoutStatsScreen>
     );
   }
 
-  IconData _getBodyPartIcon(String bodyPart) {
-    switch (bodyPart.toUpperCase()) {
-      case 'BACK':
-        return Icons.airline_seat_recline_normal;
-      case 'CHEST':
+  Widget _buildTag(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  List<Color> _getGradientForLevel(String level) {
+    switch (level.toLowerCase()) {
+      case 'beginner':
+        return [Colors.green.shade400, Colors.green.shade600];
+      case 'intermediate':
+        return TColor.primaryG;
+      case 'advanced':
+        return [Colors.red.shade400, Colors.red.shade600];
+      default:
+        return TColor.primaryG;
+    }
+  }
+
+  Color _getColorForLevel(String level) {
+    switch (level.toLowerCase()) {
+      case 'beginner':
+        return Colors.green;
+      case 'intermediate':
+        return TColor.primaryColor1;
+      case 'advanced':
+        return Colors.red;
+      default:
+        return TColor.gray;
+    }
+  }
+
+  IconData _getCategoryIconFromString(String category) {
+    switch (category.toLowerCase()) {
+      case 'fullbody':
+      case 'full_body':
+      case 'full body':
         return Icons.accessibility_new;
-      case 'LEGS':
-      case 'LOWER LEGS':
-      case 'UPPER LEGS':
-        return Icons.directions_walk;
-      case 'ARMS':
-      case 'UPPER ARMS':
-      case 'LOWER ARMS':
+      case 'upper':
+      case 'upper_body':
+      case 'upperbody':
         return Icons.fitness_center;
-      case 'SHOULDERS':
-        return Icons.self_improvement;
-      case 'WAIST':
-      case 'ABS':
-        return Icons.crop_square;
-      case 'CARDIO':
+      case 'lower':
+      case 'lower_body':
+      case 'lowerbody':
+        return Icons.directions_run;
+      case 'abs':
+        return Icons.filter_vintage;
+      case 'cardio':
         return Icons.favorite;
+      case 'flexibility':
+        return Icons.self_improvement;
       default:
         return Icons.fitness_center;
     }
+  }
+
+  Widget _buildLoadMoreButton(WorkoutStatsScreenLoaded state) {
+    if (state.isLoadingMore) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: RoundButton(
+        title: "Load More",
+        type: RoundButtonType.bgGradient,
+        onPressed: () {
+          context.read<WorkoutStatsScreenCubit>().loadMoreWorkouts();
+        },
+      ),
+    );
+  }
+
+  void _showWorkoutDetailBottomSheet(WorkoutModel workout) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        decoration: BoxDecoration(
+          color: TColor.white,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Container(
+              width: 50,
+              height: 4,
+              decoration: BoxDecoration(
+                color: TColor.gray.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      children: [
+                        Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: _getGradientForLevel(workout.level),
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              _getCategoryIconFromString(workout.category),
+                              color: TColor.white,
+                              size: 35,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                workout.name,
+                                style: TextStyle(
+                                  color: TColor.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  _buildTag(
+                                    workout.displayLevel,
+                                    _getColorForLevel(workout.level),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildTag(
+                                    workout.displayCategory,
+                                    TColor.gray,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    // Description
+                    Text(
+                      'Description',
+                      style: TextStyle(
+                        color: TColor.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      workout.description.isEmpty
+                          ? 'No description available.'
+                          : workout.description,
+                      style: TextStyle(color: TColor.gray, fontSize: 14),
+                    ),
+                    const SizedBox(height: 20),
+                    // Stats
+                    Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: TColor.lightGray,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildWorkoutStat(
+                            '${workout.exerciseCount}',
+                            'Exercises',
+                            Icons.fitness_center,
+                          ),
+                          _buildWorkoutStat(
+                            workout.displayLevel,
+                            'Level',
+                            Icons.trending_up,
+                          ),
+                          _buildWorkoutStat(
+                            workout.displayCategory,
+                            'Category',
+                            Icons.category,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Action buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RoundButton(
+                            title: "Schedule",
+                            type: RoundButtonType.bgGradient,
+                            onPressed: () {
+                              Navigator.pop(context);
+                              _showScheduleDialog(workout);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: RoundButton(
+                            title: "Start Now",
+                            type: RoundButtonType.bgGradient,
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              try {
+                                await context
+                                    .read<WorkoutStatsScreenCubit>()
+                                    .startWorkout(workout.id);
+                                // Navigate to active workout screen
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Started: ${workout.name}'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error: $e'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWorkoutStat(String value, String label, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: TColor.primaryColor1, size: 24),
+        const SizedBox(height: 5),
+        Text(
+          value,
+          style: TextStyle(
+            color: TColor.black,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        Text(label, style: TextStyle(color: TColor.gray, fontSize: 12)),
+      ],
+    );
+  }
+
+  void _showScheduleDialog(WorkoutModel workout) {
+    DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
+    TimeOfDay selectedTime = const TimeOfDay(hour: 7, minute: 0);
+    bool reminderEnabled = true;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Schedule Workout',
+            style: TextStyle(color: TColor.black, fontWeight: FontWeight.w700),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                workout.name,
+                style: TextStyle(color: TColor.gray, fontSize: 14),
+              ),
+              const SizedBox(height: 20),
+              // Date picker
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  Icons.calendar_today,
+                  color: TColor.primaryColor1,
+                ),
+                title: const Text('Date'),
+                subtitle: Text(
+                  '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                ),
+                onTap: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (date != null) {
+                    setDialogState(() => selectedDate = date);
+                  }
+                },
+              ),
+              // Time picker
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.access_time, color: TColor.primaryColor1),
+                title: const Text('Time'),
+                subtitle: Text(selectedTime.format(context)),
+                onTap: () async {
+                  final time = await showTimePicker(
+                    context: context,
+                    initialTime: selectedTime,
+                  );
+                  if (time != null) {
+                    setDialogState(() => selectedTime = time);
+                  }
+                },
+              ),
+              // Reminder toggle
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Enable Reminder'),
+                value: reminderEnabled,
+                onChanged: (value) {
+                  setDialogState(() => reminderEnabled = value);
+                },
+                activeColor: TColor.primaryColor1,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: TextStyle(color: TColor.gray)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                try {
+                  await context.read<WorkoutStatsScreenCubit>().createSchedule(
+                    workoutId: workout.id,
+                    scheduledDate: selectedDate,
+                    scheduledTime:
+                        '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                    reminderEnabled: reminderEnabled,
+                  );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Workout scheduled successfully!'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: TColor.primaryColor1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                'Schedule',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildLoadingState() {

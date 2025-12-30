@@ -81,93 +81,102 @@ class Api {
   static String exerciseTargetMuscles = "$exercises/target-muscles";
 
   // ============================================================
-  // CUSTOM WORKOUT PLANS ENDPOINTS
+  // WORKOUTS ENDPOINTS (NEW API)
   // ============================================================
 
-  /// Base custom workout plans endpoint
-  static String customWorkoutPlans =
-      "${AppConstants.apiUrl}/workouts/custom/plans";
+  /// Base workouts endpoint - GET /workouts
+  static String workouts = "${AppConstants.apiUrl}/workouts";
 
-  /// Get custom workout plan by ID
-  static String getCustomWorkoutPlanById(String id) =>
-      "$customWorkoutPlans/$id";
-
-  /// Update custom workout plan by ID
-  static String updateCustomWorkoutPlan(String id) => "$customWorkoutPlans/$id";
-
-  /// Delete custom workout plan by ID
-  static String deleteCustomWorkoutPlan(String id) => "$customWorkoutPlans/$id";
+  /// Get workout by ID - GET /workouts/:id
+  static String getWorkoutById(String id) => "$workouts/$id";
 
   // ============================================================
-  // WORKOUT SCHEDULES ENDPOINTS
-  // ============================================================
-
-  /// Base workout schedules endpoint
-  static String workoutSchedules = "${AppConstants.apiUrl}/workouts/schedules";
-
-  /// Get workout schedule by ID
-  static String getWorkoutScheduleById(String id) => "$workoutSchedules/$id";
-
-  /// Update workout schedule by ID
-  static String updateWorkoutSchedule(String id) => "$workoutSchedules/$id";
-
-  /// Delete workout schedule by ID
-  static String deleteWorkoutSchedule(String id) => "$workoutSchedules/$id";
-
-  /// Toggle schedule reminder
-  static String toggleScheduleReminder(String id) =>
-      "$workoutSchedules/$id/toggle-reminder";
-
-  // ============================================================
-  // WORKOUT SESSIONS ENDPOINTS
+  // WORKOUT SESSIONS ENDPOINTS (NEW API)
   // ============================================================
 
   /// Base workout sessions endpoint
-  static String workoutSessions = "${AppConstants.apiUrl}/workouts/sessions";
+  static String workoutSessions = "${AppConstants.apiUrl}/workout-sessions";
 
-  /// Get weekly progress (for workout stats)
-  static String weeklyProgress = "$workoutSessions/weekly-progress";
-
-  /// Start a new workout session
+  /// Start a new workout session - POST /workout-sessions/start
   static String startWorkoutSession = "$workoutSessions/start";
 
-  /// Get active workout session
+  /// Get active workout session - GET /workout-sessions/active
   static String activeWorkoutSession = "$workoutSessions/active";
 
-  /// Update exercise progress in session
-  static String updateExerciseProgress(String sessionId) =>
-      "$workoutSessions/$sessionId/exercise-progress";
-
-  /// Complete workout session
+  /// Complete workout session - PATCH /workout-sessions/:id/complete
   static String completeWorkoutSession(String sessionId) =>
       "$workoutSessions/$sessionId/complete";
 
-  /// Pause workout session
+  /// Pause workout session - PATCH /workout-sessions/:id/pause
   static String pauseWorkoutSession(String sessionId) =>
       "$workoutSessions/$sessionId/pause";
 
-  /// Resume workout session
+  /// Resume workout session - PATCH /workout-sessions/:id/resume
   static String resumeWorkoutSession(String sessionId) =>
       "$workoutSessions/$sessionId/resume";
 
-  // ============================================================
-  // WORKOUT HISTORY & STATISTICS ENDPOINTS
-  // ============================================================
+  /// Update exercise progress in session - PATCH /workout-sessions/:id/exercise-progress
+  static String updateExerciseProgress(String sessionId) =>
+      "$workoutSessions/$sessionId/exercise-progress";
 
-  /// Base workout history endpoint
-  static String workoutHistory = "${AppConstants.apiUrl}/workouts/history";
+  /// Get workout history - GET /workout-sessions/history
+  static String workoutHistory = "$workoutSessions/history";
 
-  /// Get workout session detail by ID
+  /// Get workout session detail by ID - GET /workout-sessions/:id
   static String getWorkoutHistoryById(String sessionId) =>
-      "$workoutHistory/$sessionId";
+      "$workoutSessions/$sessionId";
 
-  /// Get workout statistics
+  /// Get weekly progress - GET /workout-sessions/weekly-progress
+  static String weeklyProgress = "$workoutSessions/weekly-progress";
+
+  // ============================================================
+  // WORKOUT SCHEDULES ENDPOINTS (NEW API)
+  // ============================================================
+
+  /// Base workout schedules endpoint - GET /workout-schedules
+  static String workoutSchedules = "${AppConstants.apiUrl}/workout-schedules";
+
+  /// Get upcoming schedules - GET /workout-schedules/upcoming
+  static String upcomingWorkoutSchedules = "$workoutSchedules/upcoming";
+
+  /// Get workout schedule by ID - GET /workout-schedules/:id
+  static String getWorkoutScheduleById(String id) => "$workoutSchedules/$id";
+
+  /// Update workout schedule - PATCH /workout-schedules/:id
+  static String updateWorkoutSchedule(String id) => "$workoutSchedules/$id";
+
+  /// Delete workout schedule - DELETE /workout-schedules/:id
+  static String deleteWorkoutSchedule(String id) => "$workoutSchedules/$id";
+
+  // ============================================================
+  // LEGACY ENDPOINTS (untuk backward compatibility)
+  // ============================================================
+
+  /// Base custom workout plans endpoint (legacy)
+  static String customWorkoutPlans =
+      "${AppConstants.apiUrl}/workouts/custom/plans";
+
+  /// Get custom workout plan by ID (legacy)
+  static String getCustomWorkoutPlanById(String id) =>
+      "$customWorkoutPlans/$id";
+
+  /// Update custom workout plan by ID (legacy)
+  static String updateCustomWorkoutPlan(String id) => "$customWorkoutPlans/$id";
+
+  /// Delete custom workout plan by ID (legacy)
+  static String deleteCustomWorkoutPlan(String id) => "$customWorkoutPlans/$id";
+
+  /// Toggle schedule reminder (legacy)
+  static String toggleScheduleReminder(String id) =>
+      "$workoutSchedules/$id/toggle-reminder";
+
+  /// Get workout statistics (legacy)
   static String workoutStatistics =
       "${AppConstants.apiUrl}/workouts/statistics";
 
-  /// Get weekly workout statistics (DEPRECATED - use weeklyProgress instead)
+  /// Get weekly workout statistics (legacy - use weeklyProgress instead)
   static String weeklyWorkoutStatistics = weeklyProgress;
 
-  /// Get monthly workout statistics
+  /// Get monthly workout statistics (legacy)
   static String monthlyWorkoutStatistics = "$workoutStatistics/monthly";
 }

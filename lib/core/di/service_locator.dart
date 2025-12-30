@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/repositories/exercise_repository.dart';
 import '../../data/repositories/workout_repository.dart';
+import '../../data/repositories/new_workout_repository.dart';
 import '../../services/favorite_service.dart';
 import '../../cubits/exercise/exercise_cubits.dart';
 import '../../cubits/workout/workout_cubits.dart';
@@ -15,6 +16,7 @@ class ServiceLocator {
   // Repositories (Singletons)
   late final ExerciseRepository exerciseRepository;
   late final WorkoutRepository workoutRepository;
+  late final NewWorkoutRepository newWorkoutRepository;
 
   // Services (Singletons)
   late final FavoriteExerciseService favoriteService;
@@ -28,6 +30,7 @@ class ServiceLocator {
     // Initialize repositories
     exerciseRepository = ExerciseRepository();
     workoutRepository = WorkoutRepository();
+    newWorkoutRepository = NewWorkoutRepository();
 
     // Initialize services
     favoriteService = FavoriteExerciseService();
@@ -47,6 +50,8 @@ extension ServiceLocatorExtension on BuildContext {
   ExerciseRepository get exerciseRepository =>
       serviceLocator.exerciseRepository;
   WorkoutRepository get workoutRepository => serviceLocator.workoutRepository;
+  NewWorkoutRepository get newWorkoutRepository =>
+      serviceLocator.newWorkoutRepository;
   FavoriteExerciseService get favoriteService => serviceLocator.favoriteService;
 }
 
@@ -111,8 +116,7 @@ class ExerciseWorkoutBlocProvider extends StatelessWidget {
         ),
         BlocProvider<WorkoutStatsScreenCubit>(
           create: (context) => WorkoutStatsScreenCubit(
-            workoutRepository: serviceLocator.workoutRepository,
-            exerciseRepository: serviceLocator.exerciseRepository,
+            workoutRepository: serviceLocator.newWorkoutRepository,
           ),
         ),
       ],
